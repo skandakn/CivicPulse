@@ -371,6 +371,8 @@ export interface PotholeAnalysisResponse {
   };
   inferenceTimeMs: number;
   modelName: string;
+  requestedMode?: string;
+  activePipelineMode?: string;
 }
 
 export type ViewMode = 

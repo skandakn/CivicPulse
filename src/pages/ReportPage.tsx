@@ -100,7 +100,7 @@ export const ReportPage: React.FC = () => {
   const [wardNumber, setWardNumber] = useState<number>(PRESET_SAMPLES[0].wardNumber);
   const [description, setDescription] = useState('Severe road craters in primary vehicle track causing vehicle swerving.');
   const [reporterPhone, setReporterPhone] = useState('+91 98450 78120');
-  const [detectorMode, setDetectorMode] = useState<'auto' | 'demo' | 'opencv'>('auto');
+  const [detectorMode, setDetectorMode] = useState<'auto' | 'demo' | 'opencv' | 'yolo'>('auto');
 
   // Analysis result state
   const [analysisResult, setAnalysisResult] = useState<PotholeAnalysisResponse | null>(null);
@@ -186,102 +186,115 @@ export const ReportPage: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`API responded with ${response.status}`);
+        let errMsg = `API error (${response.status})`;
+        try {
+          const errData = await response.json();
+          if (errData.detail) errMsg = errData.detail;
+        } catch {}
+        throw new Error(errMsg);
       }
 
       const data: PotholeAnalysisResponse = await response.json();
       setAnalysisResult(data);
-    } catch {
-      // Fallback result matching hackathon specification
-      const fallbackResult: PotholeAnalysisResponse = {
-        detected: true,
-        confidence: 0.964,
-        detections: [
-          {
-            id: 'pothole-01',
-            label: 'pothole',
-            confidence: 0.968,
-            box: { x: 330, y: 380, width: 290, height: 180, x_norm: 0.32, y_norm: 0.49, width_norm: 0.28, height_norm: 0.23 },
-            severity: 'Critical',
-            areaSqPx: 52200,
-            relativeArea: 0.066,
-            depthEstimate: 'Deep Cavity (~18 cm)',
-            polygon: [[330, 440], [360, 390], [420, 380], [510, 395], [590, 430], [620, 490], [580, 540], [480, 560], [380, 550], [335, 490]]
+    } catch (err: any) {
+      if (detectorMode === 'demo') {
+        // Fallback result isolated strictly to DEMO benchmark mode
+        const fallbackResult: PotholeAnalysisResponse = {
+          detected: true,
+          confidence: 0.964,
+          detections: [
+            {
+              id: 'pothole-01',
+              label: 'pothole',
+              confidence: 0.964,
+              box: { x: 330, y: 380, width: 290, height: 180, x_norm: 0.32, y_norm: 0.49, width_norm: 0.28, height_norm: 0.23 },
+              severity: 'High',
+              areaSqPx: 52200,
+              relativeArea: 0.066,
+              depthEstimate: 'Deep Cavity (~11 cm)',
+              polygon: [[330, 440], [360, 390], [420, 380], [510, 395], [590, 430], [620, 490], [580, 540], [480, 560], [380, 550], [335, 490]]
+            },
+            {
+              id: 'pothole-02',
+              label: 'pothole',
+              confidence: 0.948,
+              box: { x: 640, y: 460, width: 190, height: 120, x_norm: 0.62, y_norm: 0.60, width_norm: 0.18, height_norm: 0.15 },
+              severity: 'Medium',
+              areaSqPx: 22800,
+              relativeArea: 0.029,
+              depthEstimate: 'Moderate (~6 cm)',
+              polygon: [[640, 510], [670, 470], [750, 460], [820, 500], [830, 550], [770, 580], [690, 570], [645, 530]]
+            },
+            {
+              id: 'pothole-03',
+              label: 'pothole',
+              confidence: 0.912,
+              box: { x: 180, y: 480, width: 150, height: 95, x_norm: 0.18, y_norm: 0.62, width_norm: 0.15, height_norm: 0.12 },
+              severity: 'Medium',
+              areaSqPx: 14250,
+              relativeArea: 0.018,
+              depthEstimate: 'Shallow Surface Break (~4 cm)',
+              polygon: [[180, 520], [210, 485], [280, 480], [325, 515], [330, 555], [275, 575], [205, 565]]
+            }
+          ],
+          estimatedSeverity: 'Severe',
+          damageArea: '1.8 m²',
+          potholeCount: 3,
+          roadCondition: 'Degraded Bituminous Asphalt - Severe Hazard to Two-Wheelers & Bus Transit',
+          explanation: '3 hazardous structural depressions detected across primary travel lane. Largest crater depth exceeds 10cm.',
+          imageMetadata: { width: 1024, height: 768, sizeBytes: 340000, format: 'jpeg' },
+          damageImpact: {
+            totalAreaSqMeters: 1.8,
+            roadObstructionPct: 64.1,
+            twoWheelerRisk: 'Extreme (High Skidding & Rim Fracture Risk)',
+            busTransitDisruption: 'Severe (Speed Reduction to < 10 km/h, Axle Stress)',
+            laneClosureRecommended: true,
+            repairUrgency: 'Emergency Cold Patching Required (< 24h)',
+            primaryCraterId: 'pothole-01',
+            primaryCraterDepth: 'Deep Cavity (~11 cm)'
           },
-          {
-            id: 'pothole-02',
-            label: 'pothole',
-            confidence: 0.948,
-            box: { x: 640, y: 460, width: 190, height: 120, x_norm: 0.62, y_norm: 0.60, width_norm: 0.18, height_norm: 0.15 },
-            severity: 'Medium',
-            areaSqPx: 22800,
-            relativeArea: 0.029,
-            depthEstimate: 'Moderate (~6 cm)',
-            polygon: [[640, 510], [670, 470], [750, 460], [820, 500], [830, 550], [770, 580], [690, 570], [645, 530]]
+          severityEngine: {
+            score: 94,
+            level: 'CRITICAL',
+            factors: { visual_size: 19.5, pothole_count: 15.0, road_obstruction: 15.0, confidence: 9.3, road_importance: 15.0, hub_proximity: 8.5, previous_reports: 8.0, persistence: 3.7 },
+            explanations: [
+              'Multi-crater cluster (3 distinct depressions in single frame)',
+              'High roadway obstruction (64.1% vehicle track span)',
+              'Arterial Corridor (Outer Ring Road Corridor)',
+              'Within 0.4km of Bellandur EcoSpace Tech Corridor',
+              '17 citizen reports consolidated'
+            ]
           },
-          {
-            id: 'pothole-03',
-            label: 'pothole',
-            confidence: 0.912,
-            box: { x: 180, y: 480, width: 150, height: 95, x_norm: 0.18, y_norm: 0.62, width_norm: 0.15, height_norm: 0.12 },
-            severity: 'Medium',
-            areaSqPx: 14250,
-            relativeArea: 0.018,
-            depthEstimate: 'Shallow Surface Break (~4 cm)',
-            polygon: [[180, 520], [210, 485], [280, 480], [325, 515], [330, 555], [275, 575], [205, 565]]
-          }
-        ],
-        estimatedSeverity: 'Severe',
-        damageArea: '1.8 m²',
-        potholeCount: 3,
-        roadCondition: 'Degraded Bituminous Asphalt - Severe Hazard to Two-Wheelers & Bus Transit',
-        explanation: '3 hazardous structural depressions detected across primary travel lane. Largest crater depth exceeds 10cm.',
-        imageMetadata: { width: 1024, height: 768, sizeBytes: 340000, format: 'jpeg' },
-        damageImpact: {
-          totalAreaSqMeters: 1.8,
-          roadObstructionPct: 64.1,
-          twoWheelerRisk: 'Extreme (High Skidding & Rim Fracture Risk)',
-          busTransitDisruption: 'Severe (Speed Reduction to < 10 km/h, Axle Stress)',
-          laneClosureRecommended: true,
-          repairUrgency: 'Emergency Cold Patching Required (< 24h)',
-          primaryCraterId: 'pothole-01',
-          primaryCraterDepth: 'Deep Cavity (~18 cm)'
-        },
-        severityEngine: {
-          score: 94,
-          level: 'CRITICAL',
-          factors: { visual_size: 19.5, pothole_count: 15.0, road_obstruction: 15.0, confidence: 9.3, road_importance: 15.0, hub_proximity: 8.5, previous_reports: 8.0, persistence: 3.7 },
-          explanations: [
-            'Multi-crater cluster (3 distinct depressions in single frame)',
-            'High roadway obstruction (64.1% vehicle track span)',
-            'Arterial Corridor (Outer Ring Road Corridor)',
-            'Within 0.4km of Bellandur EcoSpace Tech Corridor',
-            '17 citizen reports consolidated'
-          ]
-        },
-        duplicateCheck: {
-          isDuplicate: true,
-          duplicateProbability: 0.94,
-          matchedIncidentId: 'BNG-PTH-1042',
-          reason: '94% likely duplicate of BNG-PTH-1042 located 14m away on Outer Ring Road (Bellandur flyover descent)',
-          distanceMeters: 14.2
-        },
-        incident: {
-          id: 'BNG-PTH-1042',
-          canonicalLocation: { lat: 12.9279, lng: 77.6833, address: 'Outer Ring Road, near Bellandur EcoSpace Flyover Descent', ward: 'Ward 150 - Bellandur', zone: 'Mahadevapura' },
-          priority: 94,
-          severity: 'CRITICAL',
-          reportsMerged: 17,
-          road: 'Outer Ring Road (State Highway 35 Connector)',
-          authority: 'BBMP Mahadevapura Division (Major Roads Dept)',
-          contractor: 'NCC Urban Infrastructure Ltd (Contract #KA-BBMP-2025-912)',
-          status: 'Verified',
-          lastReportedAt: new Date().toISOString()
-        },
-        inferenceTimeMs: 24.5,
-        modelName: 'CivicPulse-YOLOv11x-BengaluruCivic-DEMO'
-      };
-      setAnalysisResult(fallbackResult);
+          duplicateCheck: {
+            isDuplicate: true,
+            duplicateProbability: 0.94,
+            matchedIncidentId: 'BNG-PTH-1042',
+            reason: '94% likely duplicate of BNG-PTH-1042 located 14m away on Outer Ring Road (Bellandur flyover descent)',
+            distanceMeters: 14.2
+          },
+          incident: {
+            id: 'BNG-PTH-1042',
+            canonicalLocation: { lat: 12.9279, lng: 77.6833, address: 'Outer Ring Road, near Bellandur EcoSpace Flyover Descent', ward: 'Ward 150 - Bellandur', zone: 'Mahadevapura' },
+            priority: 94,
+            severity: 'CRITICAL',
+            reportsMerged: 17,
+            road: 'Outer Ring Road (State Highway 35 Connector)',
+            authority: 'BBMP Mahadevapura Division (Major Roads Dept)',
+            contractor: 'NCC Urban Infrastructure Ltd (Contract #KA-BBMP-2025-912)',
+            status: 'Verified',
+            lastReportedAt: new Date().toISOString()
+          },
+          inferenceTimeMs: 24.5,
+          modelName: 'CivicPulse-YOLOv11x-BengaluruCivic-DEMO',
+          activePipelineMode: 'demo'
+        };
+        setAnalysisResult(fallbackResult);
+      } else {
+        // STRICT ISOLATION: The demo adapter must NEVER silently activate when OPENCV or YOLO is requested.
+        setReportStep('INPUT');
+        addToast('CV Inference Error', err.message || 'Detection failed on active detector', 'error');
+        return;
+      }
     }
   };
 
@@ -419,6 +432,43 @@ export const ReportPage: React.FC = () => {
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Computer Vision Subsystem Engine Selector */}
+            <div className="p-3.5 rounded-2xl bg-[#090C17] border border-white/10 space-y-2">
+              <div className="flex items-center justify-between text-xs font-mono">
+                <span className="text-slate-400 font-bold uppercase tracking-wider">Inference Subsystem Mode</span>
+                <span className={`text-[11px] font-bold ${
+                  detectorMode === 'demo' ? 'text-purple-400' : detectorMode === 'opencv' ? 'text-cyan-400' : detectorMode === 'yolo' ? 'text-blue-400' : 'text-emerald-400'
+                }`}>
+                  {detectorMode === 'demo' ? 'DEMO (Benchmark)' : detectorMode === 'opencv' ? 'OPENCV (Prototype CV)' : detectorMode === 'yolo' ? 'YOLO (Neural Net)' : 'AUTO DETECTOR'}
+                </span>
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                {(['auto', 'opencv', 'yolo', 'demo'] as const).map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => {
+                      setDetectorMode(m);
+                      addToast('Mode Selected', `${m.toUpperCase()} inference engine`, 'info');
+                    }}
+                    className={`py-2 px-2 rounded-xl text-xs font-mono font-bold transition-all border cursor-pointer ${
+                      detectorMode === m
+                        ? m === 'demo'
+                          ? 'bg-purple-950/80 border-purple-500 text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.35)]'
+                          : m === 'opencv'
+                          ? 'bg-cyan-950/80 border-cyan-500 text-cyan-300 shadow-[0_0_15px_rgba(0,240,255,0.35)]'
+                          : m === 'yolo'
+                          ? 'bg-blue-950/80 border-blue-500 text-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.35)]'
+                          : 'bg-emerald-950/80 border-emerald-500 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.35)]'
+                        : 'bg-white/[0.02] border-white/10 text-slate-400 hover:text-slate-200 hover:bg-white/[0.05]'
+                    }`}
+                  >
+                    {m.toUpperCase()}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Action Buttons */}
@@ -694,9 +744,24 @@ export const ReportPage: React.FC = () => {
                       Road Hazard Telemetry
                     </h2>
                   </div>
-                  <span className="px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-300 font-mono text-[11px] font-bold border border-cyan-500/40">
-                    CV VERIFIED
-                  </span>
+                  <div className="text-right">
+                    {analysisResult.activePipelineMode === 'demo' || analysisResult.modelName?.includes('DEMO') ? (
+                      <span className="px-2.5 py-1 rounded bg-purple-500/20 text-purple-300 font-mono text-[11px] font-bold border border-purple-500/40 inline-block shadow-[0_0_10px_rgba(168,85,247,0.2)]">
+                        DEMO INFERENCE
+                      </span>
+                    ) : analysisResult.activePipelineMode === 'yolo' || analysisResult.modelName?.includes('YOLO') ? (
+                      <span className="px-2.5 py-1 rounded bg-blue-500/20 text-blue-300 font-mono text-[11px] font-bold border border-blue-500/40 inline-block shadow-[0_0_10px_rgba(59,130,246,0.2)]">
+                        YOLO INFERENCE {analysisResult.modelName?.includes('Adaptive') ? '(Prototype CV Fallback)' : ''}
+                      </span>
+                    ) : (
+                      <div className="space-y-0.5">
+                        <span className="px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-300 font-mono text-[11px] font-bold border border-cyan-500/40 inline-block shadow-[0_0_10px_rgba(0,240,255,0.2)]">
+                          OPENCV INFERENCE
+                        </span>
+                        <span className="block text-[10px] text-cyan-400/80 font-mono">Prototype CV inference</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 text-center">

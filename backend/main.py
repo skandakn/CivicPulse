@@ -34,7 +34,8 @@ if os.path.exists(DIST_DIR):
 pipelines = {
     "auto": PotholeAnalysisPipeline(mode="auto"),
     "demo": PotholeAnalysisPipeline(mode="demo"),
-    "opencv": PotholeAnalysisPipeline(mode="opencv")
+    "opencv": PotholeAnalysisPipeline(mode="opencv"),
+    "yolo": PotholeAnalysisPipeline(mode="yolo"),
 }
 
 @app.get("/api/health")
@@ -119,14 +120,19 @@ async def analyze_pothole(
     latitude: Optional[float] = Form(None, description="Optional GPS latitude"),
     longitude: Optional[float] = Form(None, description="Optional GPS longitude"),
     road_hint: Optional[str] = Form(None, description="Optional road or landmark name"),
-    mode: Optional[str] = Form("auto", description="'auto', 'opencv', or 'demo'")
+    mode: Optional[str] = Form("auto", description="'auto', 'opencv', 'yolo', or 'demo'")
 ):
     try:
+        if latitude is not None and not (-90.0 <= latitude <= 90.0):
+            raise HTTPException(status_code=400, detail="Invalid latitude: Must be between -90.0 and 90.0 degrees.")
+        if longitude is not None and not (-180.0 <= longitude <= 180.0):
+            raise HTTPException(status_code=400, detail="Invalid longitude: Must be between -180.0 and 180.0 degrees.")
+
         image_bytes = await image.read()
         if not image_bytes:
             raise HTTPException(status_code=400, detail="Uploaded file is empty.")
 
-        pipeline_mode = mode.lower() if mode in pipelines else "auto"
+        pipeline_mode = mode.lower() if mode and mode.lower() in pipelines else "auto"
         active_pipeline = pipelines[pipeline_mode]
 
         result = active_pipeline.process(
@@ -136,8 +142,12 @@ async def analyze_pothole(
             road_hint=road_hint,
             content_type=image.content_type
         )
+        result["requestedMode"] = mode
+        result["activePipelineMode"] = pipeline_mode
         return JSONResponse(status_code=200, content=result)
 
+    except HTTPException:
+        raise
     except ImageValidationError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
