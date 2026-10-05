@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { BengaluruMap } from '../components/map/BengaluruMap';
 import { useApp } from '../context/AppContext';
-import { SeverityLevel } from '../types';
+import { SeverityLevel, MapMode } from '../types';
 import { CITY_METRICS } from '../data/mockData';
 import { getSeverityColor } from '../utils/formatters';
 
@@ -28,6 +28,7 @@ export const GodsEyePage: React.FC = () => {
   const [severityFilter, setSeverityFilter] = useState<SeverityLevel | 'ALL'>('ALL');
   const [warrantyFilterOnly, setWarrantyFilterOnly] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<'QUEUE' | 'DETAILS'>('QUEUE');
+  const [mapMode, setMapMode] = useState<MapMode>('INCIDENTS');
 
   // Filtered list based on local UI controls
   const displayedIncidents = filteredIncidents.filter((inc) => {
@@ -183,17 +184,44 @@ export const GodsEyePage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch min-h-[680px]">
         {/* Center: Large Bengaluru Map */}
         <div className="lg:col-span-8 flex flex-col rounded-2xl border border-white/10 bg-[#090C16] overflow-hidden shadow-2xl relative">
-          {/* Map Top Bar */}
-          <div className="p-3 bg-[#070910] border-b border-white/10 flex items-center justify-between text-xs">
+          {/* Map Top Bar with 5 Modes */}
+          <div className="p-3 bg-[#070910] border-b border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs">
             <div className="flex items-center gap-2">
               <Eye className="w-4 h-4 text-cyan-400" />
-              <span className="font-mono font-bold text-white uppercase tracking-wider">
-                Bengaluru Real-Time Spatial Canvas
+              <span className="font-mono font-bold text-white uppercase tracking-wider hidden sm:inline">
+                Bengaluru Spatial Canvas
               </span>
             </div>
 
+            {/* 5 Map Mode Switcher Tabs */}
+            <div className="flex flex-wrap bg-white/5 rounded-xl p-1 gap-1 text-xs font-mono">
+              {[
+                { id: 'INCIDENTS', label: 'Incidents' },
+                { id: 'HEATMAP', label: 'Heatmap' },
+                { id: 'ROAD_HEALTH', label: 'Road Health' },
+                { id: 'PRIORITY_ZONES', label: 'Priority Zones' },
+                { id: 'CONTRACTORS', label: 'Contractors' }
+              ].map(m => (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => {
+                    setMapMode(m.id as MapMode);
+                    addToast('Map Mode Changed', `${m.label} Layer Active`, 'info');
+                  }}
+                  className={`px-2.5 py-1 rounded-lg transition-all font-semibold cursor-pointer ${
+                    mapMode === m.id
+                      ? 'bg-cyan-500 text-slate-950 font-bold shadow-[0_0_12px_rgba(0,240,255,0.4)]'
+                      : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+
             {/* Severity Legend */}
-            <div className="hidden sm:flex items-center gap-3 text-[11px] font-mono">
+            <div className="hidden xl:flex items-center gap-3 text-[11px] font-mono">
               <span className="flex items-center gap-1 text-slate-400">
                 <span className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_8px_#EF4444]" />
                 Critical
@@ -203,12 +231,8 @@ export const GodsEyePage: React.FC = () => {
                 High
               </span>
               <span className="flex items-center gap-1 text-slate-400">
-                <span className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
-                Medium
-              </span>
-              <span className="flex items-center gap-1 text-slate-400">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10B981]" />
-                AI Verified
+                Verified
               </span>
             </div>
           </div>
@@ -218,6 +242,7 @@ export const GodsEyePage: React.FC = () => {
             <BengaluruMap
               incidents={displayedIncidents}
               selectedIncidentId={selectedIncident?.id}
+              mapMode={mapMode}
               onSelectIncident={(inc) => {
                 setSelectedIncident(inc);
                 setActiveTab('DETAILS');

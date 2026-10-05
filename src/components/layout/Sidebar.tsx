@@ -11,7 +11,8 @@ import {
   ShieldCheck,
   ChevronLeft,
   ChevronRight,
-  FileCheck2
+  FileCheck2,
+  Sparkles
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ViewMode } from '../../types';
@@ -49,7 +50,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'VERIFICATION', label: 'Repair Verification', icon: FileCheck2, badge: 'AI Audit', badgeColor: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' },
     { id: 'COMPLAINTS', label: 'Complaints', icon: FileText, badge: activeComplaintsCount, badgeColor: 'bg-amber-500/20 text-amber-400' },
     { id: 'CONTRACTORS', label: 'Contractors', icon: Building2 },
-    { id: 'ANALYTICS', label: 'Analytics', icon: BarChart3 }
+    { id: 'ANALYTICS', label: 'Analytics', icon: BarChart3 },
+    { id: 'DEMO', label: 'Judge Walkthrough', icon: Sparkles, badge: 'Demo', badgeColor: 'bg-purple-500/20 text-purple-300 border border-purple-500/30' }
   ];
 
   return (

@@ -5,7 +5,8 @@ import {
   Authority,
   Contract,
   PotholeIncident,
-  Complaint
+  Complaint,
+  MonthlyTrend
 } from '../types';
 
 export const INITIAL_WARDS: Ward[] = [
@@ -1122,9 +1123,30 @@ export const CITY_METRICS = {
   reportsToday: 78,
   resolvedThisMonth: 1240,
   aiVerifiedRepairs: 1180,
+  duplicateReportsMerged: 842,
   taxpayerSavingsINR: 48500000,
   avgResolutionTimeHours: 42.5,
   aiPrecisionRate: 98.7,
   activeContractorsMonitored: 34,
-  totalBangaloreRoadsMonitoredKm: 1420
+  totalBangaloreRoadsMonitoredKm: 1420,
+  roadsAtRisk: 14
 };
+
+export const MONTHLY_TRENDS: MonthlyTrend[] = [
+  { month: 'Apr', reported: 310, resolved: 270, aiVerified: 248 },
+  { month: 'May', reported: 395, resolved: 340, aiVerified: 318 },
+  { month: 'Jun', reported: 521, resolved: 410, aiVerified: 389 },
+  { month: 'Jul', reported: 842, resolved: 590, aiVerified: 541 },
+  { month: 'Aug', reported: 1104, resolved: 780, aiVerified: 722 },
+  { month: 'Sep', reported: 988, resolved: 830, aiVerified: 801 },
+  { month: 'Oct', reported: 78, resolved: 61, aiVerified: 58 },
+];
+
+export const DEMO_INCIDENT_IDS = [
+  'inc-07', // Critical - Devarabisanahalli
+  'inc-01', // Critical - ORR Ecospace (BNG-PTH-1042)
+  'inc-02', // Critical - Silk Board
+  'inc-05', // Medium  - Indiranagar
+  'inc-09', // High    - Hebbal
+];
+

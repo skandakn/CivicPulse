@@ -55,10 +55,25 @@ export interface PriorityBreakdown {
   citizenUpvotesWeight: number; // 0-100
 }
 
+export type MapMode = 
+  | 'INCIDENTS' 
+  | 'HEATMAP' 
+  | 'ROAD_HEALTH' 
+  | 'PRIORITY_ZONES' 
+  | 'CONTRACTORS';
+
+export interface PriorityScoreExplanation {
+  factor: string;
+  contribution: number;
+  detail: string;
+  icon: string;
+}
+
 export interface PriorityScore {
   overallScore: number; // 0-100
   breakdown: PriorityBreakdown;
   scoreItems?: ScoreItem[];
+  scoreFactors?: PriorityScoreExplanation[];
   confidence: number; // 0.0 - 1.0
   explanation: string[];
   shortExplanation?: string;
@@ -109,6 +124,10 @@ export interface RepairVerification {
   areaReductionPercent: number; // e.g. 96.4%
   unresolvedDamageDetected: boolean;
   thermalDensityScore: number; // 0-100
+  structuralSimilarityScore?: number; // 0-100
+  edgeSealingScore?: number; // 0-100
+  compactionScore?: number; // 0-100
+  isDemo?: boolean;
   verifiedBy: 'AI_VISION_AUDITOR' | 'HUMAN_OVERRIDE';
   status: 'APPROVED' | 'REJECTED_REWORK_NEEDED';
   notes: string;
@@ -120,6 +139,7 @@ export interface ComplaintHistoryItem {
   action: string;
   actor: string;
   notes?: string;
+  status?: string;
 }
 
 export interface ComplaintDraft {
@@ -178,6 +198,14 @@ export interface Contractor {
   contactEmail: string;
   contactPhone: string;
   activeWards: string[];
+  totalProjectsCompleted?: number;
+  openIncidents?: number;
+  resolvedIncidents?: number;
+  avgResolutionTimeDays?: number;
+  activeRoads?: string[];
+  incorporatedYear?: number;
+  directorName?: string;
+  addressCity?: string;
 }
 
 export interface Authority {
@@ -280,6 +308,55 @@ export interface PotholeIncident {
   road?: string;
   authority?: string;
   contractor?: string;
+  generatedComplaint?: GeneratedComplaint;
+  duplicateCluster?: string[];
+  isDemo?: boolean;
+}
+
+export interface GeneratedComplaint {
+  complaintId: string;
+  incidentCode: string;
+  generatedAt: string;
+  location: string;
+  roadName: string;
+  landmark: string;
+  severity: SeverityLevel;
+  priorityScore: number;
+  priorityReason: string;
+  evidenceImages: string[];
+  supportingReportsCount: number;
+  responsibleAuthority: string;
+  responsibleAuthorityEmail: string;
+  contractorName?: string;
+  contractorRegistration?: string;
+  isUnderWarranty: boolean;
+  warrantyClause?: string;
+  submissionStatus: 'DRAFT' | 'COPIED' | 'SUBMITTED';
+  submittedAt?: string;
+  aiDisclaimer: string;
+  fullText: string;
+}
+
+export interface MonthlyTrend {
+  month: string;
+  reported: number;
+  resolved: number;
+  aiVerified: number;
+}
+
+export interface WardStats {
+  wardName: string;
+  wardNumber: number;
+  active: number;
+  critical: number;
+  resolved: number;
+  riskIndex: number;
+}
+
+export interface SeverityDistribution {
+  severity: SeverityLevel;
+  count: number;
+  percentage: number;
 }
 
 export interface BoundingBox {
@@ -385,5 +462,6 @@ export type ViewMode =
   | 'VERIFICATION'
   | 'CONTRACTORS' 
   | 'COMPLAINTS' 
-  | 'ANALYTICS';
+  | 'ANALYTICS'
+  | 'DEMO';
 

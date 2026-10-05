@@ -14,6 +14,8 @@ import {
 import { useApp } from '../context/AppContext';
 import { getSeverityColor, getStatusBadge } from '../utils/formatters';
 import { BengaluruMap } from '../components/map/BengaluruMap';
+import { PriorityExplainer } from '../components/incident/PriorityExplainer';
+import { ComplaintGenerator } from '../components/incident/ComplaintGenerator';
 
 export const IncidentDetailPage: React.FC = () => {
   const {
@@ -277,37 +279,11 @@ export const IncidentDetailPage: React.FC = () => {
 
         {/* Right 6 cols: Contractor Accountability, Sahaya Grievance & Timeline */}
         <div className="lg:col-span-6 space-y-6">
-          {/* Explainable Scoring Card */}
-          <div className="rounded-2xl border border-white/10 bg-[#090C16] p-5 space-y-3 font-mono text-xs">
-            <div className="flex items-center justify-between border-b border-white/10 pb-2">
-              <span className="text-cyan-400 font-bold uppercase">EXPLAINABLE PRIORITY SCORE: {selectedIncident.priorityDetails.overallScore}/100</span>
-              <span className="text-red-400 font-bold">{selectedIncident.severity}</span>
-            </div>
-
-            <p className="text-slate-300 font-sans italic text-xs leading-relaxed">
-              "{selectedIncident.priorityDetails.shortExplanation || selectedIncident.priorityDetails.explanation[0]}"
-            </p>
-
-            <div className="space-y-1.5 pt-2">
-              {(selectedIncident.priorityDetails.scoreItems || [
-                { factor: 'Visual severity & depth', points: 31, maxPoints: 35 },
-                { factor: 'Traffic exposure', points: 21, maxPoints: 25 },
-                { factor: 'Report density', points: 17, maxPoints: 20 },
-                { factor: 'Persistence', points: 12, maxPoints: 15 },
-                { factor: 'Road importance', points: 8, maxPoints: 10 },
-                { factor: 'Sensitive location', points: 5, maxPoints: 5 }
-              ]).map((it, idx) => (
-                <div key={idx} className="flex justify-between items-center text-slate-300">
-                  <span>{it.factor}</span>
-                  <span className="text-cyan-400 font-bold">+{it.points}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="pt-2 border-t border-white/5 text-[11px] font-sans text-slate-300">
-              <strong className="text-cyan-400 font-mono">Why priority {selectedIncident.priorityDetails.overallScore}?</strong> Severe defect + high traffic + multiple reports + persistence.
-            </div>
-          </div>
+          {/* Interactive Explainable Priority Scoring */}
+          <PriorityExplainer
+            priorityDetails={selectedIncident.priorityDetails}
+            overallScore={selectedIncident.priorityDetails.overallScore}
+          />
 
           {/* Contractor & Engineering Record */}
           <div className="rounded-2xl border border-white/10 bg-[#090C16] p-5 space-y-4">
@@ -388,19 +364,8 @@ export const IncidentDetailPage: React.FC = () => {
               </button>
             </div>
 
-            {/* AI Automated Complaint Draft */}
-            <div className="p-4 rounded-xl bg-[#060810] border border-amber-500/30 space-y-2 font-mono text-xs">
-              <div className="flex justify-between items-center text-amber-300 font-bold">
-                <span>AI COMPLAINT DRAFT (READY TO SUBMIT)</span>
-                <span className="text-[10px] text-slate-500">Simulated Gateway</span>
-              </div>
-              <p className="text-slate-300 font-sans text-xs">
-                Recommended Action: Notice to contractor under Clause 45.2 for emergency cold-mix compaction within 24h as per IRC-SP-100 specifications.
-              </p>
-              <div className="text-[10px] text-slate-500 italic pt-1 border-t border-white/5">
-                Watermark: AI-generated — review before submission.
-              </div>
-            </div>
+            {/* Official AI Civic Complaint Generator */}
+            <ComplaintGenerator incident={selectedIncident} />
           </div>
         </div>
       </div>

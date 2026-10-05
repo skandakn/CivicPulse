@@ -31,6 +31,27 @@ DIST_DIR = os.path.join(os.path.dirname(__file__), "..", "dist")
 if os.path.exists(DIST_DIR):
     app.mount("/assets", StaticFiles(directory=os.path.join(DIST_DIR, "assets")), name="assets")
 
+@app.get("/")
+def serve_index():
+    index_file = os.path.join(DIST_DIR, "index.html")
+    if os.path.exists(index_file):
+        return FileResponse(index_file)
+    return {"message": "CivicPulse API is running. Frontend dist not built."}
+
+@app.get("/favicon.svg")
+def serve_favicon():
+    fav = os.path.join(DIST_DIR, "favicon.svg")
+    if os.path.exists(fav):
+        return FileResponse(fav)
+    return JSONResponse(status_code=404, content={"detail": "Not found"})
+
+@app.get("/icons.svg")
+def serve_icons():
+    ic = os.path.join(DIST_DIR, "icons.svg")
+    if os.path.exists(ic):
+        return FileResponse(ic)
+    return JSONResponse(status_code=404, content={"detail": "Not found"})
+
 pipelines = {
     "auto": PotholeAnalysisPipeline(mode="auto"),
     "demo": PotholeAnalysisPipeline(mode="demo"),

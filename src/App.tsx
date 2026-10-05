@@ -17,6 +17,7 @@ import { RepairVerificationPage } from './pages/RepairVerificationPage';
 import { ContractorIntelligencePage } from './pages/ContractorIntelligencePage';
 import { ComplaintsPage } from './pages/ComplaintsPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
+import { DemoPage } from './pages/DemoPage';
 
 const AppContent: React.FC = () => {
   const { currentView } = useApp();
@@ -45,6 +46,8 @@ const AppContent: React.FC = () => {
         return <ComplaintsPage />;
       case 'ANALYTICS':
         return <AnalyticsPage />;
+      case 'DEMO':
+        return <DemoPage />;
       default:
         return <LandingPage />;
     }
