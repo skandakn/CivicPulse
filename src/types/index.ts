@@ -465,3 +465,14 @@ export type ViewMode =
   | 'ANALYTICS'
   | 'DEMO';
 
+export type UserRole = 'CITIZEN' | 'WARD_ENGINEER' | 'CHIEF_COMMISSIONER' | 'AUDITOR';
+
+export interface AuthUserProfile {
+  id: string;
+  fullName: string | null;
+  firstName: string | null;
+  email: string | null;
+  imageUrl: string | null;
+  role: UserRole;
+}
+

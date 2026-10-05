@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
+import { ClerkAuthProvider } from './components/auth/ClerkAuthProvider';
+import { AuthModal } from './components/auth/AuthModal';
+import { ProtectedView } from './components/auth/ProtectedView';
 import { Sidebar } from './components/layout/Sidebar';
 import { TopBar } from './components/layout/TopBar';
 import { ToastContainer } from './components/common/ToastContainer';
@@ -29,23 +32,59 @@ const AppContent: React.FC = () => {
       case 'LANDING':
         return <LandingPage />;
       case 'REPORT':
-        return <ReportPage />;
+        return (
+          <ProtectedView title="Report Pothole">
+            <ReportPage />
+          </ProtectedView>
+        );
       case 'GODS_EYE':
-        return <GodsEyePage />;
+        return (
+          <ProtectedView title="God's Eye Geospatial Intelligence">
+            <GodsEyePage />
+          </ProtectedView>
+        );
       case 'AI_ANALYSIS':
-        return <PotholeIntelligencePage />;
+        return (
+          <ProtectedView title="Pothole Intelligence & Vision Lab">
+            <PotholeIntelligencePage />
+          </ProtectedView>
+        );
       case 'PRIORITY_QUEUE':
-        return <PriorityQueuePage />;
+        return (
+          <ProtectedView title="Hazard Priority Queue">
+            <PriorityQueuePage />
+          </ProtectedView>
+        );
       case 'INCIDENT_DETAIL':
-        return <IncidentDetailPage />;
+        return (
+          <ProtectedView title="Incident Investigation Dossier">
+            <IncidentDetailPage />
+          </ProtectedView>
+        );
       case 'VERIFICATION':
-        return <RepairVerificationPage />;
+        return (
+          <ProtectedView title="AI Repair Verification Lab">
+            <RepairVerificationPage />
+          </ProtectedView>
+        );
       case 'CONTRACTORS':
-        return <ContractorIntelligencePage />;
+        return (
+          <ProtectedView title="Contractor Compliance Intelligence">
+            <ContractorIntelligencePage />
+          </ProtectedView>
+        );
       case 'COMPLAINTS':
-        return <ComplaintsPage />;
+        return (
+          <ProtectedView title="BBMP Sahaya SLA Complaints">
+            <ComplaintsPage />
+          </ProtectedView>
+        );
       case 'ANALYTICS':
-        return <AnalyticsPage />;
+        return (
+          <ProtectedView title="Bengaluru Civic Analytics">
+            <AnalyticsPage />
+          </ProtectedView>
+        );
       case 'DEMO':
         return <DemoPage />;
       default:
@@ -83,6 +122,7 @@ const AppContent: React.FC = () => {
       {/* Global Interactive Modals & Toasts */}
       <JudgeDemoModal />
       <SearchModal />
+      <AuthModal />
       <ToastContainer />
 
       {/* Footer */}
@@ -96,10 +136,12 @@ const AppContent: React.FC = () => {
             <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
             <span className="font-bold text-slate-300">CivicPulse Bengaluru</span>
             <span className="text-slate-600">|</span>
-            <span>AI-Powered Pothole Intelligence & Accountability</span>
+            <span>AI-Powered Pothole Intelligence &amp; Accountability</span>
           </div>
 
           <div className="flex items-center gap-4 text-[11px] text-slate-400">
+            <span>Clerk Auth Protected</span>
+            <span>•</span>
             <span>BBMP Sahaya 2.0 Synced</span>
             <span>•</span>
             <span>IRC-SP-100 Compliant</span>
@@ -114,8 +156,10 @@ const AppContent: React.FC = () => {
 
 export default function App() {
   return (
-    <AppProvider>
-      <AppContent />
-    </AppProvider>
+    <ClerkAuthProvider>
+      <AppProvider>
+        <AppContent />
+      </AppProvider>
+    </ClerkAuthProvider>
   );
 }

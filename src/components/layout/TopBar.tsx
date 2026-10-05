@@ -10,9 +10,14 @@ import {
   FileCheck,
   ChevronDown,
   Zap,
-  RotateCcw
+  RotateCcw,
+  LogIn,
+  LogOut
 } from 'lucide-react';
 import { useApp, UserRole } from '../../context/AppContext';
+import { useAuthSession } from '../../context/AuthContext';
+import { UserButton } from '@clerk/clerk-react';
+import { clerkAppearance } from '../auth/clerkAppearance';
 
 interface TopBarProps {
   isSidebarCollapsed: boolean;
@@ -34,6 +39,15 @@ export const TopBar: React.FC<TopBarProps> = ({
     resetDemo,
     addToast
   } = useApp();
+
+  const {
+    isSignedIn,
+    isDemoBypass,
+    user,
+    openSignIn,
+    signOut,
+    isClerkAvailable
+  } = useAuthSession();
 
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
@@ -229,52 +243,176 @@ export const TopBar: React.FC<TopBarProps> = ({
           )}
         </div>
 
-        {/* User Role Switcher Dropdown */}
-        <div className="relative">
-          <button
-            onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-            className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/10 hover:border-cyan-500/40 transition-all text-xs cursor-pointer"
-          >
-            <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-black font-bold text-xs">
-              <User className="w-3.5 h-3.5 text-slate-900" />
-            </div>
-            <div className="text-left hidden sm:block">
-              <div className="text-xs font-semibold text-slate-200 leading-none">
-                {roleLabels[userRole].title}
-              </div>
-              <span className={`text-[9px] font-mono px-1 rounded border inline-block mt-0.5 ${roleLabels[userRole].color}`}>
-                {roleLabels[userRole].badge}
-              </span>
-            </div>
-            <ChevronDown className="w-3 h-3 text-slate-400" />
-          </button>
+        {/* Authentication: User Profile or Sign In CTA */}
+        {isSignedIn ? (
+          <div className="relative">
+            <button
+              onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
+              className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/10 hover:border-cyan-500/40 transition-all text-xs cursor-pointer group"
+            >
+              {/* Profile Avatar */}
+              {isClerkAvailable && !isDemoBypass ? (
+                <div onClick={(e) => e.stopPropagation()} className="flex items-center">
+                  <UserButton appearance={clerkAppearance} />
+                </div>
+              ) : user?.imageUrl ? (
+                <img
+                  src={user.imageUrl}
+                  alt={user.fullName || 'User avatar'}
+                  className="w-6 h-6 rounded-full object-cover border border-cyan-400/50"
+                />
+              ) : (
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] ${
+                  isDemoBypass
+                    ? 'bg-gradient-to-tr from-amber-500 to-orange-500 text-slate-950 font-mono'
+                    : 'bg-gradient-to-tr from-cyan-500 to-blue-600 text-slate-950'
+                }`}>
+                  {isDemoBypass ? 'GJ' : <User className="w-3.5 h-3.5 text-slate-950" />}
+                </div>
+              )}
 
-          {isRoleDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-56 rounded-xl bg-[#0E121B] border border-white/10 shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2">
-              <div className="px-2 py-1.5 text-[10px] uppercase font-mono text-slate-500 tracking-wider">
-                Switch Perspective
-              </div>
-              {(Object.keys(roleLabels) as UserRole[]).map((role) => (
-                <button
-                  key={role}
-                  onClick={() => {
-                    setUserRole(role);
-                    setIsRoleDropdownOpen(false);
-                    addToast(`Switched perspective to ${roleLabels[role].title}`, 'Interface privileges adjusted', 'info');
-                  }}
-                  className={`w-full text-left px-2.5 py-2 rounded-lg text-xs font-medium flex items-center justify-between transition-colors cursor-pointer
-                    ${userRole === role ? 'bg-cyan-500/10 text-cyan-300' : 'text-slate-300 hover:bg-white/5'}
-                  `}
-                >
-                  <span>{roleLabels[role].title}</span>
-                  <span className={`text-[9px] font-mono px-1 rounded border ${roleLabels[role].color}`}>
-                    {roleLabels[role].badge}
+              {/* User Name & Role Pill */}
+              <div className="text-left hidden sm:block">
+                <div className="text-xs font-semibold text-slate-200 leading-none group-hover:text-cyan-300 transition-colors">
+                  {user?.fullName || user?.firstName || 'Authenticated User'}
+                </div>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className={`text-[9px] font-mono px-1 rounded border inline-block ${roleLabels[userRole].color}`}>
+                    {roleLabels[userRole].badge}
                   </span>
-                </button>
-              ))}
+                  {isDemoBypass ? (
+                    <span className="text-[9px] font-mono px-1 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                      DEMO
+                    </span>
+                  ) : (
+                    <span className="text-[9px] font-mono text-cyan-400">
+                      CLERK
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <ChevronDown className="w-3 h-3 text-slate-400 group-hover:text-slate-200 transition-colors" />
+            </button>
+
+            {/* Profile Dropdown Menu */}
+            {isRoleDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-64 rounded-xl bg-[#0E121B] border border-white/10 shadow-2xl p-3 z-50 animate-in fade-in slide-in-from-top-2 space-y-3">
+                {/* User Identity Dossier */}
+                <div className="p-2.5 rounded-lg bg-white/[0.03] border border-white/5 space-y-1">
+                  <div className="text-xs font-bold text-white flex items-center justify-between">
+                    <span className="truncate">{user?.fullName || 'CivicPulse User'}</span>
+                    <span className={`text-[9px] font-mono px-1.5 py-0.2 rounded border ${
+                      isDemoBypass
+                        ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                        : 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30'
+                    }`}>
+                      {isDemoBypass ? 'DEMO BYPASS' : 'CLERK VERIFIED'}
+                    </span>
+                  </div>
+                  {user?.email && (
+                    <div className="text-[11px] font-mono text-slate-400 truncate">
+                      {user.email}
+                    </div>
+                  )}
+                  <div className="text-[10px] text-slate-500 font-mono pt-1">
+                    ID: {user?.id.slice(0, 14)}...
+                  </div>
+                </div>
+
+                {/* Perspective Switcher */}
+                <div>
+                  <div className="px-1 text-[10px] uppercase font-mono text-slate-500 tracking-wider mb-1.5">
+                    Switch Perspective
+                  </div>
+                  <div className="space-y-1">
+                    {(Object.keys(roleLabels) as UserRole[]).map((role) => (
+                      <button
+                        key={role}
+                        onClick={() => {
+                          setUserRole(role);
+                          setIsRoleDropdownOpen(false);
+                          addToast(`Switched perspective to ${roleLabels[role].title}`, 'Interface privileges adjusted', 'info');
+                        }}
+                        className={`w-full text-left px-2 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-colors cursor-pointer ${
+                          userRole === role ? 'bg-cyan-500/10 text-cyan-300' : 'text-slate-300 hover:bg-white/5'
+                        }`}
+                      >
+                        <span>{roleLabels[role].title}</span>
+                        <span className={`text-[9px] font-mono px-1 rounded border ${roleLabels[role].color}`}>
+                          {roleLabels[role].badge}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Sign Out Action */}
+                <div className="pt-2 border-t border-white/10">
+                  <button
+                    onClick={async () => {
+                      setIsRoleDropdownOpen(false);
+                      await signOut();
+                      addToast('Signed Out', 'Returned to unauthenticated session', 'info');
+                    }}
+                    className="w-full text-left px-2 py-1.5 rounded-lg text-xs font-semibold text-red-400 hover:text-red-300 hover:bg-red-500/10 flex items-center gap-2 transition-colors cursor-pointer"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>{isDemoBypass ? 'Exit Demo Session' : 'Sign Out'}</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            {/* Sign In CTA */}
+            <button
+              onClick={openSignIn}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/40 text-cyan-300 font-bold text-xs shadow-[0_0_15px_rgba(0,240,255,0.2)] transition-all cursor-pointer hover:scale-105"
+            >
+              <LogIn className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Sign In</span>
+            </button>
+
+            {/* Perspective Switcher for Unauthenticated Preview */}
+            <div className="relative hidden md:block">
+              <button
+                onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/[0.04] border border-white/10 hover:border-white/20 text-slate-400 hover:text-slate-200 text-xs font-mono transition-colors cursor-pointer"
+                title="Preview role perspectives"
+              >
+                <span>Role: {roleLabels[userRole].badge}</span>
+                <ChevronDown className="w-3 h-3 text-slate-500" />
+              </button>
+
+              {isRoleDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-56 rounded-xl bg-[#0E121B] border border-white/10 shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2">
+                  <div className="px-2 py-1.5 text-[10px] uppercase font-mono text-slate-500 tracking-wider">
+                    Preview Perspective
+                  </div>
+                  {(Object.keys(roleLabels) as UserRole[]).map((role) => (
+                    <button
+                      key={role}
+                      onClick={() => {
+                        setUserRole(role);
+                        setIsRoleDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-2.5 py-2 rounded-lg text-xs font-medium flex items-center justify-between transition-colors cursor-pointer ${
+                        userRole === role ? 'bg-cyan-500/10 text-cyan-300' : 'text-slate-300 hover:bg-white/5'
+                      }`}
+                    >
+                      <span>{roleLabels[role].title}</span>
+                      <span className={`text-[9px] font-mono px-1 rounded border ${roleLabels[role].color}`}>
+                        {roleLabels[role].badge}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </header>
   );
