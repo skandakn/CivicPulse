@@ -87,11 +87,16 @@ export interface AIDetectionMetrics {
 
 export interface SupportingReport {
   reportId: string;
-  citizenName: string;
+  citizenName?: string;
   timestamp: string;
   imageUrl?: string;
   notes?: string;
-  similarityScore: number; // percentage, e.g. 94%
+  similarityScore?: number; // percentage, e.g. 94%
+  reporter?: string;
+  deviceInfo?: string;
+  confidence?: number;
+  imageUri?: string;
+  distanceFromCanonicalM?: number;
 }
 
 export interface RepairVerification {
@@ -332,16 +337,6 @@ export interface CanonicalLocation {
   address: string;
   ward: string;
   zone: string;
-}
-
-export interface SupportingReport {
-  reportId: string;
-  timestamp: string;
-  reporter: string;
-  deviceInfo: string;
-  confidence: number;
-  imageUri?: string;
-  distanceFromCanonicalM?: number;
 }
 
 export interface PotholeAnalysisResponse {
