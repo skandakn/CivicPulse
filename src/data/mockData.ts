@@ -378,6 +378,89 @@ export const INITIAL_CONTRACTS: Contract[] = [
 // Master Seed of 10 Realistic Bengaluru Potholes with Complete End-to-End Intelligence
 export const INITIAL_INCIDENTS: PotholeIncident[] = [
   {
+    id: 'inc-1042',
+    code: 'BNG-PTH-1042',
+    roadId: 'road-01',
+    roadName: 'Outer Ring Road (State Highway 35 Connector)',
+    wardId: 'ward-150',
+    wardName: 'Bellandur',
+    wardNumber: 150,
+    zone: 'Mahadevapura',
+    coordinates: {
+      lat: 12.9279,
+      lng: 77.6833
+    },
+    canonicalLocation: {
+      lat: 12.9279,
+      lng: 77.6833,
+      address: 'Outer Ring Road, near Bellandur EcoSpace Flyover Descent',
+      ward: 'Ward 150 - Bellandur',
+      zone: 'Mahadevapura'
+    },
+    landmark: 'Near Bellandur EcoSpace Flyover descent, median vehicle track',
+    severity: 'CRITICAL',
+    depthCm: 16.5,
+    surfaceAreaSqM: 1.8,
+    estimatedVolumeLiters: 42.0,
+    riskScore: 94,
+    status: 'TRIAGED',
+    priorityRank: 1,
+    priorityDetails: {
+      overallScore: 94,
+      breakdown: {
+        depthRisk: 96,
+        trafficVolumeImpact: 98,
+        schoolHospitalProximity: 90,
+        monsoonFloodingVulnerability: 94,
+        twoWheelerAccidentHistory: 95,
+        citizenUpvotesWeight: 92
+      },
+      confidence: 0.964,
+      explanation: [
+        'Multiple severe structural depressions detected across primary travel lane.',
+        'High-density arterial transit route carrying heavy commuter and BMTC bus volumes.',
+        'Proximity to Sakra World Hospital and EcoSpace Tech Corridor.',
+        '17 citizen reports consolidated without duplicate ticket creation.'
+      ],
+      calculatedAt: '2026-10-05T21:40:00Z'
+    },
+    reportedAt: '2026-10-05T07:12:00Z',
+    lastUpdatedAt: '2026-10-05T21:40:00Z',
+    contractorId: 'cont-01',
+    contractorName: 'NCC Urban Infrastructure Ltd (Contract #KA-BBMP-2025-912)',
+    contractId: 'cntr-2024-88',
+    isUnderWarranty: true,
+    authorityId: 'auth-bbmp',
+    authorityName: 'BBMP Mahadevapura Division (Major Roads Dept)',
+    complaintsCount: 42,
+    upvotes: 184,
+    sahayaTicketNo: 'BBMP-SHY-2026-1042',
+    images: {
+      original: '/sample_data/images/bellandur_outer_ring_road_severe.jpg',
+      detectionOverlay: '/sample_data/images/bellandur_outer_ring_road_severe.jpg'
+    },
+    reports: [
+      {
+        reportId: 'REP-104201',
+        timestamp: '2026-10-05T07:15:00Z',
+        reporter: 'Citizen-101@civicpulse.in',
+        deviceInfo: 'Android DashCam v3.1',
+        confidence: 0.964,
+        distanceFromCanonicalM: 2.1
+      }
+    ],
+    aiMetrics: {
+      depthCm: 16.5,
+      surfaceAreaSqM: 1.8,
+      estimatedVolumeLiters: 42.0,
+      asphaltDeteriorationIndex: 96,
+      moistureWaterloggingRisk: 90,
+      vehicleDamageHazard: 98,
+      modelConfidence: 0.964,
+      processingTimeMs: 28
+    }
+  },
+  {
     id: 'inc-01',
     code: 'BNG-PTH-1042',
     reportId: 'rep-0842',

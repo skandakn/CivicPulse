@@ -269,6 +269,113 @@ export interface PotholeIncident {
   nearbySensitivePlaces: string[];
   dataSource: DataSourceTag;
   repairVerification?: RepairVerification;
+  canonicalLocation?: CanonicalLocation;
+  reports?: SupportingReport[];
+  imageList?: string[];
+  road?: string;
+  authority?: string;
+  contractor?: string;
+}
+
+export interface BoundingBox {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  x_norm?: number;
+  y_norm?: number;
+  width_norm?: number;
+  height_norm?: number;
+}
+
+export interface Detection {
+  id: string;
+  label: string;
+  confidence: number;
+  box: BoundingBox;
+  severity: 'Low' | 'Medium' | 'High' | 'Critical';
+  areaSqPx: number;
+  relativeArea: number;
+  depthEstimate?: string;
+  polygon?: number[][];
+}
+
+export interface DamageImpact {
+  totalAreaSqMeters: number;
+  roadObstructionPct: number;
+  twoWheelerRisk: string;
+  busTransitDisruption: string;
+  laneClosureRecommended: boolean;
+  repairUrgency: string;
+  primaryCraterId?: string;
+  primaryCraterDepth?: string;
+}
+
+export interface SeverityEngineResult {
+  score: number;
+  level: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  factors: Record<string, number>;
+  explanations: string[];
+}
+
+export interface DuplicateCheckResult {
+  isDuplicate: boolean;
+  duplicateProbability: number;
+  matchedIncidentId: string | null;
+  reason: string;
+  distanceMeters?: number;
+}
+
+export interface CanonicalLocation {
+  lat: number;
+  lng: number;
+  address: string;
+  ward: string;
+  zone: string;
+}
+
+export interface SupportingReport {
+  reportId: string;
+  timestamp: string;
+  reporter: string;
+  deviceInfo: string;
+  confidence: number;
+  imageUri?: string;
+  distanceFromCanonicalM?: number;
+}
+
+export interface PotholeAnalysisResponse {
+  detected: boolean;
+  confidence: number;
+  detections: Detection[];
+  estimatedSeverity: string;
+  damageArea: string;
+  potholeCount: number;
+  roadCondition: string;
+  explanation: string;
+  imageMetadata: {
+    width: number;
+    height: number;
+    sizeBytes: number;
+    format: string;
+  };
+  damageImpact: DamageImpact;
+  severityEngine: SeverityEngineResult;
+  duplicateCheck: DuplicateCheckResult;
+  incident: {
+    id: string;
+    canonicalLocation: CanonicalLocation;
+    priority: number;
+    severity: string;
+    reportsMerged: number;
+    road: string;
+    authority: string;
+    contractor: string;
+    status: string;
+    lastReportedAt: string;
+  };
+  inferenceTimeMs: number;
+  modelName: string;
 }
 
 export type ViewMode = 
@@ -282,3 +389,4 @@ export type ViewMode =
   | 'CONTRACTORS' 
   | 'COMPLAINTS' 
   | 'ANALYTICS';
+
