@@ -2,17 +2,12 @@ import React, { useState, useRef } from 'react';
 import {
   Upload,
   Camera,
-  Video,
   MapPin,
   CheckCircle2,
-  AlertTriangle,
   Loader2,
   Sparkles,
   ArrowRight,
   ShieldCheck,
-  RefreshCw,
-  FileImage,
-  Layers,
   GitMerge
 } from 'lucide-react';
 import { BengaluruMap } from '../components/map/BengaluruMap';

@@ -3,13 +3,8 @@ import {
   FileText,
   Clock,
   ThumbsUp,
-  AlertTriangle,
   CheckCircle2,
   Filter,
-  ArrowRight,
-  ShieldCheck,
-  Send,
-  ExternalLink,
   MessageSquare
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
@@ -21,8 +16,7 @@ export const ComplaintsPage: React.FC = () => {
     complaints,
     incidents,
     selectIncidentById,
-    upvoteComplaint,
-    addToast
+    upvoteComplaint
   } = useApp();
 
   const [statusFilter, setStatusFilter] = useState<string>('ALL');

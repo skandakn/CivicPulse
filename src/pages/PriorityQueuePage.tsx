@@ -1,16 +1,11 @@
 import React, { useState } from 'react';
 import {
-  ListOrdered,
   SlidersHorizontal,
   Flame,
-  AlertTriangle,
-  Building2,
   ArrowRight,
   Send,
   Download,
-  Filter,
-  CheckCircle2,
-  Sparkles
+  Filter
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { getSeverityColor } from '../utils/formatters';

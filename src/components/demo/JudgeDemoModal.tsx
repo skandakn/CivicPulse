@@ -5,18 +5,9 @@ import {
   ArrowRight,
   ArrowLeft,
   CheckCircle2,
-  AlertTriangle,
-  Building2,
-  ShieldCheck,
-  Eye,
-  FileText,
-  Layers,
-  Flame,
-  Camera,
-  RotateCcw
+  ShieldCheck
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
-import { formatINR } from '../../utils/formatters';
 
 export const JudgeDemoModal: React.FC = () => {
   const {

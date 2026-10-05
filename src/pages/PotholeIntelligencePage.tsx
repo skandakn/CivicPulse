@@ -6,12 +6,7 @@ import {
   Activity,
   Sliders,
   AlertTriangle,
-  Eye,
-  CheckCircle2,
-  FileCheck,
-  Maximize2,
-  Volume2,
-  Navigation
+  FileCheck
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { PotholeIncident } from '../types';

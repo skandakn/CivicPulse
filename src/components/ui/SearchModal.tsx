@@ -16,7 +16,6 @@ export const SearchModal: React.FC = () => {
     setIsSearchOpen,
     incidents,
     roads,
-    wards,
     contractors,
     complaints,
     selectIncidentById,
@@ -26,11 +25,14 @@ export const SearchModal: React.FC = () => {
   const [term, setTerm] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const closeModal = () => {
+    setTerm('');
+    setIsSearchOpen(false);
+  };
+
   useEffect(() => {
     if (isSearchOpen) {
       setTimeout(() => inputRef.current?.focus(), 50);
-    } else {
-      setTerm('');
     }
   }, [isSearchOpen]);
 
@@ -66,7 +68,10 @@ export const SearchModal: React.FC = () => {
   const hasResults = matchedIncidents.length > 0 || matchedRoads.length > 0 || matchedContractors.length > 0 || matchedComplaints.length > 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+    <div
+      onClick={closeModal}
+      className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/80 backdrop-blur-sm animate-in fade-in"
+    >
       <div
         className="w-full max-w-2xl bg-[#0C101A] border border-cyan-500/30 rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
@@ -91,7 +96,7 @@ export const SearchModal: React.FC = () => {
             </button>
           )}
           <button
-            onClick={() => setIsSearchOpen(false)}
+            onClick={closeModal}
             className="px-2 py-1 text-[11px] font-mono text-slate-400 hover:text-white bg-white/5 rounded border border-white/10"
           >
             ESC
@@ -136,7 +141,7 @@ export const SearchModal: React.FC = () => {
                     key={inc.id}
                     onClick={() => {
                       selectIncidentById(inc.id, 'INCIDENT_DETAIL');
-                      setIsSearchOpen(false);
+                      closeModal();
                     }}
                     className="p-2.5 rounded-lg bg-white/[0.03] hover:bg-cyan-500/10 border border-white/5 hover:border-cyan-500/30 flex items-center justify-between cursor-pointer group transition-all"
                   >
@@ -170,7 +175,7 @@ export const SearchModal: React.FC = () => {
                     key={road.id}
                     onClick={() => {
                       setCurrentView('GODS_EYE');
-                      setIsSearchOpen(false);
+                      closeModal();
                     }}
                     className="p-2.5 rounded-lg bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 flex items-center justify-between cursor-pointer group transition-all"
                   >
@@ -202,7 +207,7 @@ export const SearchModal: React.FC = () => {
                     key={c.id}
                     onClick={() => {
                       setCurrentView('CONTRACTORS');
-                      setIsSearchOpen(false);
+                      closeModal();
                     }}
                     className="p-2.5 rounded-lg bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 flex items-center justify-between cursor-pointer group transition-all"
                   >
@@ -234,7 +239,7 @@ export const SearchModal: React.FC = () => {
                     key={cmp.id}
                     onClick={() => {
                       setCurrentView('COMPLAINTS');
-                      setIsSearchOpen(false);
+                      closeModal();
                     }}
                     className="p-2.5 rounded-lg bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 flex items-center justify-between cursor-pointer group transition-all"
                   >

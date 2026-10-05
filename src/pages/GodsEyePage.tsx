@@ -1,23 +1,18 @@
 import React, { useState } from 'react';
 import {
   Eye,
-  AlertTriangle,
   CheckCircle2,
   Clock,
   Filter,
-  Layers,
   ArrowRight,
   ShieldAlert,
-  Search,
   Zap,
-  SlidersHorizontal,
   Flame,
-  Building,
   RotateCcw
 } from 'lucide-react';
 import { BengaluruMap } from '../components/map/BengaluruMap';
 import { useApp } from '../context/AppContext';
-import { SeverityLevel, PotholeIncident } from '../types';
+import { SeverityLevel } from '../types';
 import { CITY_METRICS } from '../data/mockData';
 import { getSeverityColor } from '../utils/formatters';
 
@@ -78,7 +73,7 @@ export const GodsEyePage: React.FC = () => {
             {CITY_METRICS.criticalIssues}
           </div>
           <div className="text-[11px] text-red-300 mt-1 flex items-center gap-1 font-mono">
-            <span>Immediate dispatch required</span>
+            <span>{criticalCount} active in live queue</span>
           </div>
         </div>
 

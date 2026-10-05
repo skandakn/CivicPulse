@@ -3,14 +3,7 @@ import {
   ShieldCheck,
   CheckCircle2,
   AlertTriangle,
-  Upload,
-  Sparkles,
-  ArrowRight,
-  Layers,
-  FileCheck,
-  RotateCcw,
-  Camera,
-  Maximize2
+  Sparkles
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { PotholeIncident, RepairVerification } from '../types';
@@ -34,13 +27,18 @@ export const RepairVerificationPage: React.FC = () => {
     setIsAuditing(true);
     addToast('Surface Scan Commenced', 'Running stereoscopic texture comparison', 'info');
 
+    const submittedPhoto = shouldPass
+      ? 'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=800&q=80'
+      : 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80';
+    setAfterImage(submittedPhoto);
+
     await new Promise(r => setTimeout(r, 1200));
 
     const result: RepairVerification = {
       incidentId: activeIncident.id,
       repairedAt: new Date().toISOString(),
-      contractorSubmittedPhoto: afterImage,
-      aiAuditPhoto: afterImage,
+      contractorSubmittedPhoto: submittedPhoto,
+      aiAuditPhoto: submittedPhoto,
       passConfidence: shouldPass ? 0.984 : 0.642,
       surfaceSmoothnessScore: shouldPass ? 94 : 52,
       areaReductionPercent: shouldPass ? 98.2 : 61.0,
@@ -85,6 +83,10 @@ export const RepairVerificationPage: React.FC = () => {
               const inc = incidents.find(i => i.id === e.target.value);
               if (inc) {
                 setSelectedIncident(inc);
+                setAfterImage(
+                  inc.repairVerification?.contractorSubmittedPhoto ||
+                  'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=800&q=80'
+                );
                 setAuditResult(inc.repairVerification || null);
               }
             }}

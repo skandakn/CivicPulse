@@ -6,14 +6,9 @@ import {
   PlusCircle,
   Cpu,
   Building2,
-  CheckCircle2,
   Radar,
   Activity,
-  Layers,
-  Sparkles,
   Zap,
-  GitMerge,
-  FileCheck,
   Flame,
   ShieldCheck
 } from 'lucide-react';
@@ -23,8 +18,6 @@ import { formatINR } from '../utils/formatters';
 
 export const LandingPage: React.FC = () => {
   const { setCurrentView, incidents, selectIncidentById, loadDemoCase } = useApp();
-
-  const topPriorityIncident = incidents[0];
 
   const stepsStory = [
     { step: '01', title: 'DETECT', desc: 'Stereoscopic depth & asphalt cracking via citizen photo/video', icon: Cpu, color: 'text-cyan-400' },

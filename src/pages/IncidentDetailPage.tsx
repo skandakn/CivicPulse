@@ -2,24 +2,17 @@ import React, { useState } from 'react';
 import {
   ShieldAlert,
   MapPin,
-  Calendar,
   ThumbsUp,
-  Clock,
-  CheckCircle2,
   AlertTriangle,
   Building2,
   FileText,
-  User,
-  ExternalLink,
-  Cpu,
   ArrowLeft,
   Share2,
-  Download,
   GitMerge,
   ShieldCheck
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { getSeverityColor, getStatusBadge, formatDate, formatDateTime } from '../utils/formatters';
+import { getSeverityColor, getStatusBadge } from '../utils/formatters';
 import { BengaluruMap } from '../components/map/BengaluruMap';
 
 export const IncidentDetailPage: React.FC = () => {

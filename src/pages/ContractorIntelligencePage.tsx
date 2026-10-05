@@ -2,16 +2,8 @@ import React, { useState } from 'react';
 import {
   Building2,
   ShieldAlert,
-  AlertTriangle,
-  CheckCircle2,
-  FileText,
   Search,
-  ExternalLink,
-  Ban,
-  Clock,
-  Briefcase,
-  Layers,
-  ArrowUpRight
+  Ban
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { Contractor } from '../types';

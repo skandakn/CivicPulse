@@ -6,9 +6,7 @@ import {
   ShieldCheck,
   Building2,
   DollarSign,
-  Calendar,
   AlertTriangle,
-  ArrowUpRight,
   Layers
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
