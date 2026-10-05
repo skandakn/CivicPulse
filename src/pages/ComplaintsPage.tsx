@@ -10,6 +10,8 @@ import {
 import { useApp } from '../context/AppContext';
 import { Complaint } from '../types';
 import { formatDateTime } from '../utils/formatters';
+import { ComplaintTrackingStepper } from '../components/common/ComplaintTrackingStepper';
+import { DepartmentRoutingBadge } from '../components/common/DepartmentRoutingBadge';
 
 export const ComplaintsPage: React.FC = () => {
   const {
@@ -150,6 +152,25 @@ export const ComplaintsPage: React.FC = () => {
                   </div>
                 </div>
               )}
+
+              {/* WebNova 4-Stage Lifecycle Stepper */}
+              <ComplaintTrackingStepper
+                status={complaint.status}
+                filedAt={complaint.filedAt}
+                assignedAuthority={matchingIncident?.authorityName || 'BBMP Major Roads Division'}
+                contractorName={matchingIncident?.contractorName}
+                slaBreached={complaint.slaBreached}
+                compact={false}
+              />
+
+              {/* Department Routing Desk */}
+              <div className="flex items-center justify-between flex-wrap gap-2 pt-1">
+                <DepartmentRoutingBadge
+                  department={matchingIncident?.authorityId?.includes('BMRCL') ? 'BMRCL' : matchingIncident?.authorityId?.includes('BWSSB') ? 'BWSSB' : matchingIncident?.authorityId?.includes('BESCOM') ? 'BESCOM' : 'BBMP'}
+                  roadName={matchingIncident?.roadName}
+                  compact={true}
+                />
+              </div>
 
               {/* Citizen & Upvote Bar */}
               <div className="flex flex-wrap items-center justify-between gap-4 pt-1 text-xs">

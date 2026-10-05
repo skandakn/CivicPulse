@@ -16,6 +16,8 @@ import { getSeverityColor, getStatusBadge } from '../utils/formatters';
 import { BengaluruMap } from '../components/map/BengaluruMap';
 import { PriorityExplainer } from '../components/incident/PriorityExplainer';
 import { ComplaintGenerator } from '../components/incident/ComplaintGenerator';
+import { ComplaintTrackingStepper } from '../components/common/ComplaintTrackingStepper';
+import { DepartmentRoutingBadge } from '../components/common/DepartmentRoutingBadge';
 
 export const IncidentDetailPage: React.FC = () => {
   const {
@@ -149,6 +151,16 @@ export const IncidentDetailPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* WebNova 4-Stage Lifecycle Tracking Stepper */}
+      <ComplaintTrackingStepper
+        status={selectedIncident.status}
+        filedAt={selectedIncident.reportedAt}
+        assignedAuthority={selectedIncident.authorityName}
+        contractorName={selectedIncident.contractorName}
+        resolvedAt={selectedIncident.repairVerification?.repairedAt}
+        slaBreached={matchingComplaint?.slaBreached}
+      />
 
       {/* 2 Column Details: Visual Evidence & Legal/Engineering Record */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -324,6 +336,14 @@ export const IncidentDetailPage: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* WebNova Department Routing Desk */}
+          <DepartmentRoutingBadge
+            department={selectedIncident.authorityId?.includes('BMRCL') ? 'BMRCL' : selectedIncident.authorityId?.includes('BWSSB') ? 'BWSSB' : selectedIncident.authorityId?.includes('BESCOM') ? 'BESCOM' : 'BBMP'}
+            roadName={selectedIncident.roadName}
+            nodalOfficer={matchingWard?.chiefEngineer || 'Sri B. S. Prahlad, Chief Engineer (Roads)'}
+            routingReason={selectedIncident.isUnderWarranty ? 'Corridor under active road contractor Defect Liability Period (Clause 45.2). Routed to BBMP Major Roads Division for warranty enforcement.' : 'Arterial roadway under BBMP PWD jurisdiction. Routed to Zonal Rapid Patching Unit.'}
+          />
 
           {/* Citizen Community Grievance & Sahaya Sync */}
           <div className="rounded-2xl border border-white/10 bg-[#090C16] p-5 space-y-4">
