@@ -11,7 +11,9 @@ import {
   ArrowRight,
   ShieldCheck,
   RefreshCw,
-  FileImage
+  FileImage,
+  Layers,
+  GitMerge
 } from 'lucide-react';
 import { BengaluruMap } from '../components/map/BengaluruMap';
 import { useApp } from '../context/AppContext';
@@ -29,11 +31,14 @@ interface PresetSample {
   severity: 'CRITICAL' | 'HIGH' | 'MEDIUM';
   depthCm: number;
   areaSqM: number;
+  isPotentialDuplicate?: boolean;
+  duplicateMasterCode?: string;
+  duplicateMasterId?: string;
 }
 
 const PRESET_SAMPLES: PresetSample[] = [
   {
-    title: 'Severe Arterial Crater - Bellandur ORR',
+    title: 'Bellandur ORR (Duplicate Test Case)',
     roadName: 'Outer Ring Road (Opposite Ecospace)',
     wardName: 'Bellandur',
     wardNumber: 150,
@@ -41,8 +46,11 @@ const PRESET_SAMPLES: PresetSample[] = [
     coords: { lat: 12.9298, lng: 77.6835 },
     imageUrl: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80',
     severity: 'CRITICAL',
-    depthCm: 15.2,
-    areaSqM: 1.4
+    depthCm: 15.4,
+    areaSqM: 1.48,
+    isPotentialDuplicate: true,
+    duplicateMasterCode: 'BNG-PTH-1042',
+    duplicateMasterId: 'inc-01'
   },
   {
     title: 'Waterlogged Pothole - Koramangala 80ft',
@@ -53,7 +61,7 @@ const PRESET_SAMPLES: PresetSample[] = [
     coords: { lat: 12.9345, lng: 77.6269 },
     imageUrl: 'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=800&q=80',
     severity: 'HIGH',
-    depthCm: 11.5,
+    depthCm: 11.2,
     areaSqM: 0.95
   },
   {
@@ -65,15 +73,26 @@ const PRESET_SAMPLES: PresetSample[] = [
     coords: { lat: 12.9856, lng: 77.7289 },
     imageUrl: 'https://images.unsplash.com/photo-1541888946425-d0fbb186c5f7?auto=format&fit=crop&w=800&q=80',
     severity: 'HIGH',
-    depthCm: 10.8,
-    areaSqM: 1.1
+    depthCm: 10.5,
+    areaSqM: 1.15
   }
 ];
 
-type AIStage = 'IDLE' | 'DETECTING' | 'ANALYZING' | 'LOCATING' | 'CHECKING_DUPLICATES' | 'PRIORITIZING' | 'COMPLETED';
+type AIStage =
+  | 'IDLE'
+  | 'INGESTING'
+  | 'DETECTING'
+  | 'ANALYZING_DAMAGE'
+  | 'ESTIMATING_SEVERITY'
+  | 'IDENTIFYING_LOCATION'
+  | 'CHECKING_DUPLICATES'
+  | 'RESOLVING_RESPONSIBILITY'
+  | 'CALCULATING_PRIORITY'
+  | 'GENERATING_INCIDENT'
+  | 'COMPLETED';
 
 export const ReportPage: React.FC = () => {
-  const { addPotholeReport, selectIncidentById, addToast } = useApp();
+  const { addPotholeReport, mergeDuplicateReport, selectIncidentById, addToast } = useApp();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -85,10 +104,13 @@ export const ReportPage: React.FC = () => {
   const [wardName, setWardName] = useState(PRESET_SAMPLES[0].wardName);
   const [wardNumber, setWardNumber] = useState<number>(PRESET_SAMPLES[0].wardNumber);
   const [description, setDescription] = useState('Deep crater in median lane causing two-wheelers to swerve abruptly. Rainwater pooled inside.');
+  const [reporterName, setReporterName] = useState('Kavitha S. (Indiranagar Commuter)');
   const [reporterPhone, setReporterPhone] = useState('+91 98450 78120');
 
   // AI Pipeline State
   const [aiStage, setAiStage] = useState<AIStage>('IDLE');
+  const [detectedDuplicate, setDetectedDuplicate] = useState<{ masterCode: string; masterId: string } | null>(null);
+
   const [detectedMetrics, setDetectedMetrics] = useState<{
     depthCm: number;
     areaSqM: number;
@@ -96,11 +118,11 @@ export const ReportPage: React.FC = () => {
     severity: 'CRITICAL' | 'HIGH' | 'MEDIUM';
     priorityScore: number;
   }>({
-    depthCm: 15.2,
-    areaSqM: 1.4,
-    volumeL: 36.8,
+    depthCm: 15.4,
+    areaSqM: 1.48,
+    volumeL: 38.5,
     severity: 'CRITICAL',
-    priorityScore: 96
+    priorityScore: 94
   });
 
   const [submittedIncident, setSubmittedIncident] = useState<PotholeIncident | null>(null);
@@ -118,10 +140,11 @@ export const ReportPage: React.FC = () => {
       areaSqM: preset.areaSqM,
       volumeL: Math.round(preset.depthCm * preset.areaSqM * 2.2),
       severity: preset.severity,
-      priorityScore: preset.severity === 'CRITICAL' ? 96 : 85
+      priorityScore: preset.severity === 'CRITICAL' ? 94 : 85
     });
     setAiStage('IDLE');
     setSubmittedIncident(null);
+    setDetectedDuplicate(null);
     addToast('Preset Pothole Loaded', `${preset.roadName}`, 'info');
   };
 
@@ -134,38 +157,69 @@ export const ReportPage: React.FC = () => {
         setSelectedImage(event.target?.result as string);
         setAiStage('IDLE');
         setSubmittedIncident(null);
+        setDetectedDuplicate(null);
         addToast('Media Uploaded', file.name, 'success');
       };
       reader.readAsDataURL(file);
     }
   };
 
-  // Trigger Full AI Multi-stage pipeline
-  const runAiPipelineAndSubmit = async () => {
+  // 9-Stage AI Analysis Pipeline
+  const runAiPipeline = async () => {
+    setDetectedDuplicate(null);
+
+    // 01 — INGESTING IMAGE
+    setAiStage('INGESTING');
+    await new Promise(r => setTimeout(r, 400));
+
+    // 02 — DETECTING POTHOLE
     setAiStage('DETECTING');
-    addToast('AI Vision Pipeline Initiated', 'Analyzing road surface stereopsis', 'info');
+    await new Promise(r => setTimeout(r, 450));
 
-    // Stage 1: Detecting (bounding box)
-    await new Promise(r => setTimeout(r, 600));
-    setAiStage('ANALYZING');
+    // 03 — ANALYZING DAMAGE
+    setAiStage('ANALYZING_DAMAGE');
+    await new Promise(r => setTimeout(r, 450));
 
-    // Stage 2: Analyzing (depth, volume, moisture)
-    await new Promise(r => setTimeout(r, 700));
-    setAiStage('LOCATING');
+    // 04 — ESTIMATING SEVERITY
+    setAiStage('ESTIMATING_SEVERITY');
+    await new Promise(r => setTimeout(r, 450));
 
-    // Stage 3: Locating (reverse geocode & road category)
-    await new Promise(r => setTimeout(r, 600));
+    // 05 — IDENTIFYING LOCATION
+    setAiStage('IDENTIFYING_LOCATION');
+    await new Promise(r => setTimeout(r, 400));
+
+    // 06 — CHECKING DUPLICATES
     setAiStage('CHECKING_DUPLICATES');
+    await new Promise(r => setTimeout(r, 500));
 
-    // Stage 4: Checking duplicates (spatial cluster deduplication within 15m radius)
-    await new Promise(r => setTimeout(r, 650));
-    setAiStage('PRIORITIZING');
+    // Check if within 50m of Outer Ring Road EcoSpace incident (inc-01)
+    const isNearEcoSpace = Math.abs(selectedCoords.lat - 12.9298) < 0.005 && Math.abs(selectedCoords.lng - 77.6835) < 0.005;
 
-    // Stage 5: Prioritizing (traffic matrix × hospital route calculation)
-    await new Promise(r => setTimeout(r, 700));
+    if (isNearEcoSpace) {
+      setDetectedDuplicate({ masterCode: 'BNG-PTH-1042', masterId: 'inc-01' });
+    }
+
+    // 07 — RESOLVING ROAD RESPONSIBILITY
+    setAiStage('RESOLVING_RESPONSIBILITY');
+    await new Promise(r => setTimeout(r, 450));
+
+    // 08 — CALCULATING PRIORITY
+    setAiStage('CALCULATING_PRIORITY');
+    await new Promise(r => setTimeout(r, 450));
+
+    // 09 — GENERATING INCIDENT
+    setAiStage('GENERATING_INCIDENT');
+    await new Promise(r => setTimeout(r, 400));
+
     setAiStage('COMPLETED');
 
-    // Finalize creation
+    if (!isNearEcoSpace) {
+      // Auto-create standard incident
+      finalizeNewIncident();
+    }
+  };
+
+  const finalizeNewIncident = () => {
     const newIncident = addPotholeReport({
       roadName,
       landmark,
@@ -184,46 +238,56 @@ export const ReportPage: React.FC = () => {
 
     setSubmittedIncident(newIncident);
 
-    // Confetti celebration
     try {
-      confetti({
-        particleCount: 80,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
+      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
     } catch {
       // ignore
     }
 
     addToast(
-      'Pothole Reported Successfully!',
-      `Assigned Incident ID ${newIncident.code} & Ticket ${newIncident.sahayaTicketNo}`,
+      'Incident Registered Successfully!',
+      `Assigned ID ${newIncident.code} & Ticket ${newIncident.sahayaTicketNo}`,
       'success'
     );
   };
 
+  const handleMergeDuplicate = () => {
+    if (!detectedDuplicate) return;
+
+    mergeDuplicateReport(detectedDuplicate.masterId, description, reporterName);
+    selectIncidentById(detectedDuplicate.masterId, 'INCIDENT_DETAIL');
+  };
+
   const stages: { key: AIStage; label: string; desc: string }[] = [
-    { key: 'DETECTING', label: 'Detecting', desc: 'Computer vision bounding polygon' },
-    { key: 'ANALYZING', label: 'Analyzing', desc: 'Depth stereopsis & asphalt decay' },
-    { key: 'LOCATING', label: 'Locating', desc: 'BBMP ward & road hierarchy mapping' },
-    { key: 'CHECKING_DUPLICATES', label: 'Checking duplicates', desc: 'Spatial cluster matching' },
-    { key: 'PRIORITIZING', label: 'Prioritizing', desc: 'Emergency route & PCU density scoring' }
+    { key: 'INGESTING', label: '01 — Ingesting Image', desc: 'Validating resolution & sensor geotag EXIF' },
+    { key: 'DETECTING', label: '02 — Detecting Pothole', desc: 'Neural bounding polygon & edge localization' },
+    { key: 'ANALYZING_DAMAGE', label: '03 — Analyzing Damage', desc: 'Stereoscopic depth & asphalt aggregate breakdown' },
+    { key: 'ESTIMATING_SEVERITY', label: '04 — Estimating Severity', desc: 'Classification under IRC-SP-100 standards' },
+    { key: 'IDENTIFYING_LOCATION', label: '05 — Identifying Location', desc: 'Bengaluru GIS road corridor mapping' },
+    { key: 'CHECKING_DUPLICATES', label: '06 — Checking Duplicates', desc: 'Spatial cluster & visual similarity deduplication' },
+    { key: 'RESOLVING_RESPONSIBILITY', label: '07 — Resolving Responsibility', desc: 'Matching active road contracts & Clause 45.2 warranty' },
+    { key: 'CALCULATING_PRIORITY', label: '08 — Calculating Priority', desc: 'Traffic density × Emergency routes × Depth weighting' },
+    { key: 'GENERATING_INCIDENT', label: '09 — Generating Incident', desc: 'Syncing to BBMP Sahaya grievance registry' }
   ];
 
   return (
     <div className="space-y-8 max-w-6xl mx-auto pb-16 text-left animate-in fade-in duration-300">
       {/* Header */}
-      <div className="border-b border-white/10 pb-5">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/40 text-xs font-mono text-cyan-300 mb-2">
-          <Camera className="w-3.5 h-3.5" />
-          <span>CITIZEN INGESTION PORTAL</span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-5">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/40 text-xs font-mono text-cyan-300 mb-2">
+            <Camera className="w-3.5 h-3.5" />
+            <span>CITIZEN INGESTION PORTAL</span>
+            <span className="text-slate-500">|</span>
+            <span className="text-amber-400">Demo Inference Mode</span>
+          </div>
+          <h1 className="text-3xl font-extrabold text-white tracking-tight">
+            Report a Bengaluru Pothole
+          </h1>
+          <p className="text-sm text-slate-400 mt-1 max-w-2xl">
+            Upload road imagery or dashcam video. The neural pipeline extracts physical dimensions, matches the responsible contractor under tender warranty, and stages an official grievance.
+          </p>
         </div>
-        <h1 className="text-3xl font-extrabold text-white tracking-tight">
-          Report a Bengaluru Pothole
-        </h1>
-        <p className="text-sm text-slate-400 mt-1 max-w-2xl">
-          Upload road imagery or dashcam video. Our AI automatically extracts physical dimensions, matches the responsible contractor, and logs an algorithmic grievance into the BBMP Sahaya registry.
-        </p>
       </div>
 
       {/* Main Form Grid */}
@@ -235,9 +299,9 @@ export const ReportPage: React.FC = () => {
             <div className="flex items-center justify-between text-xs">
               <span className="font-mono text-slate-400 flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-                Quick Test Samples (Bengaluru Roads)
+                Quick Test Samples
               </span>
-              <span className="text-[11px] text-cyan-400">Click to autofill</span>
+              <span className="text-[11px] text-cyan-400 font-mono">Click to autofill</span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               {PRESET_SAMPLES.map((sample, idx) => (
@@ -253,7 +317,9 @@ export const ReportPage: React.FC = () => {
                   `}
                 >
                   <div className="font-bold truncate">{sample.wardName}</div>
-                  <div className="text-[10px] text-slate-400 truncate mt-0.5">{sample.depthCm}cm depth</div>
+                  <div className="text-[10px] text-slate-400 truncate mt-0.5">
+                    {sample.isPotentialDuplicate ? 'Duplicate Test' : `${sample.depthCm}cm depth`}
+                  </div>
                 </button>
               ))}
             </div>
@@ -280,12 +346,10 @@ export const ReportPage: React.FC = () => {
                   className="w-full h-64 object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4 justify-between">
-                  <div className="text-left font-mono">
-                    <span className="text-xs font-bold text-white bg-black/60 px-2 py-0.5 rounded border border-white/20">
-                      MEDIA READY FOR SCAN
-                    </span>
-                  </div>
-                  <span className="text-xs text-cyan-400 bg-cyan-950/80 px-2 py-1 rounded border border-cyan-500/40">
+                  <span className="text-xs font-mono font-bold text-white bg-black/60 px-2 py-0.5 rounded border border-white/20">
+                    MEDIA READY FOR AI SCAN
+                  </span>
+                  <span className="text-xs text-cyan-400 bg-cyan-950/80 px-2 py-1 rounded border border-cyan-500/40 font-mono">
                     Click to change
                   </span>
                 </div>
@@ -305,39 +369,6 @@ export const ReportPage: React.FC = () => {
             )}
           </div>
 
-          {/* Upload Method Buttons */}
-          <div className="grid grid-cols-3 gap-3">
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-xs font-medium text-slate-200 transition-colors"
-            >
-              <FileImage className="w-4 h-4 text-cyan-400" />
-              <span>Upload Photo</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-xs font-medium text-slate-200 transition-colors"
-            >
-              <Video className="w-4 h-4 text-purple-400" />
-              <span>Upload Video</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                addToast('Camera Activated', 'Capturing sensor frame', 'info');
-                fileInputRef.current?.click();
-              }}
-              className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-xs font-medium text-slate-200 transition-colors"
-            >
-              <Camera className="w-4 h-4 text-emerald-400" />
-              <span>Capture Photo</span>
-            </button>
-          </div>
-
           {/* Description & Contact Input */}
           <div className="space-y-4 p-5 rounded-2xl bg-[#090C17] border border-white/10">
             <div>
@@ -353,21 +384,34 @@ export const ReportPage: React.FC = () => {
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">
-                Contact Phone (For BBMP Sahaya SMS Tracking)
-              </label>
-              <input
-                type="text"
-                value={reporterPhone}
-                onChange={(e) => setReporterPhone(e.target.value)}
-                className="w-full rounded-xl bg-white/[0.03] border border-white/10 px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">
+                  Citizen Name
+                </label>
+                <input
+                  type="text"
+                  value={reporterName}
+                  onChange={(e) => setReporterName(e.target.value)}
+                  className="w-full rounded-xl bg-white/[0.03] border border-white/10 px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-1.5">
+                  Contact Phone
+                </label>
+                <input
+                  type="text"
+                  value={reporterPhone}
+                  onChange={(e) => setReporterPhone(e.target.value)}
+                  className="w-full rounded-xl bg-white/[0.03] border border-white/10 px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Right Column: Interactive Map Picker & AI Pipeline */}
+        {/* Right Column: Location Map & 9-Stage AI Pipeline */}
         <div className="lg:col-span-6 space-y-6">
           {/* Location Picker Map */}
           <div className="rounded-2xl border border-white/10 bg-[#090C16] p-4 space-y-3">
@@ -383,24 +427,18 @@ export const ReportPage: React.FC = () => {
               </span>
             </div>
 
-            {/* Map Container */}
-            <div className="h-60 rounded-xl overflow-hidden border border-white/10 relative">
+            <div className="h-56 rounded-xl overflow-hidden border border-white/10 relative">
               <BengaluruMap
                 height="100%"
                 isPickerMode={true}
                 pickerCoordinates={selectedCoords}
                 onPickCoordinates={(coords) => {
                   setSelectedCoords(coords);
-                  addToast(
-                    'Location Updated',
-                    `Lat: ${coords.lat.toFixed(4)}, Lng: ${coords.lng.toFixed(4)}`,
-                    'info'
-                  );
+                  addToast('Coordinates Updated', `Lat: ${coords.lat.toFixed(4)}, Lng: ${coords.lng.toFixed(4)}`, 'info');
                 }}
               />
             </div>
 
-            {/* Location Readouts */}
             <div className="grid grid-cols-2 gap-3 text-xs bg-white/[0.02] p-3 rounded-xl border border-white/5 font-mono">
               <div>
                 <span className="text-slate-500 block text-[10px]">COORDINATES</span>
@@ -422,27 +460,35 @@ export const ReportPage: React.FC = () => {
             </div>
           </div>
 
-          {/* AI Processing Multi-Stage Pipeline */}
+          {/* 9-Stage AI Processing Pipeline */}
           <div className="rounded-2xl border border-white/10 bg-[#0A0D19] p-5 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-cyan-400" />
                 <span className="font-mono text-xs font-bold text-white uppercase tracking-wider">
-                  AI Neural Processing Pipeline
+                  9-Stage Neural Pipeline
                 </span>
               </div>
-              {aiStage !== 'IDLE' && aiStage !== 'COMPLETED' && (
-                <span className="flex items-center gap-1.5 text-[11px] font-mono text-cyan-400">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  Running Neural Models...
-                </span>
-              )}
+              <span className="text-[10px] font-mono text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-500/30">
+                Demo Inference Mode
+              </span>
             </div>
 
-            {/* Stages visualization: Detecting -> Analyzing -> Locating -> Checking duplicates -> Prioritizing */}
-            <div className="space-y-2.5">
+            {/* Stages Stack */}
+            <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
               {stages.map((st, idx) => {
-                const stageOrder: AIStage[] = ['DETECTING', 'ANALYZING', 'LOCATING', 'CHECKING_DUPLICATES', 'PRIORITIZING', 'COMPLETED'];
+                const stageOrder: AIStage[] = [
+                  'INGESTING',
+                  'DETECTING',
+                  'ANALYZING_DAMAGE',
+                  'ESTIMATING_SEVERITY',
+                  'IDENTIFYING_LOCATION',
+                  'CHECKING_DUPLICATES',
+                  'RESOLVING_RESPONSIBILITY',
+                  'CALCULATING_PRIORITY',
+                  'GENERATING_INCIDENT',
+                  'COMPLETED'
+                ];
                 const currentIndex = stageOrder.indexOf(aiStage);
                 const stageIndex = stageOrder.indexOf(st.key);
 
@@ -452,17 +498,17 @@ export const ReportPage: React.FC = () => {
                 return (
                   <div
                     key={st.key}
-                    className={`flex items-center justify-between p-2.5 rounded-xl border text-xs transition-all
+                    className={`flex items-center justify-between p-2 rounded-lg border text-xs transition-all
                       ${isCurrent
-                        ? 'bg-cyan-500/15 border-cyan-500/50 shadow-[0_0_15px_rgba(0,240,255,0.2)]'
+                        ? 'bg-cyan-500/15 border-cyan-500/50 shadow-[0_0_12px_rgba(0,240,255,0.15)]'
                         : isPassed
                         ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
                         : 'bg-white/[0.02] border-white/5 text-slate-500'
                       }
                     `}
                   >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center font-mono text-[10px] font-bold
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-5 h-5 rounded-full flex items-center justify-center font-mono text-[9px] font-bold
                         ${isCurrent
                           ? 'bg-cyan-400 text-slate-950 animate-pulse'
                           : isPassed
@@ -470,32 +516,62 @@ export const ReportPage: React.FC = () => {
                           : 'bg-white/10 text-slate-500'
                         }
                       `}>
-                        {isPassed ? <CheckCircle2 className="w-4 h-4" /> : idx + 1}
+                        {isPassed ? <CheckCircle2 className="w-3.5 h-3.5" /> : idx + 1}
                       </div>
 
                       <div>
-                        <div className={`font-semibold ${isCurrent ? 'text-cyan-300' : isPassed ? 'text-slate-200' : 'text-slate-400'}`}>
+                        <div className={`font-semibold text-[11px] ${isCurrent ? 'text-cyan-300' : isPassed ? 'text-slate-200' : 'text-slate-400'}`}>
                           {st.label}
                         </div>
-                        <div className="text-[10px] text-slate-500">{st.desc}</div>
+                        <div className="text-[10px] text-slate-500 leading-tight">{st.desc}</div>
                       </div>
                     </div>
 
-                    <span className="font-mono text-[10px]">
-                      {isCurrent ? 'PROCESSING...' : isPassed ? 'VERIFIED' : 'QUEUED'}
+                    <span className="font-mono text-[9px]">
+                      {isCurrent ? 'ANALYZING...' : isPassed ? 'VERIFIED' : 'PENDING'}
                     </span>
                   </div>
                 );
               })}
             </div>
 
-            {/* AI Result Box if completed */}
-            {submittedIncident && (
+            {/* Duplicate Detection Alert Box */}
+            {detectedDuplicate && aiStage === 'COMPLETED' && (
+              <div className="p-4 rounded-xl bg-purple-950/40 border border-purple-500/50 space-y-3 animate-in fade-in">
+                <div className="flex items-center gap-2 text-purple-300 font-bold text-xs">
+                  <GitMerge className="w-4 h-4 text-purple-400" />
+                  <span>94% SIMILARITY: DUPLICATE INCIDENT DETECTED</span>
+                </div>
+                <p className="text-xs text-slate-300 font-sans leading-relaxed">
+                  Location is within 15 meters of existing master incident <strong className="text-white font-mono">{detectedDuplicate.masterCode}</strong> on Outer Ring Road.
+                  Merging will increment community weight and raise priority score without cluttering the municipal map.
+                </p>
+
+                <div className="flex gap-2 pt-1">
+                  <button
+                    onClick={handleMergeDuplicate}
+                    className="flex-1 py-2 px-3 rounded-lg bg-purple-500 hover:bg-purple-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <GitMerge className="w-3.5 h-3.5" />
+                    <span>Merge as Supporting Report (Recommended)</span>
+                  </button>
+                  <button
+                    onClick={finalizeNewIncident}
+                    className="py-2 px-3 rounded-lg bg-white/10 hover:bg-white/15 text-slate-300 font-medium text-xs transition-colors cursor-pointer"
+                  >
+                    Create Separate Incident
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Standard Completed Incident Box */}
+            {submittedIncident && !detectedDuplicate && (
               <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/40 space-y-3 animate-in fade-in">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
                     <ShieldCheck className="w-4 h-4" />
-                    <span>INCIDENT REGISTERED & TRIAGED</span>
+                    <span>INCIDENT GENERATED & SYNCED</span>
                   </div>
                   <span className="font-mono text-xs font-extrabold text-white">
                     {submittedIncident.code}
@@ -517,44 +593,33 @@ export const ReportPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-3 pt-1">
-                  <button
-                    onClick={() => selectIncidentById(submittedIncident.id, 'INCIDENT_DETAIL')}
-                    className="flex-1 py-2 px-3 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                  >
-                    <span>View Incident Detail</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    onClick={() => selectIncidentById(submittedIncident.id, 'AI_ANALYSIS')}
-                    className="py-2 px-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold text-xs transition-colors cursor-pointer"
-                  >
-                    Inspect AI Vision
-                  </button>
-                </div>
+                <button
+                  onClick={() => selectIncidentById(submittedIncident.id, 'INCIDENT_DETAIL')}
+                  className="w-full py-2 px-3 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <span>Investigate Incident Details</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
               </div>
             )}
 
-            {/* Submit Button */}
-            {!submittedIncident && (
+            {/* Submit Trigger Button */}
+            {aiStage === 'IDLE' && (
               <button
                 type="button"
-                disabled={aiStage !== 'IDLE' && aiStage !== 'COMPLETED'}
-                onClick={runAiPipelineAndSubmit}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-400 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-extrabold text-sm shadow-[0_0_30px_rgba(0,240,255,0.4)] flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 cursor-pointer"
+                onClick={runAiPipeline}
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-400 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-extrabold text-sm shadow-[0_0_25px_rgba(0,240,255,0.4)] flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
               >
-                {aiStage !== 'IDLE' && aiStage !== 'COMPLETED' ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
-                    <span>Processing Computer Vision Pipeline...</span>
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4 text-slate-950" />
-                    <span>Submit & Run AI Triaging Pipeline</span>
-                  </>
-                )}
+                <Sparkles className="w-4 h-4 text-slate-950" />
+                <span>Run 9-Stage AI Triaging Pipeline</span>
               </button>
+            )}
+
+            {aiStage !== 'IDLE' && aiStage !== 'COMPLETED' && (
+              <div className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-cyan-300 text-xs font-mono flex items-center justify-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
+                <span>Executing Stage: {stages.find(s => s.key === aiStage)?.label}...</span>
+              </div>
             )}
           </div>
         </div>

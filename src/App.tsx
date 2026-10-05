@@ -4,6 +4,7 @@ import { Sidebar } from './components/layout/Sidebar';
 import { TopBar } from './components/layout/TopBar';
 import { ToastContainer } from './components/common/ToastContainer';
 import { SearchModal } from './components/ui/SearchModal';
+import { JudgeDemoModal } from './components/demo/JudgeDemoModal';
 
 // Pages
 import { LandingPage } from './pages/LandingPage';
@@ -12,6 +13,7 @@ import { GodsEyePage } from './pages/GodsEyePage';
 import { PotholeIntelligencePage } from './pages/PotholeIntelligencePage';
 import { PriorityQueuePage } from './pages/PriorityQueuePage';
 import { IncidentDetailPage } from './pages/IncidentDetailPage';
+import { RepairVerificationPage } from './pages/RepairVerificationPage';
 import { ContractorIntelligencePage } from './pages/ContractorIntelligencePage';
 import { ComplaintsPage } from './pages/ComplaintsPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
@@ -35,6 +37,8 @@ const AppContent: React.FC = () => {
         return <PriorityQueuePage />;
       case 'INCIDENT_DETAIL':
         return <IncidentDetailPage />;
+      case 'VERIFICATION':
+        return <RepairVerificationPage />;
       case 'CONTRACTORS':
         return <ContractorIntelligencePage />;
       case 'COMPLAINTS':
@@ -74,6 +78,7 @@ const AppContent: React.FC = () => {
       </main>
 
       {/* Global Interactive Modals & Toasts */}
+      <JudgeDemoModal />
       <SearchModal />
       <ToastContainer />
 

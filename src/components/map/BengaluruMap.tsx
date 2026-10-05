@@ -205,10 +205,10 @@ export const BengaluruMap: React.FC<BengaluruMapProps> = ({
 
           <div style="display: flex; gap: 6px;">
             <button id="btn-inspect-${incident.id}" style="flex: 1; padding: 6px 10px; background: #00F0FF; color: #08090D; font-weight: 700; font-size: 11px; border-radius: 4px; border: none; cursor: pointer;">
-              Inspect Deep Dive
+              Inspect Case
             </button>
-            <button id="btn-vision-${incident.id}" style="padding: 6px 10px; background: rgba(255,255,255,0.1); color: #E2E8F0; font-size: 11px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.15); cursor: pointer;">
-              AI Vision
+            <button id="btn-verify-${incident.id}" style="padding: 6px 10px; background: rgba(16,185,129,0.15); color: #10B981; font-weight: 700; font-size: 11px; border-radius: 4px; border: 1px solid rgba(16,185,129,0.3); cursor: pointer;">
+              Verify Repair
             </button>
           </div>
         </div>
@@ -221,16 +221,16 @@ export const BengaluruMap: React.FC<BengaluruMapProps> = ({
 
       marker.on('popupopen', () => {
         const btnInspect = document.getElementById(`btn-inspect-${incident.id}`);
-        const btnVision = document.getElementById(`btn-vision-${incident.id}`);
+        const btnVerify = document.getElementById(`btn-verify-${incident.id}`);
 
         if (btnInspect) {
           btnInspect.onclick = () => {
             selectIncidentById(incident.id, 'INCIDENT_DETAIL');
           };
         }
-        if (btnVision) {
-          btnVision.onclick = () => {
-            selectIncidentById(incident.id, 'AI_ANALYSIS');
+        if (btnVerify) {
+          btnVerify.onclick = () => {
+            selectIncidentById(incident.id, 'VERIFICATION');
           };
         }
       });

@@ -9,7 +9,9 @@ import {
   CheckCircle2,
   AlertTriangle,
   FileCheck,
-  ChevronDown
+  ChevronDown,
+  Zap,
+  Sparkles
 } from 'lucide-react';
 import { useApp, UserRole } from '../../context/AppContext';
 
@@ -29,6 +31,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     setIsSearchOpen,
     userRole,
     setUserRole,
+    loadDemoCase,
     addToast
   } = useApp();
 
@@ -76,7 +79,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       <div className="flex items-center gap-3">
         <button
           onClick={onOpenMobileSidebar}
-          className="lg:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5"
+          className="lg:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 cursor-pointer"
         >
           <Menu className="w-5 h-5" />
         </button>
@@ -114,15 +117,24 @@ export const TopBar: React.FC<TopBarProps> = ({
         </div>
       </div>
 
-      {/* Center/Right: Search, Status, Notifications, Role Profile */}
+      {/* Center/Right: 1-Click Demo, Search, Status, Notifications, Role Profile */}
       <div className="flex items-center gap-2 sm:gap-3">
+        {/* 1-Click Judge Demo Quick Action */}
+        <button
+          onClick={loadDemoCase}
+          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/40 text-cyan-300 font-bold font-mono text-xs shadow-[0_0_15px_rgba(0,240,255,0.2)] transition-all cursor-pointer hover:scale-105"
+        >
+          <Zap className="w-3.5 h-3.5 fill-cyan-400 text-cyan-400" />
+          <span>Judge Demo</span>
+        </button>
+
         {/* Global Quick Search Button */}
         <button
           onClick={() => setIsSearchOpen(true)}
-          className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/10 hover:border-cyan-500/40 text-slate-400 hover:text-slate-200 transition-all text-xs"
+          className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/10 hover:border-cyan-500/40 text-slate-400 hover:text-slate-200 transition-all text-xs cursor-pointer"
         >
           <Search className="w-3.5 h-3.5 text-cyan-400" />
-          <span className="font-normal text-slate-400">Search roads, wards, contractors, tickets...</span>
+          <span className="font-normal text-slate-400">Search roads, wards, tickets...</span>
           <kbd className="ml-3 px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono text-slate-300">
             ⌘K
           </kbd>
@@ -131,7 +143,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         {/* Mobile Search Icon */}
         <button
           onClick={() => setIsSearchOpen(true)}
-          className="md:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5"
+          className="md:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 cursor-pointer"
         >
           <Search className="w-4 h-4 text-cyan-400" />
         </button>
@@ -152,7 +164,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         <div className="relative">
           <button
             onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-            className="relative p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+            className="relative p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
             title="System Notifications"
           >
             <Bell className="w-4 h-4" />
@@ -197,7 +209,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
               <button
                 onClick={() => setIsNotificationsOpen(false)}
-                className="w-full mt-3 py-1.5 text-[11px] font-medium text-slate-400 hover:text-white bg-white/5 rounded-lg hover:bg-white/10 transition-colors"
+                className="w-full mt-3 py-1.5 text-[11px] font-medium text-slate-400 hover:text-white bg-white/5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
               >
                 Close Alerts
               </button>
@@ -209,7 +221,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         <div className="relative">
           <button
             onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-            className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/10 hover:border-cyan-500/40 transition-all text-xs"
+            className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/10 hover:border-cyan-500/40 transition-all text-xs cursor-pointer"
           >
             <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-black font-bold text-xs">
               <User className="w-3.5 h-3.5 text-slate-900" />
@@ -238,7 +250,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                     setIsRoleDropdownOpen(false);
                     addToast(`Switched perspective to ${roleLabels[role].title}`, 'Interface privileges adjusted', 'info');
                   }}
-                  className={`w-full text-left px-2.5 py-2 rounded-lg text-xs font-medium flex items-center justify-between transition-colors
+                  className={`w-full text-left px-2.5 py-2 rounded-lg text-xs font-medium flex items-center justify-between transition-colors cursor-pointer
                     ${userRole === role ? 'bg-cyan-500/10 text-cyan-300' : 'text-slate-300 hover:bg-white/5'}
                   `}
                 >

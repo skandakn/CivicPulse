@@ -10,22 +10,34 @@ import {
   Radar,
   Activity,
   Layers,
-  Sparkles
+  Sparkles,
+  Zap,
+  GitMerge,
+  FileCheck,
+  Flame,
+  ShieldCheck
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { CITY_METRICS } from '../data/mockData';
 import { formatINR } from '../utils/formatters';
 
 export const LandingPage: React.FC = () => {
-  const { setCurrentView, incidents, selectIncidentById } = useApp();
+  const { setCurrentView, incidents, selectIncidentById, loadDemoCase } = useApp();
 
   const topPriorityIncident = incidents[0];
+
+  const stepsStory = [
+    { step: '01', title: 'DETECT', desc: 'Stereoscopic depth & asphalt cracking via citizen photo/video', icon: Cpu, color: 'text-cyan-400' },
+    { step: '02', title: 'PRIORITIZE', desc: 'Traffic volume × hospital corridor × depth algorithmic ranking', icon: Flame, color: 'text-amber-400' },
+    { step: '03', title: 'ASSIGN', desc: 'Clause 45.2 Defect Liability Period zero-cost contractor mandate', icon: Building2, color: 'text-purple-400' },
+    { step: '04', title: 'TRACK', desc: 'Live BBMP Sahaya SLA sync with automated escalation daemon', icon: Activity, color: 'text-blue-400' },
+    { step: '05', title: 'VERIFY', desc: 'Post-repair computer vision audit verifying surface smoothness', icon: ShieldCheck, color: 'text-emerald-400' }
+  ];
 
   return (
     <div className="space-y-12 pb-16 animate-in fade-in duration-300">
       {/* Hero Section */}
       <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-[#0F1322] via-[#090C16] to-[#07090F] p-6 sm:p-10 lg:p-14 shadow-2xl">
-        {/* Subtle background grid & glow */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f293710_1px,transparent_1px),linear-gradient(to_bottom,#1f293710_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute top-1/2 left-10 w-72 h-72 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -49,26 +61,34 @@ export const LandingPage: React.FC = () => {
             </h1>
 
             <p className="text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed">
-              AI-powered pothole intelligence for Bengaluru. Merging computer vision road scanning, 
+              AI-powered pothole intelligence and accountability for Bengaluru. Merging computer vision road scanning, 
               God's Eye geospatial city intelligence, and algorithmic priority scoring to hold contractors accountable and fix hazardous roads before accidents occur.
             </p>
 
-            {/* CTAs */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
+            {/* CTAs including 1-Click Judge Demo */}
+            <div className="flex flex-wrap items-center gap-3.5 pt-2">
+              <button
+                onClick={loadDemoCase}
+                className="flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-extrabold text-sm shadow-[0_0_30px_rgba(0,240,255,0.5)] transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              >
+                <Zap className="w-4 h-4 fill-slate-950 text-slate-950" />
+                <span>⚡ 1-Click Judge Demo</span>
+              </button>
+
               <button
                 onClick={() => setCurrentView('REPORT')}
-                className="flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-sm shadow-[0_0_25px_rgba(0,240,255,0.4)] transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                className="flex items-center gap-2 px-5 py-3.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 hover:border-cyan-500/40 text-white font-semibold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
               >
-                <PlusCircle className="w-5 h-5 text-slate-950" />
-                Report a Pothole
+                <PlusCircle className="w-4 h-4 text-cyan-400" />
+                <span>Report Pothole</span>
               </button>
 
               <button
                 onClick={() => setCurrentView('GODS_EYE')}
-                className="flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 hover:border-cyan-500/40 text-white font-semibold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                className="flex items-center gap-2 px-5 py-3.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-slate-300 hover:text-white font-medium text-sm transition-all cursor-pointer"
               >
-                <Eye className="w-5 h-5 text-cyan-400" />
-                Explore Bengaluru (God’s Eye)
+                <Eye className="w-4 h-4 text-slate-400" />
+                <span>God’s Eye Map</span>
               </button>
             </div>
 
@@ -102,10 +122,9 @@ export const LandingPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Product Visualization (Palantir/Command Center style) */}
+          {/* Right Product Visualization */}
           <div className="lg:col-span-5 relative">
             <div className="relative mx-auto w-full max-w-md rounded-2xl bg-[#090C16]/95 border border-cyan-500/30 p-4 shadow-[0_0_40px_rgba(0,240,255,0.15)] overflow-hidden">
-              {/* Radar scanner sweep line */}
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,240,255,0.06),transparent_70%)] pointer-events-none" />
 
               {/* Header */}
@@ -123,26 +142,20 @@ export const LandingPage: React.FC = () => {
 
               {/* Simulated Map / Vision Display */}
               <div className="relative my-3 rounded-xl bg-[#06080F] border border-white/10 h-64 overflow-hidden flex flex-col justify-between p-3">
-                {/* Background street grid abstraction */}
                 <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:16px_16px]" />
 
-                {/* Animated scanning bar */}
-                <div className="absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_15px_#00F0FF] animate-bounce" style={{ animationDuration: '3s' }} />
-
-                {/* Top overlay tags */}
                 <div className="relative z-10 flex justify-between items-center text-[10px] font-mono text-slate-400">
                   <span className="px-1.5 py-0.5 rounded bg-black/60 border border-white/10">
                     LAT 12.9298° N | LNG 77.6835° E
                   </span>
                   <span className="px-1.5 py-0.5 rounded bg-red-950/80 border border-red-500/40 text-red-400 font-bold">
-                    PRIORITY #1 • 96/100
+                    PRIORITY #1 • 94/100
                   </span>
                 </div>
 
                 {/* Center Pothole Target Reticle */}
                 <div className="relative z-10 my-auto flex flex-col items-center justify-center">
                   <div className="relative w-28 h-28 border border-dashed border-red-500/60 rounded-xl flex items-center justify-center bg-red-500/5 backdrop-blur-sm">
-                    {/* Bounding box corner markers */}
                     <div className="absolute -top-1 -left-1 w-2.5 h-2.5 border-t-2 border-l-2 border-red-500" />
                     <div className="absolute -top-1 -right-1 w-2.5 h-2.5 border-t-2 border-r-2 border-red-500" />
                     <div className="absolute -bottom-1 -left-1 w-2.5 h-2.5 border-b-2 border-l-2 border-red-500" />
@@ -159,15 +172,14 @@ export const LandingPage: React.FC = () => {
                   </div>
                   <div className="mt-2 text-center">
                     <span className="text-xs font-bold text-white">Outer Ring Road (Bellandur)</span>
-                    <p className="text-[10px] text-slate-400">Ambulance Route • High Speed Corridor</p>
+                    <p className="text-[10px] text-slate-400">3 Reports Merged • Ambulance Route</p>
                   </div>
                 </div>
 
-                {/* Bottom live stats */}
                 <div className="relative z-10 grid grid-cols-3 gap-1 bg-black/70 backdrop-blur-md p-2 rounded-lg border border-white/10 text-center font-mono text-[10px]">
                   <div>
                     <span className="text-slate-500 block">RISK</span>
-                    <span className="text-red-400 font-bold">96/100</span>
+                    <span className="text-red-400 font-bold">94/100</span>
                   </div>
                   <div>
                     <span className="text-slate-500 block">EST. FILL</span>
@@ -175,7 +187,7 @@ export const LandingPage: React.FC = () => {
                   </div>
                   <div>
                     <span className="text-slate-500 block">WARRANTY</span>
-                    <span className="text-emerald-400 font-bold">ACTIVE</span>
+                    <span className="text-emerald-400 font-bold">ACTIVE DLP</span>
                   </div>
                 </div>
               </div>
@@ -187,15 +199,61 @@ export const LandingPage: React.FC = () => {
                   <span>Contractor: Star Infratech</span>
                 </div>
                 <button
-                  onClick={() => selectIncidentById(topPriorityIncident.id, 'INCIDENT_DETAIL')}
-                  className="flex items-center gap-1 text-xs font-bold text-cyan-400 hover:text-cyan-300 transition-colors"
+                  onClick={loadDemoCase}
+                  className="flex items-center gap-1 text-xs font-bold text-cyan-400 hover:text-cyan-300 transition-colors cursor-pointer"
                 >
-                  <span>Audit Case</span>
+                  <span>Launch Walkthrough</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Visual Story Sequence: DETECT -> PRIORITIZE -> ASSIGN -> TRACK -> VERIFY */}
+      <section className="space-y-4 text-left">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-xs font-mono text-cyan-400 uppercase tracking-widest mb-1">
+              THE END-TO-END PIPELINE
+            </div>
+            <h2 className="text-2xl font-bold text-white tracking-tight">
+              From Citizen Photo to Guaranteed Repair
+            </h2>
+          </div>
+          <span className="text-xs font-mono text-slate-500 hidden sm:inline-block">
+            5 Automated Municipal Transitions
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+          {stepsStory.map((st, i) => {
+            const Icon = st.icon;
+            return (
+              <div
+                key={i}
+                className="p-4 rounded-2xl bg-[#090C16] border border-white/10 hover:border-cyan-500/40 transition-all flex flex-col justify-between group"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-mono text-xs font-bold text-slate-500">{st.step}</span>
+                    <Icon className={`w-5 h-5 ${st.color}`} />
+                  </div>
+                  <h3 className="font-mono text-sm font-bold text-white group-hover:text-cyan-300 transition-colors">
+                    {st.title}
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                    {st.desc}
+                  </p>
+                </div>
+                <div className="pt-3 text-[10px] font-mono text-slate-500 flex items-center gap-1">
+                  <span>Stage {st.step}</span>
+                  {i < 4 && <ArrowRight className="w-3 h-3 text-slate-600" />}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 
@@ -271,7 +329,7 @@ export const LandingPage: React.FC = () => {
                 3. Priority & Contractor Accountability
               </h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Problems are ranked not by who shouts loudest, but by traffic risk and hospital proximity. CivicPulse checks Defect Liability clauses to force contractors to repair for free.
+                Problems are ranked by traffic volume and hospital proximity. CivicPulse checks Defect Liability clauses to force contractors to repair for free under warranty.
               </p>
             </div>
             <div className="pt-6 flex items-center gap-2 text-xs font-semibold text-purple-400">
@@ -294,7 +352,7 @@ export const LandingPage: React.FC = () => {
           </div>
           <button
             onClick={() => setCurrentView('PRIORITY_QUEUE')}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-colors cursor-pointer"
           >
             <span>View All {incidents.length} Ranked Issues</span>
             <ArrowRight className="w-3.5 h-3.5" />

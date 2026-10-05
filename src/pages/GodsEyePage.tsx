@@ -280,7 +280,10 @@ export const GodsEyePage: React.FC = () => {
                   return (
                     <div
                       key={incident.id}
-                      onClick={() => setSelectedIncident(incident)}
+                      onClick={() => {
+                        setSelectedIncident(incident);
+                        setActiveTab('DETAILS');
+                      }}
                       className={`p-3 rounded-xl border text-xs cursor-pointer transition-all relative group
                         ${isSelected
                           ? 'bg-cyan-950/30 border-cyan-500/50 shadow-[0_0_15px_rgba(0,240,255,0.15)]'

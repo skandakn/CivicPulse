@@ -10,7 +10,8 @@ import {
   BarChart3,
   ShieldCheck,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  FileCheck2
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ViewMode } from '../../types';
@@ -45,6 +46,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'GODS_EYE', label: 'God’s Eye', icon: Eye, badge: incidents.length, badgeColor: 'bg-cyan-500/20 text-cyan-400' },
     { id: 'AI_ANALYSIS', label: 'Pothole Intelligence', icon: Cpu },
     { id: 'PRIORITY_QUEUE', label: 'Priority Queue', icon: ListOrdered, badge: criticalCount, badgeColor: 'bg-red-500/20 text-red-400 border border-red-500/30' },
+    { id: 'VERIFICATION', label: 'Repair Verification', icon: FileCheck2, badge: 'AI Audit', badgeColor: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' },
     { id: 'COMPLAINTS', label: 'Complaints', icon: FileText, badge: activeComplaintsCount, badgeColor: 'bg-amber-500/20 text-amber-400' },
     { id: 'CONTRACTORS', label: 'Contractors', icon: Building2 },
     { id: 'ANALYTICS', label: 'Analytics', icon: BarChart3 }
@@ -98,7 +100,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="hidden lg:flex p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+            className="hidden lg:flex p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
             title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
           >
             {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
@@ -118,7 +120,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   setCurrentView(item.id);
                   setIsMobileOpen(false);
                 }}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group relative
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group relative cursor-pointer
                   ${isActive
                     ? 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 shadow-[0_0_15px_rgba(0,240,255,0.15)]'
                     : 'text-slate-400 hover:text-slate-100 hover:bg-white/5 border border-transparent'
@@ -146,7 +148,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   </span>
                 )}
 
-                {/* Collapsed active dot */}
                 {isCollapsed && isActive && (
                   <div className="absolute right-1 w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#00F0FF]" />
                 )}

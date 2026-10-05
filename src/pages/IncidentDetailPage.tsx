@@ -14,7 +14,9 @@ import {
   Cpu,
   ArrowLeft,
   Share2,
-  Download
+  Download,
+  GitMerge,
+  ShieldCheck
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { getSeverityColor, getStatusBadge, formatDate, formatDateTime } from '../utils/formatters';
@@ -67,7 +69,7 @@ export const IncidentDetailPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <button
           onClick={() => setCurrentView('GODS_EYE')}
-          className="flex items-center gap-2 text-xs font-mono text-slate-400 hover:text-white transition-colors"
+          className="flex items-center gap-2 text-xs font-mono text-slate-400 hover:text-white transition-colors cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4 text-cyan-400" />
           <span>BACK TO GOD’S EYE RADAR</span>
@@ -75,20 +77,18 @@ export const IncidentDetailPage: React.FC = () => {
 
         <div className="flex items-center gap-2">
           <button
+            onClick={() => setCurrentView('VERIFICATION')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs font-mono text-emerald-300 transition-colors cursor-pointer"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <span>AI Repair Verification Lab</span>
+          </button>
+          <button
             onClick={handleShare}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono text-slate-300 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono text-slate-300 hover:text-white transition-colors cursor-pointer"
           >
             <Share2 className="w-3.5 h-3.5 text-cyan-400" />
             <span>Share Case</span>
-          </button>
-          <button
-            onClick={() => {
-              addToast('Work Order Generated', `BBMP Work Order generated for ${selectedIncident.code}`, 'success');
-            }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-xs font-mono text-cyan-300 transition-colors"
-          >
-            <Download className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Export BBMP PWD Notice</span>
           </button>
         </div>
       </div>
@@ -106,11 +106,14 @@ export const IncidentDetailPage: React.FC = () => {
             <span className={`px-2.5 py-0.5 rounded-full font-mono text-xs border ${statusInfo.color}`}>
               {statusInfo.label}
             </span>
+            <span className="px-2 py-0.5 rounded font-mono text-[10px] bg-white/5 border border-white/10 text-slate-400">
+              {selectedIncident.dataSource === 'VERIFIED_OFFICIAL' ? 'VERIFIED OFFICIAL DATA' : 'DEMO INFERENCE DATA'}
+            </span>
           </div>
 
           <div className="flex items-center gap-3 font-mono text-xs">
             <div className="text-right">
-              <span className="text-[10px] text-slate-500 block">AI PRIORITY INDEX</span>
+              <span className="text-[10px] text-slate-500 block">AI PRIORITY SCORE</span>
               <span className="text-xl font-extrabold text-cyan-400">
                 {selectedIncident.priorityDetails.overallScore}/100
               </span>
@@ -126,26 +129,26 @@ export const IncidentDetailPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Contractor Warranty Highlight Banner */}
+        {/* Contractor Warranty Highlight Banner - Neutral Defensible Language */}
         {selectedIncident.isUnderWarranty ? (
-          <div className="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-500/40 flex items-start gap-3 text-xs">
+          <div className="p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/40 flex items-start gap-3 text-xs">
             <ShieldAlert className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
             <div>
               <div className="font-bold text-emerald-300">
-                ACTIVE CONTRACTOR WARRANTY (DEFECT LIABILITY PERIOD CLAUSE 45.2)
+                ROAD PROJECT UNDER ACTIVE CONTRACTOR WARRANTY (DEFECT LIABILITY CLAUSE 45.2)
               </div>
-              <p className="text-slate-300 mt-0.5">
-                Contractor <strong className="text-white">{selectedIncident.contractorName}</strong> is legally obligated to repair this defect at <strong className="text-emerald-400">ZERO cost to the public exchequer</strong> within 48 hours of notification.
+              <p className="text-slate-300 mt-0.5 leading-relaxed font-sans">
+                Road project associated with this location was recorded under contract <strong className="text-white font-mono">{selectedIncident.contractId || 'BBMP/WO-88/2024'}</strong>. Contractor associated with the recorded road project: <strong className="text-white">{selectedIncident.contractorName}</strong> is legally obligated under Clause 45.2 to rectify this defect at <strong className="text-emerald-400">ZERO cost to the public exchequer</strong> within 48 hours of notification.
               </p>
             </div>
           </div>
         ) : (
-          <div className="p-3.5 rounded-xl bg-amber-950/20 border border-amber-500/30 flex items-start gap-3 text-xs">
+          <div className="p-4 rounded-xl bg-amber-950/20 border border-amber-500/30 flex items-start gap-3 text-xs">
             <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
             <div>
               <div className="font-bold text-amber-300">BBMP PWD MAINTENANCE JURISDICTION</div>
-              <p className="text-slate-300 mt-0.5">
-                Road defect liability period expired. Assigned to BBMP Zonal Road Infrastructure rapid patching crew.
+              <p className="text-slate-300 mt-0.5 leading-relaxed font-sans">
+                Road project warranty has expired. Pothole assigned to BBMP Zonal Road Infrastructure rapid patching crew.
               </p>
             </div>
           </div>
@@ -232,12 +235,36 @@ export const IncidentDetailPage: React.FC = () => {
             </div>
           </div>
 
+          {/* Merged Duplicate Citizen Reports */}
+          {selectedIncident.supportingReports && selectedIncident.supportingReports.length > 0 && (
+            <div className="rounded-2xl border border-purple-500/30 bg-[#090C16] p-4 space-y-3">
+              <div className="flex items-center justify-between text-xs font-mono">
+                <span className="text-purple-300 font-bold flex items-center gap-1.5">
+                  <GitMerge className="w-3.5 h-3.5" />
+                  Cluster Duplication: {selectedIncident.supportingReports.length} Merged Reports
+                </span>
+                <span className="text-cyan-400 font-mono">Cluster Radius: &lt;15m</span>
+              </div>
+
+              <div className="space-y-2 text-xs font-mono">
+                {selectedIncident.supportingReports.map((r, i) => (
+                  <div key={i} className="p-2.5 rounded-lg bg-black/40 border border-white/5 flex items-center justify-between">
+                    <div>
+                      <strong className="text-white">{r.citizenName}</strong>: <span className="text-slate-400 font-sans">"{r.notes}"</span>
+                    </div>
+                    <span className="text-emerald-400 font-bold text-[10px]">{r.similarityScore}% match</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Mini Geospatial Map */}
           <div className="rounded-2xl border border-white/10 bg-[#090C16] p-4 space-y-3">
             <span className="font-mono text-xs font-bold text-white uppercase tracking-wider block">
               Exact Geolocation (GPS Coordinates)
             </span>
-            <div className="h-48 rounded-xl overflow-hidden border border-white/10">
+            <div className="h-44 rounded-xl overflow-hidden border border-white/10">
               <BengaluruMap
                 incidents={[selectedIncident]}
                 selectedIncidentId={selectedIncident.id}
@@ -253,6 +280,34 @@ export const IncidentDetailPage: React.FC = () => {
 
         {/* Right 6 cols: Contractor Accountability, Sahaya Grievance & Timeline */}
         <div className="lg:col-span-6 space-y-6">
+          {/* Explainable Scoring Card */}
+          <div className="rounded-2xl border border-white/10 bg-[#090C16] p-5 space-y-3 font-mono text-xs">
+            <div className="flex items-center justify-between border-b border-white/10 pb-2">
+              <span className="text-cyan-400 font-bold uppercase">EXPLAINABLE PRIORITY SCORE: {selectedIncident.priorityDetails.overallScore}/100</span>
+              <span className="text-red-400 font-bold">{selectedIncident.severity}</span>
+            </div>
+
+            <p className="text-slate-300 font-sans italic text-xs leading-relaxed">
+              "{selectedIncident.priorityDetails.shortExplanation || selectedIncident.priorityDetails.explanation[0]}"
+            </p>
+
+            <div className="space-y-1.5 pt-2">
+              {(selectedIncident.priorityDetails.scoreItems || [
+                { factor: 'Visual severity & depth', points: 31, maxPoints: 35 },
+                { factor: 'Traffic exposure', points: 21, maxPoints: 25 },
+                { factor: 'Report density', points: 17, maxPoints: 20 },
+                { factor: 'Persistence', points: 12, maxPoints: 15 },
+                { factor: 'Road importance', points: 8, maxPoints: 10 },
+                { factor: 'Sensitive location', points: 5, maxPoints: 5 }
+              ]).map((it, idx) => (
+                <div key={idx} className="flex justify-between items-center text-slate-300">
+                  <span>{it.factor}</span>
+                  <span className="text-cyan-400 font-bold">+{it.points}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Contractor & Engineering Record */}
           <div className="rounded-2xl border border-white/10 bg-[#090C16] p-5 space-y-4">
             <h3 className="font-mono text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
@@ -263,7 +318,7 @@ export const IncidentDetailPage: React.FC = () => {
             <div className="space-y-3 text-xs">
               <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between">
                 <div>
-                  <div className="text-[10px] font-mono text-slate-500">ASSIGNED ROAD CONTRACTOR</div>
+                  <div className="text-[10px] font-mono text-slate-500">ASSOCIATED ROAD CONTRACTOR</div>
                   <div className="font-bold text-white mt-0.5">{selectedIncident.contractorName}</div>
                   <div className="text-[11px] text-slate-400 font-mono">
                     Reg: {matchingContractor?.registrationNumber || 'PWD/KP/2021'} • Quality Score: {matchingContractor?.qualityScore || 68}/100
@@ -332,27 +387,17 @@ export const IncidentDetailPage: React.FC = () => {
               </button>
             </div>
 
-            {/* Audit History Timeline */}
-            <div className="space-y-3 pt-2">
-              <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">
-                Incident Lifecycle & Escalation History
-              </span>
-
-              <div className="relative pl-6 space-y-4 border-l border-white/10 ml-2 text-xs">
-                {(matchingComplaint?.history || [
-                  { timestamp: selectedIncident.reportedAt, action: 'Complaint filed via CivicPulse with geotagged imagery', actor: 'Citizen Reporter' },
-                  { timestamp: selectedIncident.lastUpdatedAt, action: 'AI computer vision triaged severity and depth stereopsis', actor: 'AI Vision Auditor v4.2' }
-                ]).map((item, idx) => (
-                  <div key={idx} className="relative">
-                    <span className="absolute -left-[31px] top-1 w-3 h-3 rounded-full bg-cyan-400 border-2 border-[#090C16] shadow-[0_0_8px_#00F0FF]" />
-                    <div className="font-semibold text-slate-100">{item.action}</div>
-                    <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono mt-0.5">
-                      <span>{formatDateTime(item.timestamp)}</span>
-                      <span>•</span>
-                      <span className="text-cyan-400">{item.actor}</span>
-                    </div>
-                  </div>
-                ))}
+            {/* AI Automated Complaint Draft */}
+            <div className="p-4 rounded-xl bg-[#060810] border border-amber-500/30 space-y-2 font-mono text-xs">
+              <div className="flex justify-between items-center text-amber-300 font-bold">
+                <span>AI COMPLAINT DRAFT (READY TO SUBMIT)</span>
+                <span className="text-[10px] text-slate-500">Simulated Gateway</span>
+              </div>
+              <p className="text-slate-300 font-sans text-xs">
+                Recommended Action: Notice to contractor under Clause 45.2 for emergency cold-mix compaction within 24h as per IRC-SP-100 specifications.
+              </p>
+              <div className="text-[10px] text-slate-500 italic pt-1 border-t border-white/5">
+                Watermark: AI-generated — review before submission.
               </div>
             </div>
           </div>

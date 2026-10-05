@@ -26,6 +26,8 @@ export type BbmpZone =
   | 'Dasarahalli' 
   | 'Yelahanka';
 
+export type DataSourceTag = 'VERIFIED_OFFICIAL' | 'DEMO_DATA' | 'ESTIMATED';
+
 export interface GeoLocation {
   lat: number;
   lng: number;
@@ -35,6 +37,13 @@ export interface GeoLocation {
   wardNumber: number;
   wardName: string;
   zone: BbmpZone;
+}
+
+export interface ScoreItem {
+  factor: string;
+  points: number;
+  maxPoints: number;
+  description: string;
 }
 
 export interface PriorityBreakdown {
@@ -49,9 +58,18 @@ export interface PriorityBreakdown {
 export interface PriorityScore {
   overallScore: number; // 0-100
   breakdown: PriorityBreakdown;
+  scoreItems?: ScoreItem[];
   confidence: number; // 0.0 - 1.0
   explanation: string[];
+  shortExplanation?: string;
   calculatedAt: string;
+}
+
+export interface DetectedHazardObject {
+  label: string;
+  confidence: number;
+  bbox: [number, number, number, number]; // [x, y, w, h] in percentages
+  notes?: string;
 }
 
 export interface AIDetectionMetrics {
@@ -64,20 +82,16 @@ export interface AIDetectionMetrics {
   boundingPolygon?: [number, number][];
   modelConfidence: number;
   processingTimeMs: number;
+  inferenceMode?: 'DEMO_INFERENCE_MODE' | 'LIVE_EDGE_MODEL';
 }
 
-export interface PotholeReport {
-  id: string;
-  reporterName: string;
-  reporterPhone?: string;
-  reporterRole: 'CITIZEN' | 'WARD_ENGINEER' | 'BUS_DRIVER' | 'TRAFFIC_POLICE';
-  imageUrl: string;
-  videoUrl?: string;
-  location: GeoLocation;
-  description: string;
+export interface SupportingReport {
+  reportId: string;
+  citizenName: string;
   timestamp: string;
-  status: 'PENDING_AI' | 'PROCESSED' | 'REJECTED';
-  aiDetection?: AIDetectionMetrics;
+  imageUrl?: string;
+  notes?: string;
+  similarityScore: number; // percentage, e.g. 94%
 }
 
 export interface RepairVerification {
@@ -87,10 +101,13 @@ export interface RepairVerification {
   aiAuditPhoto: string;
   passConfidence: number; // 0.0 - 1.0
   surfaceSmoothnessScore: number; // 0-100
+  areaReductionPercent: number; // e.g. 96.4%
+  unresolvedDamageDetected: boolean;
   thermalDensityScore: number; // 0-100
   verifiedBy: 'AI_VISION_AUDITOR' | 'HUMAN_OVERRIDE';
   status: 'APPROVED' | 'REJECTED_REWORK_NEEDED';
   notes: string;
+  mode: 'DEMO_VERIFICATION_MODE' | 'LIVE_AUDIT_MODE';
 }
 
 export interface ComplaintHistoryItem {
@@ -98,6 +115,15 @@ export interface ComplaintHistoryItem {
   action: string;
   actor: string;
   notes?: string;
+}
+
+export interface ComplaintDraft {
+  draftId: string;
+  status: 'READY_TO_SUBMIT' | 'SIMULATED_SYNC';
+  generatedAt: string;
+  recommendedAction: string;
+  slaDeadline: string;
+  watermark: string; // "AI-generated — review before submission."
 }
 
 export interface Complaint {
@@ -112,6 +138,7 @@ export interface Complaint {
   slaDeadline: string; // ISO string
   slaBreached: boolean;
   history: ComplaintHistoryItem[];
+  draftDetails?: ComplaintDraft;
 }
 
 export interface Contract {
@@ -128,6 +155,7 @@ export interface Contract {
   isUnderWarranty: boolean;
   totalCostINR: number;
   status: 'ACTIVE' | 'UNDER_WARRANTY' | 'EXPIRED' | 'DEFAULTED';
+  responsibilityClause: string;
 }
 
 export interface Contractor {
@@ -190,7 +218,10 @@ export interface Ward {
 
 export interface PotholeIncident {
   id: string;
-  code: string; // e.g. "BLR-POT-2026-0842"
+  code: string; // e.g. "BLR-POT-2026-0842" / "BNG-PTH-1042"
+  reportId?: string;
+  latitude: number;
+  longitude: number;
   roadId: string;
   roadName: string;
   wardId: string;
@@ -203,10 +234,12 @@ export interface PotholeIncident {
   };
   landmark: string;
   severity: SeverityLevel;
+  severityScore: number; // 0-100
   depthCm: number;
   surfaceAreaSqM: number;
   estimatedVolumeLiters: number;
   riskScore: number; // 0-100
+  confidence: number; // 0.0 - 1.0
   status: IncidentStatus;
   priorityRank: number;
   priorityDetails: PriorityScore;
@@ -228,6 +261,13 @@ export interface PotholeIncident {
     repaired?: string;
   };
   aiMetrics: AIDetectionMetrics;
+  detectedObjects: DetectedHazardObject[];
+  duplicateOf?: string | null;
+  supportingReports: SupportingReport[];
+  roadHealth: string;
+  trafficExposure: string;
+  nearbySensitivePlaces: string[];
+  dataSource: DataSourceTag;
   repairVerification?: RepairVerification;
 }
 
@@ -238,6 +278,7 @@ export type ViewMode =
   | 'AI_ANALYSIS' 
   | 'PRIORITY_QUEUE' 
   | 'INCIDENT_DETAIL' 
+  | 'VERIFICATION'
   | 'CONTRACTORS' 
   | 'COMPLAINTS' 
   | 'ANALYTICS';

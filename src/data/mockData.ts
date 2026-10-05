@@ -136,7 +136,7 @@ export const INITIAL_AUTHORITIES: Authority[] = [
     id: 'auth-bbmp',
     name: 'Bruhat Bengaluru Mahanagara Palike (BBMP) - Road Infrastructure',
     acronym: 'BBMP',
-    jurisdiction: 'Greater Bengaluru Arterial & Sub-Arterial Roads',
+    jurisdiction: 'Greater Bengaluru Arterial & Sub-Arterial Corridors',
     nodalOfficer: 'Sri B. S. Prahlad, Chief Engineer (Roads)',
     designation: 'Chief Engineer, Major Roads',
     escalationContact: 'ce.roadinfra@bbmp.gov.in / 080-22221188'
@@ -178,7 +178,7 @@ export const INITIAL_CONTRACTORS: Contractor[] = [
     classRating: 'CLASS_1',
     activeContractsCount: 6,
     totalKmsPaved: 142.5,
-    warrantyDefectRate: 14.8, // high defect rate
+    warrantyDefectRate: 14.8,
     qualityScore: 61,
     penaltiesLeviedINR: 4250000,
     penaltiesPaidINR: 1800000,
@@ -210,7 +210,7 @@ export const INITIAL_CONTRACTORS: Contractor[] = [
     classRating: 'CLASS_1',
     activeContractsCount: 8,
     totalKmsPaved: 215.0,
-    warrantyDefectRate: 18.4, // high defect rate
+    warrantyDefectRate: 18.4,
     qualityScore: 54,
     penaltiesLeviedINR: 7800000,
     penaltiesPaidINR: 2500000,
@@ -242,7 +242,7 @@ export const INITIAL_CONTRACTORS: Contractor[] = [
     classRating: 'CLASS_2',
     activeContractsCount: 1,
     totalKmsPaved: 32.0,
-    warrantyDefectRate: 26.5, // severe default
+    warrantyDefectRate: 26.5,
     qualityScore: 38,
     penaltiesLeviedINR: 9200000,
     penaltiesPaidINR: 0,
@@ -350,11 +350,12 @@ export const INITIAL_CONTRACTS: Contract[] = [
     authorityId: 'auth-bbmp',
     awardDate: '2024-04-10',
     completionDate: '2024-11-15',
-    warrantyPeriodMonths: 36, // 3 years DLP
+    warrantyPeriodMonths: 36,
     defectLiabilityExpiry: '2027-11-15T00:00:00Z',
     isUnderWarranty: true,
     totalCostINR: 148000000,
-    status: 'UNDER_WARRANTY'
+    status: 'UNDER_WARRANTY',
+    responsibilityClause: 'Clause 45.2 (Defect Liability Period): Contractor shall rectify all bituminous pavement failures within 48h of notification at zero additional cost.'
   },
   {
     id: 'cntr-2024-12',
@@ -367,36 +368,40 @@ export const INITIAL_CONTRACTS: Contract[] = [
     completionDate: '2024-05-12',
     warrantyPeriodMonths: 24,
     defectLiabilityExpiry: '2026-05-12T00:00:00Z',
-    isUnderWarranty: false, // lapsed or breached
+    isUnderWarranty: false,
     totalCostINR: 92000000,
-    status: 'ACTIVE'
+    status: 'ACTIVE',
+    responsibilityClause: 'Standard PWD maintenance jurisdiction post-warranty.'
   }
 ];
 
+// Master Seed of 10 Realistic Bengaluru Potholes with Complete End-to-End Intelligence
 export const INITIAL_INCIDENTS: PotholeIncident[] = [
   {
     id: 'inc-01',
-    code: 'BLR-POT-2026-0842',
+    code: 'BNG-PTH-1042',
+    reportId: 'rep-0842',
+    latitude: 12.9298,
+    longitude: 77.6835,
     roadId: 'road-01',
     roadName: 'Outer Ring Road (Marathahalli - Bellandur Corridor)',
     wardId: 'ward-150',
     wardName: 'Bellandur',
     wardNumber: 150,
     zone: 'Mahadevapura',
-    coordinates: {
-      lat: 12.9298,
-      lng: 77.6835
-    },
-    landmark: 'Opposite Ecospace Main Gate, Bellandur Service Road merge',
+    coordinates: { lat: 12.9298, lng: 77.6835 },
+    landmark: 'Opposite EcoSpace Main Gate, Bellandur center high-speed lane',
     severity: 'CRITICAL',
+    severityScore: 94,
     depthCm: 15.4,
     surfaceAreaSqM: 1.48,
     estimatedVolumeLiters: 38.5,
-    riskScore: 96,
+    riskScore: 94,
+    confidence: 0.98,
     status: 'TRIAGED',
     priorityRank: 1,
     priorityDetails: {
-      overallScore: 96,
+      overallScore: 94,
       breakdown: {
         depthRisk: 95,
         trafficVolumeImpact: 98,
@@ -405,12 +410,20 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
         twoWheelerAccidentHistory: 94,
         citizenUpvotesWeight: 90
       },
+      scoreItems: [
+        { factor: 'Visual severity & depth (>15cm)', points: 31, maxPoints: 35, description: 'Crater depth 15.4cm poses immediate wheel entrapment risk.' },
+        { factor: 'Traffic exposure (ORR Corridor)', points: 21, maxPoints: 25, description: 'Carrying 24,500 PCU/hr on primary tech-corridor transit.' },
+        { factor: 'Report density (Cluster merge)', points: 17, maxPoints: 20, description: '3 citizen reports merged into this single master incident.' },
+        { factor: 'Persistence & unresolved age', points: 12, maxPoints: 15, description: 'Unresolved for 48+ hours without cold-mix patch.' },
+        { factor: 'Road importance (Arterial)', points: 8, maxPoints: 10, description: 'Arterial priority corridor under BBMP Major Roads Division.' },
+        { factor: 'Sensitive location (Ambulance)', points: 5, maxPoints: 5, description: 'Within 0.4km of Sakra World Hospital emergency corridor.' }
+      ],
       confidence: 0.98,
+      shortExplanation: 'High-confidence pothole on a high-traffic corridor with multiple supporting reports and prolonged unresolved status.',
       explanation: [
-        'Critical depth (>15cm) causing high risk of two-wheeler wheel entrapment.',
-        'High-speed corridor (ORR) carrying 22,000+ passenger car units/hr.',
-        'Direct ambulance corridor between Sakra World Hospital and Manipal Sarjapur.',
-        'Road under 36-month Contractor Warranty (Star Infratech) - ZERO BBMP tender cost.'
+        'Critical depth (>15cm) causing sudden braking and two-wheeler instability.',
+        'High-speed corridor carrying 24,000+ passenger car units per hour.',
+        'Road project associated with recorded tender under 36-month Contractor Warranty (Star Infratech) — Zero public tender cost.'
       ],
       calculatedAt: '2026-10-05T08:15:00Z'
     },
@@ -421,7 +434,7 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     contractId: 'cntr-2024-88',
     isUnderWarranty: true,
     authorityId: 'auth-bbmp',
-    authorityName: 'BBMP Major Roads Division',
+    authorityName: 'Bruhat Bengaluru Mahanagara Palike (BBMP) - Major Roads',
     complaintsCount: 38,
     upvotes: 142,
     sahayaTicketNo: 'BBMP-SHY-2026-90412',
@@ -438,28 +451,44 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
       moistureWaterloggingRisk: 92,
       vehicleDamageHazard: 97,
       modelConfidence: 0.982,
-      processingTimeMs: 38
-    }
+      processingTimeMs: 38,
+      inferenceMode: 'DEMO_INFERENCE_MODE'
+    },
+    detectedObjects: [
+      { label: 'Deep Asphalt Crater', confidence: 0.98, bbox: [28, 25, 44, 50], notes: 'High depth entrapment zone' },
+      { label: 'Radial Aggregate Cracks', confidence: 0.91, bbox: [22, 18, 56, 62], notes: 'Moisture ingress along base layer' }
+    ],
+    supportingReports: [
+      { reportId: 'rep-0842-a', citizenName: 'Vikram R. (Commuter)', timestamp: '2026-10-04T18:22:00Z', notes: 'Hit my scooter wheel rim; water inside', similarityScore: 98 },
+      { reportId: 'rep-0842-b', citizenName: 'Ananya S. (Cab Driver)', timestamp: '2026-10-04T19:05:00Z', notes: 'Traffic backed up to Bellandur flyover', similarityScore: 94 },
+      { reportId: 'rep-0842-c', citizenName: 'Deepak Rao', timestamp: '2026-10-05T07:15:00Z', notes: 'Almost caused multi-vehicle shunt', similarityScore: 92 }
+    ],
+    roadHealth: 'Pavement Condition Index: 28/100 (Severe Base Delamination)',
+    trafficExposure: '24,500 PCU/hr • BMTC Route 500D Major Transit',
+    nearbySensitivePlaces: ['Sakra World Hospital (0.4 km)', 'EcoSpace Tech Park (0.1 km)', 'New Horizon College (0.8 km)'],
+    dataSource: 'VERIFIED_OFFICIAL'
   },
   {
     id: 'inc-02',
-    code: 'BLR-POT-2026-0819',
+    code: 'BNG-PTH-1038',
+    reportId: 'rep-0819',
+    latitude: 12.9172,
+    longitude: 77.6228,
     roadId: 'road-04',
     roadName: 'Hosur Road / Silk Board Flyover Underpass',
     wardId: 'ward-176',
     wardName: 'BTM Layout & Silk Board',
     wardNumber: 176,
     zone: 'Bommanahalli',
-    coordinates: {
-      lat: 12.9172,
-      lng: 77.6228
-    },
-    landmark: 'Ramp descend towards Electronic City expressway, lane 2',
+    coordinates: { lat: 12.9172, lng: 77.6228 },
+    landmark: 'Ramp descent towards Electronic City expressway, lane 2',
     severity: 'CRITICAL',
+    severityScore: 93,
     depthCm: 13.8,
     surfaceAreaSqM: 1.82,
     estimatedVolumeLiters: 42.0,
     riskScore: 93,
+    confidence: 0.97,
     status: 'WORK_IN_PROGRESS',
     priorityRank: 2,
     priorityDetails: {
@@ -472,7 +501,16 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
         twoWheelerAccidentHistory: 92,
         citizenUpvotesWeight: 88
       },
+      scoreItems: [
+        { factor: 'Visual severity & depth', points: 29, maxPoints: 35, description: '13.8cm crater depth across high-transit interchange.' },
+        { factor: 'Traffic exposure', points: 24, maxPoints: 25, description: 'Silk Board junction handles 38,000+ vehicles/hr.' },
+        { factor: 'Report density', points: 16, maxPoints: 20, description: '52 citizen complaints submitted via BBMP Sahaya.' },
+        { factor: 'Persistence', points: 11, maxPoints: 15, description: 'Unresolved for 36 hours.' },
+        { factor: 'Road importance', points: 8, maxPoints: 10, description: 'Primary inter-city highway connector.' },
+        { factor: 'Sensitive location', points: 5, maxPoints: 5, description: 'Within 1.1km of Jayadeva Cardiology Institute.' }
+      ],
       confidence: 0.97,
+      shortExplanation: 'Major highway bottleneck with heavy commercial traffic and cascade tailbacks.',
       explanation: [
         'Acute bottleneck at Silk Board interchange; sudden braking cascades 1.2km tailbacks.',
         'High heavy-vehicle transit causing rapid asphalt crater expansion.',
@@ -502,28 +540,42 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
       moistureWaterloggingRisk: 86,
       vehicleDamageHazard: 94,
       modelConfidence: 0.965,
-      processingTimeMs: 44
-    }
+      processingTimeMs: 44,
+      inferenceMode: 'DEMO_INFERENCE_MODE'
+    },
+    detectedObjects: [
+      { label: 'Deep Crater Cluster', confidence: 0.96, bbox: [20, 30, 50, 45], notes: 'High impact zone' }
+    ],
+    supportingReports: [
+      { reportId: 'rep-0819-a', citizenName: 'Sanjay Hegde', timestamp: '2026-10-03T11:10:00Z', notes: 'Wheel rim bent on descending ramp', similarityScore: 97 },
+      { reportId: 'rep-0819-b', citizenName: 'Traffic Warden 14', timestamp: '2026-10-04T08:00:00Z', notes: 'Tailback reaching Madiwala', similarityScore: 91 }
+    ],
+    roadHealth: 'Pavement Condition Index: 34/100 (Severe Fatigue Cracking)',
+    trafficExposure: '38,000 PCU/hr • Silk Board Expressway Entry',
+    nearbySensitivePlaces: ['Jayadeva Hospital (1.2 km)', 'Central Silk Board Metro (0.2 km)'],
+    dataSource: 'VERIFIED_OFFICIAL'
   },
   {
     id: 'inc-03',
-    code: 'BLR-POT-2026-0794',
+    code: 'BNG-PTH-1031',
+    reportId: 'rep-0794',
+    latitude: 12.9345,
+    longitude: 77.6269,
     roadId: 'road-03',
     roadName: '80 Feet Road, Koramangala 4th Block',
     wardId: 'ward-151',
     wardName: 'Koramangala',
     wardNumber: 151,
     zone: 'South',
-    coordinates: {
-      lat: 12.9345,
-      lng: 77.6269
-    },
+    coordinates: { lat: 12.9345, lng: 77.6269 },
     landmark: 'Between Sony World Signal and Maharaja Junction, near Corner House',
     severity: 'HIGH',
+    severityScore: 87,
     depthCm: 11.2,
     surfaceAreaSqM: 0.95,
     estimatedVolumeLiters: 21.0,
     riskScore: 87,
+    confidence: 0.96,
     status: 'TENDER_ASSIGNED',
     priorityRank: 3,
     priorityDetails: {
@@ -537,10 +589,11 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
         citizenUpvotesWeight: 82
       },
       confidence: 0.96,
+      shortExplanation: 'Waterlogged commercial corridor with dense two-wheeler food-delivery transit.',
       explanation: [
         'Pothole cluster expanding due to water stagnation from recent stormwater overflow.',
         'High density of delivery two-wheelers and office commuters.',
-        'Sri Venkateshwara Bitumen assigned for rapid cold-mix patching within 24h.'
+        'Contractor associated with road project: Sri Venkateshwara Bitumen assigned for rapid cold-mix patching within 24h.'
       ],
       calculatedAt: '2026-10-05T06:30:00Z'
     },
@@ -565,28 +618,39 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
       moistureWaterloggingRisk: 88,
       vehicleDamageHazard: 85,
       modelConfidence: 0.958,
-      processingTimeMs: 32
-    }
+      processingTimeMs: 32,
+      inferenceMode: 'DEMO_INFERENCE_MODE'
+    },
+    detectedObjects: [
+      { label: 'Waterlogged Void', confidence: 0.95, bbox: [25, 25, 45, 45], notes: 'Standing stormwater pooling' }
+    ],
+    supportingReports: [],
+    roadHealth: 'Pavement Condition Index: 46/100 (Moderate Stripping)',
+    trafficExposure: '16,000 PCU/hr • Commercial Dining Strip',
+    nearbySensitivePlaces: ['Apollo Spectra Hospital (0.6 km)', 'Bethany High School (0.9 km)'],
+    dataSource: 'DEMO_DATA'
   },
   {
     id: 'inc-04',
-    code: 'BLR-POT-2026-0761',
+    code: 'BNG-PTH-1025',
+    reportId: 'rep-0761',
+    latitude: 12.9856,
+    longitude: 77.7289,
     roadId: 'road-05',
     roadName: 'Whitefield Main Road (Near ITPL Gate 2)',
     wardId: 'ward-84',
     wardName: 'Whitefield',
     wardNumber: 84,
     zone: 'Mahadevapura',
-    coordinates: {
-      lat: 12.9856,
-      lng: 77.7289
-    },
+    coordinates: { lat: 12.9856, lng: 77.7289 },
     landmark: 'Adjacent to Pattandur Agrahara Metro Station pillar 421',
     severity: 'HIGH',
+    severityScore: 82,
     depthCm: 10.5,
     surfaceAreaSqM: 1.15,
     estimatedVolumeLiters: 24.2,
     riskScore: 82,
+    confidence: 0.95,
     status: 'TRIAGED',
     priorityRank: 4,
     priorityDetails: {
@@ -600,10 +664,11 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
         citizenUpvotesWeight: 76
       },
       confidence: 0.95,
+      shortExplanation: 'Metro feeder corridor with uncompacted utility trenching sinkage.',
       explanation: [
         'Metro feeder route with dense BMTC Volvo transit.',
-        'Trenching work by BESCOM left uncompacted road base, causing sinkage.',
-        'Inter-agency coordination alert raised to BMRCL & BESCOM.'
+        'Trenching work by utility agencies left uncompacted road base, causing sinkage.',
+        'Inter-agency coordination notice dispatched to BMRCL & BESCOM.'
       ],
       calculatedAt: '2026-10-05T05:15:00Z'
     },
@@ -628,28 +693,39 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
       moistureWaterloggingRisk: 75,
       vehicleDamageHazard: 81,
       modelConfidence: 0.951,
-      processingTimeMs: 41
-    }
+      processingTimeMs: 41,
+      inferenceMode: 'DEMO_INFERENCE_MODE'
+    },
+    detectedObjects: [
+      { label: 'Longitudinal Trench Sinkage', confidence: 0.94, bbox: [20, 20, 60, 50], notes: 'Utility trench settlement' }
+    ],
+    supportingReports: [],
+    roadHealth: 'Pavement Condition Index: 42/100 (Settlement Cracks)',
+    trafficExposure: '21,000 PCU/hr • ITPL Tech Park Transit',
+    nearbySensitivePlaces: ['Manipal Hospital Whitefield (1.4 km)', 'ITPL Gate 2 (0.1 km)'],
+    dataSource: 'DEMO_DATA'
   },
   {
     id: 'inc-05',
-    code: 'BLR-POT-2026-0720',
+    code: 'BNG-PTH-1018',
+    reportId: 'rep-0720',
+    latitude: 12.9719,
+    longitude: 77.6412,
     roadId: 'road-02',
     roadName: '100 Feet Road, Indiranagar (Near 12th Main Junction)',
     wardId: 'ward-80',
     wardName: 'Indiranagar',
     wardNumber: 80,
     zone: 'East',
-    coordinates: {
-      lat: 12.9719,
-      lng: 77.6412
-    },
+    coordinates: { lat: 12.9719, lng: 77.6412 },
     landmark: 'Opposite Glen\'s Bakehouse, median crossover lane',
     severity: 'MEDIUM',
+    severityScore: 68,
     depthCm: 7.2,
     surfaceAreaSqM: 0.62,
     estimatedVolumeLiters: 11.5,
     riskScore: 68,
+    confidence: 0.99,
     status: 'AI_VERIFIED',
     priorityRank: 8,
     priorityDetails: {
@@ -663,9 +739,10 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
         citizenUpvotesWeight: 70
       },
       confidence: 0.99,
+      shortExplanation: 'Repair completed by contractor; post-repair AI vision passed surface smoothness audit.',
       explanation: [
         'Pothole filled with hot-mix asphalt by Sri Venkateshwara Bitumen.',
-        'AI Computer Vision audit performed on post-repair laser scan: 98.4% surface smoothness.',
+        'AI Computer Vision audit performed on post-repair scan: 98.4% surface smoothness.',
         'Zero defect audit passed; closed in BBMP Sahaya database.'
       ],
       calculatedAt: '2026-10-05T09:00:00Z'
@@ -692,8 +769,17 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
       moistureWaterloggingRisk: 55,
       vehicleDamageHazard: 64,
       modelConfidence: 0.991,
-      processingTimeMs: 29
+      processingTimeMs: 29,
+      inferenceMode: 'DEMO_INFERENCE_MODE'
     },
+    detectedObjects: [
+      { label: 'Surface Aggregate Spalling', confidence: 0.98, bbox: [30, 30, 40, 40], notes: 'Surface wear' }
+    ],
+    supportingReports: [],
+    roadHealth: 'Pavement Condition Index: 82/100 (Post-Repair Restored)',
+    trafficExposure: '18,500 PCU/hr • Commercial High Street',
+    nearbySensitivePlaces: ['Chinmaya Mission Hospital (0.7 km)', 'Indiranagar Metro (0.4 km)'],
+    dataSource: 'VERIFIED_OFFICIAL',
     repairVerification: {
       incidentId: 'inc-05',
       repairedAt: '2026-10-05T08:45:00Z',
@@ -701,33 +787,38 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
       aiAuditPhoto: 'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=800&q=80',
       passConfidence: 0.984,
       surfaceSmoothnessScore: 94,
+      areaReductionPercent: 98.2,
+      unresolvedDamageDetected: false,
       thermalDensityScore: 96,
       verifiedBy: 'AI_VISION_AUDITOR',
       status: 'APPROVED',
-      notes: 'Hot-mix compaction verified. Edge sealing adheres to IRC-SP-100 specification.'
+      notes: 'Hot-mix compaction verified. Edge sealing adheres to IRC-SP-100 specification.',
+      mode: 'DEMO_VERIFICATION_MODE'
     }
   },
   {
     id: 'inc-06',
-    code: 'BLR-POT-2026-0691',
+    code: 'BNG-PTH-1011',
+    reportId: 'rep-0691',
+    latitude: 12.9982,
+    longitude: 77.5714,
     roadId: 'road-06',
     roadName: 'Sampige Road, Malleshwaram 8th Cross',
     wardId: 'ward-65',
     wardName: 'Malleshwaram',
     wardNumber: 65,
     zone: 'West',
-    coordinates: {
-      lat: 12.9982,
-      lng: 77.5714
-    },
+    coordinates: { lat: 12.9982, lng: 77.5714 },
     landmark: 'Near Malleshwaram Post Office, south-bound lane',
     severity: 'LOW',
+    severityScore: 42,
     depthCm: 4.8,
     surfaceAreaSqM: 0.38,
     estimatedVolumeLiters: 5.2,
     riskScore: 42,
+    confidence: 0.94,
     status: 'REPORTED',
-    priorityRank: 12,
+    priorityRank: 10,
     priorityDetails: {
       overallScore: 42,
       breakdown: {
@@ -739,6 +830,7 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
         citizenUpvotesWeight: 32
       },
       confidence: 0.94,
+      shortExplanation: 'Minor edge spalling on concrete white-topped road with minimal vehicle hazard.',
       explanation: [
         'Minor surface spalling on white-topped concrete road edge.',
         'Low risk to vehicular suspension; monitored for water seepage.'
@@ -766,28 +858,39 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
       moistureWaterloggingRisk: 30,
       vehicleDamageHazard: 41,
       modelConfidence: 0.944,
-      processingTimeMs: 25
-    }
+      processingTimeMs: 25,
+      inferenceMode: 'DEMO_INFERENCE_MODE'
+    },
+    detectedObjects: [
+      { label: 'Concrete Joint Spall', confidence: 0.94, bbox: [35, 35, 30, 30], notes: 'Edge deterioration' }
+    ],
+    supportingReports: [],
+    roadHealth: 'Pavement Condition Index: 76/100 (Satisfactory White-Topping)',
+    trafficExposure: '12,000 PCU/hr • Residential Arterial',
+    nearbySensitivePlaces: ['KC General Hospital (0.8 km)'],
+    dataSource: 'DEMO_DATA'
   },
   {
     id: 'inc-07',
-    code: 'BLR-POT-2026-0655',
+    code: 'BNG-PTH-1008',
+    reportId: 'rep-0655',
+    latitude: 12.9234,
+    longitude: 77.6892,
     roadId: 'road-01',
-    roadName: 'Outer Ring Road (Devarabisanahalli Flyover descent)',
+    roadName: 'Outer Ring Road (Devarabisanahalli Flyover Descent)',
     wardId: 'ward-150',
     wardName: 'Bellandur',
     wardNumber: 150,
     zone: 'Mahadevapura',
-    coordinates: {
-      lat: 12.9234,
-      lng: 77.6892
-    },
+    coordinates: { lat: 12.9234, lng: 77.6892 },
     landmark: 'Below Devarabisanahalli flyover, near Intel SRR3 campus',
     severity: 'CRITICAL',
+    severityScore: 98,
     depthCm: 16.2,
     surfaceAreaSqM: 2.10,
     estimatedVolumeLiters: 51.5,
     riskScore: 98,
+    confidence: 0.99,
     status: 'REPORTED',
     priorityRank: 0,
     priorityDetails: {
@@ -800,7 +903,15 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
         twoWheelerAccidentHistory: 97,
         citizenUpvotesWeight: 95
       },
+      scoreItems: [
+        { factor: 'Visual severity & extreme depth (16.2cm)', points: 34, maxPoints: 35, description: 'Extreme depth crater causing vehicular bottoming-out.' },
+        { factor: 'Traffic exposure', points: 24, maxPoints: 25, description: 'High-speed flyover descent lane.' },
+        { factor: 'Report density', points: 19, maxPoints: 20, description: '67 complaints & 310 community upvotes.' },
+        { factor: 'Persistence', points: 13, maxPoints: 15, description: 'Repeated rain stagnation.' },
+        { factor: 'Road importance', points: 8, maxPoints: 10, description: 'Prime IT Corridor Arterial.' }
+      ],
       confidence: 0.99,
+      shortExplanation: 'Extreme hazard on flyover descent with multiple documented two-wheeler accidents.',
       explanation: [
         'Extremely dangerous crater (16.2cm depth) across high-speed lane.',
         '3 two-wheeler accidents recorded in previous 48 hours by traffic wardens.',
@@ -830,28 +941,39 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
       moistureWaterloggingRisk: 96,
       vehicleDamageHazard: 99,
       modelConfidence: 0.992,
-      processingTimeMs: 36
-    }
+      processingTimeMs: 36,
+      inferenceMode: 'DEMO_INFERENCE_MODE'
+    },
+    detectedObjects: [
+      { label: 'Extreme Subgrade Void', confidence: 0.99, bbox: [15, 20, 70, 60], notes: 'Subbase subsidence' }
+    ],
+    supportingReports: [],
+    roadHealth: 'Pavement Condition Index: 18/100 (Total Base Failure)',
+    trafficExposure: '26,000 PCU/hr • Flyover Descent Speed Zone',
+    nearbySensitivePlaces: ['Intel Campus (0.1 km)', 'Sakra World Hospital (0.9 km)'],
+    dataSource: 'VERIFIED_OFFICIAL'
   },
   {
     id: 'inc-08',
-    code: 'BLR-POT-2026-0630',
+    code: 'BNG-PTH-1002',
+    reportId: 'rep-0630',
+    latitude: 12.9221,
+    longitude: 77.6180,
     roadId: 'road-04',
     roadName: 'Hosur Road (Madiwala Police Station Junction)',
     wardId: 'ward-176',
     wardName: 'BTM Layout & Silk Board',
     wardNumber: 176,
     zone: 'Bommanahalli',
-    coordinates: {
-      lat: 12.9221,
-      lng: 77.6180
-    },
+    coordinates: { lat: 12.9221, lng: 77.6180 },
     landmark: 'Opposite Total Mall / Madiwala Market bus shelter',
     severity: 'HIGH',
+    severityScore: 89,
     depthCm: 12.0,
     surfaceAreaSqM: 1.30,
     estimatedVolumeLiters: 29.0,
     riskScore: 89,
+    confidence: 0.96,
     status: 'TRIAGED',
     priorityRank: 5,
     priorityDetails: {
@@ -865,6 +987,7 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
         citizenUpvotesWeight: 84
       },
       confidence: 0.96,
+      shortExplanation: 'Severe congestion bottleneck near pedestrian vegetable market.',
       explanation: [
         'Severe congestion point near Madiwala vegetable market.',
         'High pedestrian and city bus transit with repeated hard braking.'
@@ -892,8 +1015,17 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
       moistureWaterloggingRisk: 84,
       vehicleDamageHazard: 90,
       modelConfidence: 0.961,
-      processingTimeMs: 34
-    }
+      processingTimeMs: 34,
+      inferenceMode: 'DEMO_INFERENCE_MODE'
+    },
+    detectedObjects: [
+      { label: 'Bus Transit Rutting', confidence: 0.95, bbox: [25, 25, 50, 45], notes: 'High axle-load fatigue' }
+    ],
+    supportingReports: [],
+    roadHealth: 'Pavement Condition Index: 38/100 (Rutting & Stripping)',
+    trafficExposure: '32,000 PCU/hr • BMTC Bus Hub',
+    nearbySensitivePlaces: ['Madiwala Market (0.05 km)', 'St. John\'s Medical College (0.7 km)'],
+    dataSource: 'DEMO_DATA'
   }
 ];
 
@@ -907,36 +1039,28 @@ export const INITIAL_COMPLAINTS: Complaint[] = [
     upvotes: 310,
     status: 'ESCALATED_L2',
     filedAt: '2026-10-05T07:15:00Z',
-    slaDeadline: '2026-10-06T07:15:00Z', // 24h SLA for critical arterial
+    slaDeadline: '2026-10-06T07:15:00Z',
     slaBreached: false,
     history: [
-      {
-        timestamp: '2026-10-05T07:15:00Z',
-        action: 'Complaint Logged via CivicPulse Mobile App',
-        actor: 'Citizen (Dr. Vivek)'
-      },
-      {
-        timestamp: '2026-10-05T07:16:00Z',
-        action: 'AI Vision Engine auto-triaged: Severity CRITICAL (Score 98/100)',
-        actor: 'CivicPulse AI Neural Engine'
-      },
-      {
-        timestamp: '2026-10-05T08:30:00Z',
-        action: 'Notice issued under Defect Liability Clause 45.2 to Star Infratech',
-        actor: 'BBMP Chief Engineer (Roads)'
-      },
-      {
-        timestamp: '2026-10-05T11:00:00Z',
-        action: 'Escalated to Zonal Joint Commissioner due to 300+ community upvotes',
-        actor: 'Automated SLA Escalation Daemon'
-      }
-    ]
+      { timestamp: '2026-10-05T07:15:00Z', action: 'Complaint Logged via CivicPulse Mobile App', actor: 'Citizen (Dr. Vivek)' },
+      { timestamp: '2026-10-05T07:16:00Z', action: 'AI Vision Engine auto-triaged: Severity CRITICAL (Score 98/100)', actor: 'CivicPulse Neural Engine' },
+      { timestamp: '2026-10-05T08:30:00Z', action: 'Defect Liability Notice issued under Clause 45.2 to Star Infratech', actor: 'BBMP Chief Engineer (Roads)' },
+      { timestamp: '2026-10-05T11:00:00Z', action: 'Escalated to Zonal Joint Commissioner due to 300+ community upvotes', actor: 'Automated SLA Escalation Daemon' }
+    ],
+    draftDetails: {
+      draftId: 'DFT-BBMP-2026-90599',
+      status: 'SIMULATED_SYNC',
+      generatedAt: '2026-10-05T07:16:00Z',
+      recommendedAction: 'Emergency cold-mix pothole compaction within 24h as per IRC-SP-100 specification.',
+      slaDeadline: '2026-10-06T07:15:00Z',
+      watermark: 'AI-generated — review before submission.'
+    }
   },
   {
     id: 'cmp-02',
     sahayaTicketNo: 'BBMP-SHY-2026-90412',
     incidentId: 'inc-01',
-    citizenName: 'Priya Narayanan',
+    citizenName: 'Priya Narayanan (Commuter Group)',
     citizenPhone: '+91 99801 44520',
     upvotes: 142,
     status: 'ACKNOWLEDGED',
@@ -944,22 +1068,18 @@ export const INITIAL_COMPLAINTS: Complaint[] = [
     slaDeadline: '2026-10-06T18:22:00Z',
     slaBreached: false,
     history: [
-      {
-        timestamp: '2026-10-04T18:22:00Z',
-        action: 'Grievance registered with geotagged photo',
-        actor: 'Citizen (Priya N.)'
-      },
-      {
-        timestamp: '2026-10-04T18:25:00Z',
-        action: 'BBMP Sahaya API synch confirmed ticket creation',
-        actor: 'BBMP Sahaya Gateway'
-      },
-      {
-        timestamp: '2026-10-05T09:30:00Z',
-        action: 'Ward 150 AEE assigned field inspection crew',
-        actor: 'Er. K. Ramesh (AEE)'
-      }
-    ]
+      { timestamp: '2026-10-04T18:22:00Z', action: 'Grievance registered with geotagged photo', actor: 'Citizen (Priya N.)' },
+      { timestamp: '2026-10-04T18:25:00Z', action: 'Duplicate spatial check: 3 supporting reports merged into master case BNG-PTH-1042', actor: 'CivicPulse Cluster Engine' },
+      { timestamp: '2026-10-05T09:30:00Z', action: 'Ward 150 AEE assigned field inspection crew', actor: 'Er. K. Ramesh (AEE)' }
+    ],
+    draftDetails: {
+      draftId: 'DFT-BBMP-2026-90412',
+      status: 'SIMULATED_SYNC',
+      generatedAt: '2026-10-04T18:25:00Z',
+      recommendedAction: 'Notice to Star Infratech under Defect Liability Clause 45.2; Zero cost to public exchequer.',
+      slaDeadline: '2026-10-06T18:22:00Z',
+      watermark: 'AI-generated — review before submission.'
+    }
   },
   {
     id: 'cmp-03',
@@ -971,25 +1091,17 @@ export const INITIAL_COMPLAINTS: Complaint[] = [
     status: 'OPEN',
     filedAt: '2026-10-03T11:10:00Z',
     slaDeadline: '2026-10-05T11:10:00Z',
-    slaBreached: true, // breached SLA
+    slaBreached: true,
     history: [
-      {
-        timestamp: '2026-10-03T11:10:00Z',
-        action: 'Citizen reported sudden wheel rim bent accident',
-        actor: 'Citizen (Sanjay Hegde)'
-      },
-      {
-        timestamp: '2026-10-05T11:10:00Z',
-        action: 'SLA 48h breached: Automatic penalty warning generated for contractor',
-        actor: 'CivicPulse Automated Compliance Engine'
-      }
+      { timestamp: '2026-10-03T11:10:00Z', action: 'Citizen reported sudden wheel rim bent accident', actor: 'Citizen (Sanjay Hegde)' },
+      { timestamp: '2026-10-05T11:10:00Z', action: 'SLA 48h breached: Automatic penalty warning generated for contractor', actor: 'CivicPulse Automated Compliance Engine' }
     ]
   },
   {
     id: 'cmp-04',
     sahayaTicketNo: 'BBMP-SHY-2026-88102',
     incidentId: 'inc-05',
-    citizenName: 'Rahul Shenoy',
+    citizenName: 'Rahul Shenoy (Indiranagar RWA)',
     citizenPhone: '+91 98860 33445',
     upvotes: 45,
     status: 'RESOLVED',
@@ -997,21 +1109,9 @@ export const INITIAL_COMPLAINTS: Complaint[] = [
     slaDeadline: '2026-10-02T14:00:00Z',
     slaBreached: false,
     history: [
-      {
-        timestamp: '2026-09-29T14:00:00Z',
-        action: 'Reported via 100ft Rd Resident Welfare Association',
-        actor: 'Rahul Shenoy (Indiranagar RWA)'
-      },
-      {
-        timestamp: '2026-10-05T08:45:00Z',
-        action: 'Asphalt cold patch completed by Sri Venkateshwara Bitumen',
-        actor: 'Contractor Crew'
-      },
-      {
-        timestamp: '2026-10-05T09:12:00Z',
-        action: 'CivicPulse AI Computer Vision inspection audit: VERIFIED & APPROVED',
-        actor: 'AI Vision Auditor v4.2'
-      }
+      { timestamp: '2026-09-29T14:00:00Z', action: 'Reported via 100ft Rd Resident Welfare Association', actor: 'Rahul Shenoy' },
+      { timestamp: '2026-10-05T08:45:00Z', action: 'Asphalt hot patch completed by Sri Venkateshwara Bitumen', actor: 'Contractor Crew' },
+      { timestamp: '2026-10-05T09:12:00Z', action: 'CivicPulse AI Computer Vision inspection audit: VERIFIED & APPROVED', actor: 'AI Vision Auditor v4.2' }
     ]
   }
 ];
@@ -1022,7 +1122,7 @@ export const CITY_METRICS = {
   reportsToday: 78,
   resolvedThisMonth: 1240,
   aiVerifiedRepairs: 1180,
-  taxpayerSavingsINR: 48500000, // 4.85 Crore saved via DLP warranty enforcement
+  taxpayerSavingsINR: 48500000,
   avgResolutionTimeHours: 42.5,
   aiPrecisionRate: 98.7,
   activeContractorsMonitored: 34,
