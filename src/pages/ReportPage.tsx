@@ -41,7 +41,7 @@ const PRESET_SAMPLES: PresetSample[] = [
     coords: { lat: 12.9298, lng: 77.6835 },
     imageUrl: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80',
     severity: 'CRITICAL',
-    depthCm: 15.4,
+    depthCm: 18.0,
     areaSqM: 1.48,
     isPotentialDuplicate: true,
     duplicateMasterCode: 'BNG-PTH-1042',
@@ -113,7 +113,7 @@ export const ReportPage: React.FC = () => {
     severity: 'CRITICAL' | 'HIGH' | 'MEDIUM';
     priorityScore: number;
   }>({
-    depthCm: 15.4,
+    depthCm: 18.0,
     areaSqM: 1.48,
     volumeL: 38.5,
     severity: 'CRITICAL',
@@ -165,27 +165,27 @@ export const ReportPage: React.FC = () => {
 
     // 01 — INGESTING IMAGE
     setAiStage('INGESTING');
-    await new Promise(r => setTimeout(r, 400));
+    await new Promise(r => setTimeout(r, 250));
 
     // 02 — DETECTING POTHOLE
     setAiStage('DETECTING');
-    await new Promise(r => setTimeout(r, 450));
+    await new Promise(r => setTimeout(r, 250));
 
     // 03 — ANALYZING DAMAGE
     setAiStage('ANALYZING_DAMAGE');
-    await new Promise(r => setTimeout(r, 450));
+    await new Promise(r => setTimeout(r, 250));
 
     // 04 — ESTIMATING SEVERITY
     setAiStage('ESTIMATING_SEVERITY');
-    await new Promise(r => setTimeout(r, 450));
+    await new Promise(r => setTimeout(r, 250));
 
     // 05 — IDENTIFYING LOCATION
     setAiStage('IDENTIFYING_LOCATION');
-    await new Promise(r => setTimeout(r, 400));
+    await new Promise(r => setTimeout(r, 220));
 
     // 06 — CHECKING DUPLICATES
     setAiStage('CHECKING_DUPLICATES');
-    await new Promise(r => setTimeout(r, 500));
+    await new Promise(r => setTimeout(r, 250));
 
     // Check if within 50m of Outer Ring Road EcoSpace incident (inc-01)
     const isNearEcoSpace = Math.abs(selectedCoords.lat - 12.9298) < 0.005 && Math.abs(selectedCoords.lng - 77.6835) < 0.005;
@@ -196,15 +196,15 @@ export const ReportPage: React.FC = () => {
 
     // 07 — RESOLVING ROAD RESPONSIBILITY
     setAiStage('RESOLVING_RESPONSIBILITY');
-    await new Promise(r => setTimeout(r, 450));
+    await new Promise(r => setTimeout(r, 250));
 
     // 08 — CALCULATING PRIORITY
     setAiStage('CALCULATING_PRIORITY');
-    await new Promise(r => setTimeout(r, 450));
+    await new Promise(r => setTimeout(r, 250));
 
     // 09 — GENERATING INCIDENT
     setAiStage('GENERATING_INCIDENT');
-    await new Promise(r => setTimeout(r, 400));
+    await new Promise(r => setTimeout(r, 220));
 
     setAiStage('COMPLETED');
 
@@ -541,6 +541,10 @@ export const ReportPage: React.FC = () => {
                   Location is within 15 meters of existing master incident <strong className="text-white font-mono">{detectedDuplicate.masterCode}</strong> on Outer Ring Road.
                   Merging will increment community weight and raise priority score without cluttering the municipal map.
                 </p>
+
+                <div className="p-2 rounded bg-purple-950/60 border border-purple-500/20 text-[11px] font-sans text-slate-300">
+                  <strong className="text-purple-300 font-mono">Why duplicate?</strong> 15 m spatial proximity + 94% visual feature similarity.
+                </div>
 
                 <div className="flex gap-2 pt-1">
                   <button

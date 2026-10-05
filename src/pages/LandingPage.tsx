@@ -10,14 +10,15 @@ import {
   Activity,
   Zap,
   Flame,
-  ShieldCheck
+  ShieldCheck,
+  RotateCcw
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { CITY_METRICS } from '../data/mockData';
 import { formatINR } from '../utils/formatters';
 
 export const LandingPage: React.FC = () => {
-  const { setCurrentView, incidents, selectIncidentById, loadDemoCase } = useApp();
+  const { setCurrentView, incidents, selectIncidentById, loadDemoCase, resetDemo } = useApp();
 
   const stepsStory = [
     { step: '01', title: 'DETECT', desc: 'Stereoscopic depth & asphalt cracking via citizen photo/video', icon: Cpu, color: 'text-cyan-400' },
@@ -82,6 +83,15 @@ export const LandingPage: React.FC = () => {
               >
                 <Eye className="w-4 h-4 text-slate-400" />
                 <span>God’s Eye Map</span>
+              </button>
+
+              <button
+                onClick={resetDemo}
+                className="flex items-center gap-1.5 px-3.5 py-3.5 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/5 text-slate-400 hover:text-slate-200 text-xs font-mono transition-all cursor-pointer"
+                title="Reset application to initial clean seed state"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+                <span>Reset Demo</span>
               </button>
             </div>
 

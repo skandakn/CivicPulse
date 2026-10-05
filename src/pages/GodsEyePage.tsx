@@ -399,6 +399,12 @@ export const GodsEyePage: React.FC = () => {
                         </li>
                       ))}
                     </ul>
+
+                    {selectedIncident.priorityDetails.shortExplanation && (
+                      <div className="p-2 rounded bg-cyan-950/40 border border-cyan-500/20 text-[11px] font-sans text-slate-300 mt-2">
+                        <strong className="text-cyan-300 font-mono">Why priority {selectedIncident.priorityDetails.overallScore}?</strong> {selectedIncident.priorityDetails.shortExplanation}
+                      </div>
+                    )}
                   </div>
 
                   {/* Action Buttons */}

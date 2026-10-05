@@ -60,6 +60,7 @@ interface AppContextType {
   isJudgeDemoOpen: boolean;
   setIsJudgeDemoOpen: (open: boolean) => void;
   loadDemoCase: () => void;
+  resetDemo: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -123,6 +124,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setSelectedIncident(demoIncident);
     setIsJudgeDemoOpen(true);
     addToast('1-Click Judge Demo Activated', `Case ${demoIncident.code} loaded with complete end-to-end evidence`, 'info');
+  };
+
+  const resetDemo = () => {
+    setIncidents(INITIAL_INCIDENTS);
+    setSelectedIncident(INITIAL_INCIDENTS[0]);
+    setSelectedWardId('ALL');
+    setSearchQuery('');
+    setIsSearchOpen(false);
+    setComplaints(INITIAL_COMPLAINTS);
+    setIsJudgeDemoOpen(false);
+    setCurrentView('LANDING');
+    addToast('Demo State Reset', 'System returned to pristine state (10 seed incidents ready)', 'info');
   };
 
   const upvoteComplaint = (complaintId: string) => {
@@ -423,7 +436,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         filteredIncidents,
         isJudgeDemoOpen,
         setIsJudgeDemoOpen,
-        loadDemoCase
+        loadDemoCase,
+        resetDemo
       }}
     >
       {children}

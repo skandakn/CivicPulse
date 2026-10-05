@@ -212,24 +212,28 @@ export const RepairVerificationPage: React.FC = () => {
               <span className="text-xl font-extrabold text-emerald-400">
                 {auditResult.areaReductionPercent}%
               </span>
+              <span className="text-[9px] text-slate-500 block">Calculated</span>
             </div>
             <div className="p-3 rounded-xl bg-black/40 border border-white/5">
               <span className="text-[10px] text-slate-400 block">SURFACE CONSISTENCY</span>
               <span className="text-xl font-extrabold text-white">
                 {auditResult.surfaceSmoothnessScore} / 100
               </span>
+              <span className="text-[9px] text-slate-500 block">IRC-SP-100 Standard</span>
             </div>
             <div className="p-3 rounded-xl bg-black/40 border border-white/5">
-              <span className="text-[10px] text-slate-400 block">NEURAL CONFIDENCE</span>
+              <span className="text-[10px] text-slate-500 block">NEURAL CONFIDENCE</span>
               <span className="text-xl font-extrabold text-cyan-400">
                 {(auditResult.passConfidence * 100).toFixed(1)}%
               </span>
+              <span className="text-[9px] text-slate-500 block">Model-Generated</span>
             </div>
             <div className="p-3 rounded-xl bg-black/40 border border-white/5">
               <span className="text-[10px] text-slate-400 block">UNRESOLVED DAMAGE</span>
               <span className={`text-xl font-extrabold ${auditResult.unresolvedDamageDetected ? 'text-red-400' : 'text-emerald-400'}`}>
                 {auditResult.unresolvedDamageDetected ? 'DETECTED' : 'NONE'}
               </span>
+              <span className="text-[9px] text-slate-500 block">Subbase Void Scan</span>
             </div>
           </div>
 

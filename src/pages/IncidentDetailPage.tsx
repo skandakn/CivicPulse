@@ -249,6 +249,10 @@ export const IncidentDetailPage: React.FC = () => {
                   </div>
                 ))}
               </div>
+
+              <div className="p-2 rounded-lg bg-purple-950/20 border border-purple-500/20 text-[11px] font-sans text-slate-300">
+                <strong className="text-purple-300 font-mono">Why duplicate?</strong> 15 m spatial proximity + 94% visual feature similarity merged {selectedIncident.supportingReports.length} reports into 1 master record.
+              </div>
             </div>
           )}
 
@@ -298,6 +302,10 @@ export const IncidentDetailPage: React.FC = () => {
                   <span className="text-cyan-400 font-bold">+{it.points}</span>
                 </div>
               ))}
+            </div>
+
+            <div className="pt-2 border-t border-white/5 text-[11px] font-sans text-slate-300">
+              <strong className="text-cyan-400 font-mono">Why priority {selectedIncident.priorityDetails.overallScore}?</strong> Severe defect + high traffic + multiple reports + persistence.
             </div>
           </div>
 

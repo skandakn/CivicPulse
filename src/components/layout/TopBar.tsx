@@ -9,7 +9,8 @@ import {
   AlertTriangle,
   FileCheck,
   ChevronDown,
-  Zap
+  Zap,
+  RotateCcw
 } from 'lucide-react';
 import { useApp, UserRole } from '../../context/AppContext';
 
@@ -30,6 +31,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     userRole,
     setUserRole,
     loadDemoCase,
+    resetDemo,
     addToast
   } = useApp();
 
@@ -126,6 +128,16 @@ export const TopBar: React.FC<TopBarProps> = ({
           <span>Judge Demo</span>
         </button>
 
+        {/* Reset Demo Quick Action */}
+        <button
+          onClick={resetDemo}
+          className="hidden md:flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 font-mono text-xs transition-colors cursor-pointer"
+          title="Reset application to clean initial seed"
+        >
+          <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
+          <span>Reset Demo</span>
+        </button>
+
         {/* Global Quick Search Button */}
         <button
           onClick={() => setIsSearchOpen(true)}
@@ -146,14 +158,16 @@ export const TopBar: React.FC<TopBarProps> = ({
           <Search className="w-4 h-4 text-cyan-400" />
         </button>
 
-        {/* Live AI Status Badge */}
+        {/* Live AI Status Badge with DEMO MODE */}
         <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-cyan-950/40 border border-cyan-500/30 text-[11px] font-mono text-cyan-300 shadow-[0_0_12px_rgba(0,240,255,0.15)]">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
           </span>
-          <span className="hidden xl:inline">AI Vision v4.2 Active</span>
-          <span className="xl:hidden">AI Active</span>
+          <span className="hidden xl:inline">AI Vision v4.2</span>
+          <span className="px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-300 text-[10px] border border-amber-500/30">
+            DEMO MODE
+          </span>
           <span className="text-slate-500">|</span>
           <span className="text-slate-400">28ms</span>
         </div>

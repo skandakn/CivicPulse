@@ -393,11 +393,11 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     landmark: 'Opposite EcoSpace Main Gate, Bellandur center high-speed lane',
     severity: 'CRITICAL',
     severityScore: 94,
-    depthCm: 15.4,
+    depthCm: 18.0,
     surfaceAreaSqM: 1.48,
     estimatedVolumeLiters: 38.5,
     riskScore: 94,
-    confidence: 0.98,
+    confidence: 0.968,
     status: 'TRIAGED',
     priorityRank: 1,
     priorityDetails: {
@@ -411,17 +411,17 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
         citizenUpvotesWeight: 90
       },
       scoreItems: [
-        { factor: 'Visual severity & depth (>15cm)', points: 31, maxPoints: 35, description: 'Crater depth 15.4cm poses immediate wheel entrapment risk.' },
+        { factor: 'Visual severity & depth (18cm crater)', points: 31, maxPoints: 35, description: '18.0cm depth extracted from stereoscopic disparity; poses severe wheel entrapment risk.' },
         { factor: 'Traffic exposure (ORR Corridor)', points: 21, maxPoints: 25, description: 'Carrying 24,500 PCU/hr on primary tech-corridor transit.' },
         { factor: 'Report density (Cluster merge)', points: 17, maxPoints: 20, description: '3 citizen reports merged into this single master incident.' },
         { factor: 'Persistence & unresolved age', points: 12, maxPoints: 15, description: 'Unresolved for 48+ hours without cold-mix patch.' },
         { factor: 'Road importance (Arterial)', points: 8, maxPoints: 10, description: 'Arterial priority corridor under BBMP Major Roads Division.' },
         { factor: 'Sensitive location (Ambulance)', points: 5, maxPoints: 5, description: 'Within 0.4km of Sakra World Hospital emergency corridor.' }
       ],
-      confidence: 0.98,
-      shortExplanation: 'High-confidence pothole on a high-traffic corridor with multiple supporting reports and prolonged unresolved status.',
+      confidence: 0.968,
+      shortExplanation: 'Severe 18cm defect on high-volume corridor (24.5k PCU/hr) with 3 merged reports and active Clause 45.2 warranty.',
       explanation: [
-        'Critical depth (>15cm) causing sudden braking and two-wheeler instability.',
+        'Critical depth (18.0cm) causing sudden braking and two-wheeler instability.',
         'High-speed corridor carrying 24,000+ passenger car units per hour.',
         'Road project associated with recorded tender under 36-month Contractor Warranty (Star Infratech) — Zero public tender cost.'
       ],
@@ -444,13 +444,13 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
       depthHeatmap: 'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=800&q=80'
     },
     aiMetrics: {
-      depthCm: 15.4,
+      depthCm: 18.0,
       surfaceAreaSqM: 1.48,
       estimatedVolumeLiters: 38.5,
       asphaltDeteriorationIndex: 94,
       moistureWaterloggingRisk: 92,
       vehicleDamageHazard: 97,
-      modelConfidence: 0.982,
+      modelConfidence: 0.968,
       processingTimeMs: 38,
       inferenceMode: 'DEMO_INFERENCE_MODE'
     },

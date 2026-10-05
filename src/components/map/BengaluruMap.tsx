@@ -58,13 +58,24 @@ export const BengaluruMap: React.FC<BengaluruMapProps> = ({
     markersLayerRef.current = markersLayer;
     mapInstanceRef.current = map;
 
+    // Set container dark background for seamless dark mode
+    if (mapContainerRef.current) {
+      mapContainerRef.current.style.backgroundColor = '#070912';
+    }
+
     // Handle container resize
     const resizeObserver = new ResizeObserver(() => {
       map.invalidateSize();
     });
     resizeObserver.observe(mapContainerRef.current);
 
+    // Initial size invalidations to handle parent animations/transitions
+    const timer1 = setTimeout(() => map.invalidateSize(), 100);
+    const timer2 = setTimeout(() => map.invalidateSize(), 400);
+
     return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
       resizeObserver.disconnect();
       map.remove();
       mapInstanceRef.current = null;

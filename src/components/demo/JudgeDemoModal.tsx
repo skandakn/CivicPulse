@@ -5,7 +5,8 @@ import {
   ArrowRight,
   ArrowLeft,
   CheckCircle2,
-  ShieldCheck
+  ShieldCheck,
+  RotateCcw
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -16,6 +17,7 @@ export const JudgeDemoModal: React.FC = () => {
     incidents,
     selectIncidentById,
     setCurrentView,
+    resetDemo,
     addToast
   } = useApp();
 
@@ -49,12 +51,15 @@ export const JudgeDemoModal: React.FC = () => {
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="font-extrabold text-white text-sm tracking-tight font-mono">
                   ONE-CLICK HACKATHON JUDGE DEMO
                 </span>
                 <span className="px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 font-mono text-[10px] border border-cyan-500/30">
                   Case BNG-PTH-1042
+                </span>
+                <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 font-mono text-[10px] border border-amber-500/30">
+                  DEMO MODE • DETERMINISTIC
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 font-sans">
@@ -63,12 +68,23 @@ export const JudgeDemoModal: React.FC = () => {
             </div>
           </div>
 
-          <button
-            onClick={() => setIsJudgeDemoOpen(false)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={resetDemo}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-[11px] font-mono text-slate-300 border border-white/10 hover:border-cyan-500/30 transition-colors cursor-pointer"
+              title="Reset all demo state to initial seed"
+            >
+              <RotateCcw className="w-3 h-3 text-cyan-400" />
+              <span className="hidden sm:inline">Reset Demo</span>
+            </button>
+
+            <button
+              onClick={() => setIsJudgeDemoOpen(false)}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Progress Stepper Bar */}
@@ -114,7 +130,7 @@ export const JudgeDemoModal: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                <div className="relative rounded-xl overflow-hidden border border-white/10 h-64 bg-black">
+                <div className="relative rounded-xl overflow-hidden border border-white/10 h-52 sm:h-60 bg-black">
                   <img
                     src={demoIncident.images.original}
                     alt="Raw citizen capture"
@@ -160,12 +176,12 @@ export const JudgeDemoModal: React.FC = () => {
                   <h3 className="text-xl font-bold text-white">Computer Vision & 3D Depth Extraction</h3>
                 </div>
                 <span className="px-2.5 py-1 rounded bg-cyan-950/80 text-cyan-300 text-xs font-mono border border-cyan-500/30">
-                  ResNet-Pothole-v4.2 (Inference Latency: 38ms)
+                  ResNet-Pothole-v4.2 • Latency: 38ms (Demo Inference)
                 </span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                <div className="relative rounded-xl overflow-hidden border border-red-500/40 h-64 bg-black">
+                <div className="relative rounded-xl overflow-hidden border border-red-500/40 h-52 sm:h-60 bg-black">
                   <img
                     src={demoIncident.images.original}
                     alt="Vision analysis"
@@ -177,7 +193,7 @@ export const JudgeDemoModal: React.FC = () => {
                     style={{ top: '25%', left: '25%', width: '50%', height: '50%' }}
                   >
                     <span className="bg-black/80 px-2 py-0.5 rounded text-[10px] font-mono text-red-400 font-bold">
-                      DEPTH: 15.4 CM (CRITICAL)
+                      DEPTH: 18.0 CM • 96.8% CONFIDENCE
                     </span>
                   </div>
                 </div>
@@ -185,30 +201,46 @@ export const JudgeDemoModal: React.FC = () => {
                 <div className="space-y-3 font-mono text-xs">
                   <div className="grid grid-cols-2 gap-3">
                     <div className="p-3 rounded-xl bg-red-950/20 border border-red-500/30">
-                      <span className="text-red-400 block text-[10px]">MEASURED DEPTH</span>
-                      <span className="text-xl font-extrabold text-red-300">15.4 cm</span>
-                      <div className="text-[10px] text-slate-400 mt-1">IRC limit: &lt;4.0 cm</div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-red-400 block text-[10px]">ESTIMATED DEPTH</span>
+                        <span className="text-[9px] text-slate-500 uppercase">Monocular Disparity</span>
+                      </div>
+                      <span className="text-xl font-extrabold text-red-300">18.0 cm</span>
+                      <div className="text-[10px] text-slate-400 mt-0.5">IRC safety limit: &lt;4.0 cm</div>
                     </div>
+
                     <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                      <span className="text-slate-500 block text-[10px]">SURFACE AREA</span>
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500 block text-[10px]">NEURAL CONFIDENCE</span>
+                        <span className="text-[9px] text-cyan-400 uppercase">Model Output</span>
+                      </div>
+                      <span className="text-xl font-extrabold text-cyan-400">96.8%</span>
+                      <div className="text-[10px] text-slate-400 mt-0.5">Crater pattern match</div>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500 block text-[10px]">SURFACE AREA</span>
+                        <span className="text-[9px] text-slate-500 uppercase">Calculated</span>
+                      </div>
                       <span className="text-xl font-extrabold text-slate-100">1.48 m²</span>
-                      <div className="text-[10px] text-slate-400 mt-1">Crater bounding area</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">Bitumen fill: 38.5 L</div>
                     </div>
-                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                      <span className="text-slate-500 block text-[10px]">ESTIMATED FILL</span>
-                      <span className="text-xl font-extrabold text-cyan-400">38.5 Liters</span>
-                      <div className="text-[10px] text-slate-400 mt-1">Bituminous hot-mix</div>
-                    </div>
-                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                      <span className="text-slate-500 block text-[10px]">SEVERITY SCORE</span>
+
+                    <div className="p-3 rounded-xl bg-red-950/10 border border-red-500/20">
+                      <div className="flex items-center justify-between">
+                        <span className="text-red-400 block text-[10px]">SEVERITY SCORE</span>
+                        <span className="text-[9px] text-red-400 uppercase">Hazard Index</span>
+                      </div>
                       <span className="text-xl font-extrabold text-red-400">94 / 100</span>
-                      <div className="text-[10px] text-red-400 mt-1 font-bold">CRITICAL HAZARD</div>
+                      <div className="text-[10px] text-red-400 mt-0.5 font-bold">CRITICAL HAZARD</div>
                     </div>
                   </div>
 
-                  <p className="text-[11px] text-slate-400 font-sans leading-relaxed">
-                    Stereoscopic neural networks evaluate road surface depth contours, classifying vehicle suspension hazard index within 38 milliseconds.
-                  </p>
+                  {/* Compact Explainability */}
+                  <div className="p-2.5 rounded-lg bg-red-950/20 border border-red-500/20 text-[11px] font-sans text-slate-300">
+                    <strong className="text-red-300 font-mono">Why CRITICAL?</strong> 18.0cm crater depth exceeds 4cm IRC safety threshold, causing severe rim collapse and two-wheeler instability.
+                  </div>
                 </div>
               </div>
             </div>
@@ -245,6 +277,11 @@ export const JudgeDemoModal: React.FC = () => {
                       <span className="text-emerald-400 font-bold">{r.similarityScore}% match</span>
                     </div>
                   ))}
+                </div>
+
+                {/* Compact Explainability */}
+                <div className="p-2.5 rounded-lg bg-purple-950/30 border border-purple-500/20 text-[11px] font-sans text-slate-300">
+                  <strong className="text-purple-300 font-mono">Why duplicate?</strong> 15 m spatial proximity + 94% visual feature similarity merged 3 citizen reports into 1 master case.
                 </div>
               </div>
             </div>
@@ -324,7 +361,7 @@ export const JudgeDemoModal: React.FC = () => {
                 </div>
 
                 <div className="flex justify-between items-center text-slate-300">
-                  <span>Visual severity & depth (&gt;15cm)</span>
+                  <span>Visual severity & depth (18cm crater)</span>
                   <span className="font-bold text-cyan-400">+31</span>
                 </div>
                 <div className="flex justify-between items-center text-slate-300">
@@ -354,14 +391,19 @@ export const JudgeDemoModal: React.FC = () => {
                 </div>
               </div>
 
-              {/* Short AI Explanation */}
-              <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-xs">
-                <span className="text-[10px] font-mono text-cyan-400 uppercase tracking-wider block mb-1">
-                  AI Natural Language Rationale
-                </span>
-                <p className="text-slate-200 font-sans italic leading-relaxed">
-                  "High-confidence pothole on a high-traffic corridor with multiple supporting reports and prolonged unresolved status."
-                </p>
+              {/* Short AI Explanation & Compact Rationale */}
+              <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/10 space-y-2 text-xs">
+                <div>
+                  <span className="text-[10px] font-mono text-cyan-400 uppercase tracking-wider block mb-0.5">
+                    AI Natural Language Rationale
+                  </span>
+                  <p className="text-slate-200 font-sans italic leading-relaxed">
+                    "High-confidence pothole on a high-traffic corridor with multiple supporting reports and prolonged unresolved status."
+                  </p>
+                </div>
+                <div className="pt-2 border-t border-white/5 text-[11px] font-sans text-slate-300">
+                  <strong className="text-cyan-400 font-mono">Why priority 94?</strong> Severe defect + high traffic + multiple reports + persistence.
+                </div>
               </div>
             </div>
           )}
@@ -434,7 +476,7 @@ export const JudgeDemoModal: React.FC = () => {
                   </div>
                   <div>
                     <span className="text-slate-500 font-mono text-[11px] block">PRIORITY & SEVERITY:</span>
-                    <span>Score 94/100 (CRITICAL) • 15.4cm Depth • 3 Supporting Reports</span>
+                    <span>Score 94/100 (CRITICAL) • 18.0cm Depth (Estimated Disparity) • 3 Merged Reports</span>
                   </div>
                   <div>
                     <span className="text-slate-500 font-mono text-[11px] block">RECORDED TENDER & CONTRACTOR:</span>
@@ -476,7 +518,7 @@ export const JudgeDemoModal: React.FC = () => {
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute bottom-2 left-2 bg-black/80 px-2 py-0.5 rounded text-[10px] font-mono text-red-400">
-                      15.4cm Depth • Crater Active
+                      18.0cm Depth • Crater Active
                     </div>
                   </div>
                 </div>
@@ -500,18 +542,22 @@ export const JudgeDemoModal: React.FC = () => {
                 <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/5">
                   <span className="text-[10px] text-slate-500 block">AREA REDUCTION</span>
                   <span className="text-emerald-400 font-bold">98.2%</span>
+                  <span className="text-[9px] text-slate-500 block">Calculated</span>
                 </div>
                 <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/5">
-                  <span className="text-[10px] text-slate-500 block">SURFACE PASS</span>
+                  <span className="text-[10px] text-slate-500 block">SURFACE SMOOTH</span>
                   <span className="text-emerald-400 font-bold">94 / 100</span>
+                  <span className="text-[9px] text-slate-500 block">IRC-SP-100</span>
                 </div>
                 <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/5">
                   <span className="text-[10px] text-slate-500 block">CONFIDENCE</span>
                   <span className="text-cyan-400 font-bold">98.4%</span>
+                  <span className="text-[9px] text-slate-500 block">Model Output</span>
                 </div>
                 <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/5">
                   <span className="text-[10px] text-slate-500 block">AUDIT VERDICT</span>
                   <span className="text-emerald-400 font-bold">APPROVED</span>
+                  <span className="text-[9px] text-emerald-400/80 block">Zero Voids</span>
                 </div>
               </div>
             </div>
