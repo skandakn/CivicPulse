@@ -6,6 +6,7 @@ export interface AuthContextType {
   isSignedIn: boolean;
   isDemoBypass: boolean;
   isClerkAvailable: boolean;
+  isRealClerkUser: boolean;
   user: AuthUserProfile | null;
   isAuthModalOpen: boolean;
   authModalTab: 'sign-in' | 'sign-up';
@@ -14,6 +15,9 @@ export interface AuthContextType {
   closeAuthModal: () => void;
   enableDemoBypass: () => void;
   disableDemoBypass: () => void;
+  signInMock: (profile?: Partial<AuthUserProfile>) => void;
+  clerkKey: string;
+  setClerkKey: (key: string) => void;
   signOut: () => Promise<void>;
   error: string | null;
 }

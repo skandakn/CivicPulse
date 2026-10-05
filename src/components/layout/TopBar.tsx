@@ -46,7 +46,8 @@ export const TopBar: React.FC<TopBarProps> = ({
     user,
     openSignIn,
     signOut,
-    isClerkAvailable
+    isClerkAvailable,
+    isRealClerkUser
   } = useAuthSession();
 
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -249,7 +250,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/10 hover:border-cyan-500/40 transition-all text-xs cursor-pointer group"
             >
               {/* Profile Avatar */}
-              {isClerkAvailable && !isDemoBypass ? (
+              {isClerkAvailable && isRealClerkUser && !isDemoBypass ? (
                 <div onClick={(e) => e.stopPropagation()} className="flex items-center">
                   <UserButton appearance={clerkAppearance} />
                 </div>
@@ -263,9 +264,9 @@ export const TopBar: React.FC<TopBarProps> = ({
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] ${
                   isDemoBypass
                     ? 'bg-gradient-to-tr from-amber-500 to-orange-500 text-slate-950 font-mono'
-                    : 'bg-gradient-to-tr from-cyan-500 to-blue-600 text-slate-950'
+                    : 'bg-gradient-to-tr from-cyan-500 to-blue-600 text-slate-950 font-mono'
                 }`}>
-                  {isDemoBypass ? 'GJ' : <User className="w-3.5 h-3.5 text-slate-950" />}
+                  {isDemoBypass ? 'GJ' : (user?.firstName ? user.firstName.substring(0, 2).toUpperCase() : <User className="w-3.5 h-3.5 text-slate-950" />)}
                 </div>
               )}
 
@@ -284,7 +285,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                     </span>
                   ) : (
                     <span className="text-[9px] font-mono text-cyan-400">
-                      CLERK
+                      {isRealClerkUser ? 'CLERK' : 'CIVIC AUTH'}
                     </span>
                   )}
                 </div>
@@ -303,9 +304,11 @@ export const TopBar: React.FC<TopBarProps> = ({
                     <span className={`text-[9px] font-mono px-1.5 py-0.2 rounded border ${
                       isDemoBypass
                         ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
-                        : 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30'
+                        : isRealClerkUser
+                        ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30'
+                        : 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
                     }`}>
-                      {isDemoBypass ? 'DEMO BYPASS' : 'CLERK VERIFIED'}
+                      {isDemoBypass ? 'DEMO BYPASS' : isRealClerkUser ? 'CLERK VERIFIED' : 'CIVIC VERIFIED'}
                     </span>
                   </div>
                   {user?.email && (

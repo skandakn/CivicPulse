@@ -50,6 +50,8 @@ const ClerkAuthBridge: React.FC<{
   setAuthModalTab: (tab: 'sign-in' | 'sign-up') => void;
   isDemoBypass: boolean;
   setIsDemoBypass: (bypass: boolean) => void;
+  clerkKey: string;
+  setClerkKey: (key: string) => void;
 }> = ({
   children,
   isAuthModalOpen,
@@ -57,21 +59,54 @@ const ClerkAuthBridge: React.FC<{
   authModalTab,
   setAuthModalTab,
   isDemoBypass,
-  setIsDemoBypass
+  setIsDemoBypass,
+  clerkKey,
+  setClerkKey
 }) => {
-  const { isLoaded, isSignedIn, user: clerkUser } = useUser();
+  const { isLoaded, isSignedIn: isClerkSignedIn, user: clerkUser } = useUser();
   const { signOut: clerkSignOut } = useClerk();
+
+  const [mockUser, setMockUser] = useState<AuthUserProfile | null>(() => {
+    const saved = sessionStorage.getItem('civicpulse_mock_user');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        // ignore parse error
+      }
+    }
+    return null;
+  });
 
   const handleSignOut = async () => {
     try {
-      if (isSignedIn) {
+      if (isClerkSignedIn) {
         await clerkSignOut();
       }
     } catch (err) {
       console.warn('[CivicPulse] Sign-out warning:', err);
     }
+    setMockUser(null);
     setIsDemoBypass(false);
+    sessionStorage.removeItem('civicpulse_mock_user');
     sessionStorage.removeItem('civicpulse_demo_bypass');
+  };
+
+  const handleSignInMock = (profile?: Partial<AuthUserProfile>) => {
+    const defaultName = profile?.fullName || 'Citizen Reporter';
+    const newProfile: AuthUserProfile = {
+      id: profile?.id || `civic_${Date.now()}`,
+      fullName: defaultName,
+      firstName: profile?.firstName || defaultName.split(' ')[0] || 'Citizen',
+      email: profile?.email || 'citizen@civicpulse.blr',
+      imageUrl: profile?.imageUrl || null,
+      role: profile?.role || 'CITIZEN'
+    };
+    setMockUser(newProfile);
+    setIsDemoBypass(false);
+    sessionStorage.setItem('civicpulse_mock_user', JSON.stringify(newProfile));
+    sessionStorage.removeItem('civicpulse_demo_bypass');
+    setIsAuthModalOpen(false);
   };
 
   const user: AuthUserProfile | null = clerkUser
@@ -83,6 +118,8 @@ const ClerkAuthBridge: React.FC<{
         imageUrl: clerkUser.imageUrl || null,
         role: 'CITIZEN'
       }
+    : mockUser
+    ? mockUser
     : isDemoBypass
     ? {
         id: 'guest-judge-session',
@@ -96,9 +133,10 @@ const ClerkAuthBridge: React.FC<{
 
   const authContextValue: AuthContextType = {
     isLoaded: isLoaded,
-    isSignedIn: Boolean(isSignedIn || isDemoBypass),
+    isSignedIn: Boolean(isClerkSignedIn || mockUser || isDemoBypass),
     isDemoBypass,
     isClerkAvailable: true,
+    isRealClerkUser: Boolean(clerkUser),
     user,
     isAuthModalOpen,
     authModalTab,
@@ -112,14 +150,27 @@ const ClerkAuthBridge: React.FC<{
     },
     closeAuthModal: () => setIsAuthModalOpen(false),
     enableDemoBypass: () => {
+      const judgeProfile: AuthUserProfile = {
+        id: 'guest-judge-session',
+        fullName: 'Guest Judge',
+        firstName: 'Judge',
+        email: 'judge@civicpulse.blr',
+        imageUrl: null,
+        role: 'CHIEF_COMMISSIONER'
+      };
+      setMockUser(judgeProfile);
       setIsDemoBypass(true);
       sessionStorage.setItem('civicpulse_demo_bypass', 'true');
+      sessionStorage.setItem('civicpulse_mock_user', JSON.stringify(judgeProfile));
       setIsAuthModalOpen(false);
     },
     disableDemoBypass: () => {
       setIsDemoBypass(false);
       sessionStorage.removeItem('civicpulse_demo_bypass');
     },
+    signInMock: handleSignInMock,
+    clerkKey,
+    setClerkKey,
     signOut: handleSignOut,
     error: null
   };
@@ -140,6 +191,8 @@ const FallbackAuthProvider: React.FC<{
   setAuthModalTab: (tab: 'sign-in' | 'sign-up') => void;
   isDemoBypass: boolean;
   setIsDemoBypass: (bypass: boolean) => void;
+  clerkKey: string;
+  setClerkKey: (key: string) => void;
   error?: string | null;
 }> = ({
   children,
@@ -149,9 +202,59 @@ const FallbackAuthProvider: React.FC<{
   setAuthModalTab,
   isDemoBypass,
   setIsDemoBypass,
+  clerkKey,
+  setClerkKey,
   error = null
 }) => {
-  const user: AuthUserProfile | null = isDemoBypass
+  const [mockUser, setMockUser] = useState<AuthUserProfile | null>(() => {
+    const saved = sessionStorage.getItem('civicpulse_mock_user');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        // ignore parse error
+      }
+    }
+    if (sessionStorage.getItem('civicpulse_demo_bypass') === 'true') {
+      return {
+        id: 'guest-judge-session',
+        fullName: 'Guest Judge (Demo Mode)',
+        firstName: 'Judge',
+        email: 'judge@civicpulse.blr',
+        imageUrl: null,
+        role: 'CHIEF_COMMISSIONER'
+      };
+    }
+    return null;
+  });
+
+  const handleSignInMock = (profile?: Partial<AuthUserProfile>) => {
+    const defaultName = profile?.fullName || 'Citizen Reporter';
+    const newProfile: AuthUserProfile = {
+      id: profile?.id || `civic_${Date.now()}`,
+      fullName: defaultName,
+      firstName: profile?.firstName || defaultName.split(' ')[0] || 'Citizen',
+      email: profile?.email || 'citizen@civicpulse.blr',
+      imageUrl: profile?.imageUrl || null,
+      role: profile?.role || 'CITIZEN'
+    };
+    setMockUser(newProfile);
+    setIsDemoBypass(false);
+    sessionStorage.setItem('civicpulse_mock_user', JSON.stringify(newProfile));
+    sessionStorage.removeItem('civicpulse_demo_bypass');
+    setIsAuthModalOpen(false);
+  };
+
+  const handleSignOut = async () => {
+    setMockUser(null);
+    setIsDemoBypass(false);
+    sessionStorage.removeItem('civicpulse_mock_user');
+    sessionStorage.removeItem('civicpulse_demo_bypass');
+  };
+
+  const user: AuthUserProfile | null = mockUser
+    ? mockUser
+    : isDemoBypass
     ? {
         id: 'guest-judge-session',
         fullName: 'Guest Judge (Demo Mode)',
@@ -164,9 +267,10 @@ const FallbackAuthProvider: React.FC<{
 
   const authContextValue: AuthContextType = {
     isLoaded: true,
-    isSignedIn: isDemoBypass,
+    isSignedIn: Boolean(mockUser !== null || isDemoBypass),
     isDemoBypass,
     isClerkAvailable: false,
+    isRealClerkUser: false,
     user,
     isAuthModalOpen,
     authModalTab,
@@ -180,18 +284,28 @@ const FallbackAuthProvider: React.FC<{
     },
     closeAuthModal: () => setIsAuthModalOpen(false),
     enableDemoBypass: () => {
+      const judgeProfile: AuthUserProfile = {
+        id: 'guest-judge-session',
+        fullName: 'Guest Judge (Demo Mode)',
+        firstName: 'Judge',
+        email: 'judge@civicpulse.blr',
+        imageUrl: null,
+        role: 'CHIEF_COMMISSIONER'
+      };
+      setMockUser(judgeProfile);
       setIsDemoBypass(true);
       sessionStorage.setItem('civicpulse_demo_bypass', 'true');
+      sessionStorage.setItem('civicpulse_mock_user', JSON.stringify(judgeProfile));
       setIsAuthModalOpen(false);
     },
     disableDemoBypass: () => {
       setIsDemoBypass(false);
       sessionStorage.removeItem('civicpulse_demo_bypass');
     },
-    signOut: async () => {
-      setIsDemoBypass(false);
-      sessionStorage.removeItem('civicpulse_demo_bypass');
-    },
+    signInMock: handleSignInMock,
+    clerkKey,
+    setClerkKey,
+    signOut: handleSignOut,
     error
   };
 
@@ -209,12 +323,31 @@ export const ClerkAuthProvider: React.FC<ClerkAuthProviderProps> = ({ children }
     return sessionStorage.getItem('civicpulse_demo_bypass') === 'true';
   });
 
-  const publishableKey =
-    import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ||
-    import.meta.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  const [clerkKey, setClerkKey] = useState<string>(() => {
+    const saved = localStorage.getItem('civicpulse_clerk_publishable_key');
+    if (saved && saved.trim()) return saved.trim();
+    const envKey = (import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || import.meta.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || '') as string;
+    return envKey.trim();
+  });
 
-  // If no publishable key is present, run in resilient fallback mode
-  if (!publishableKey || publishableKey.includes('your_clerk_publishable_key')) {
+  const handleSetClerkKey = (key: string) => {
+    const cleanKey = key.trim();
+    setClerkKey(cleanKey);
+    if (cleanKey && !cleanKey.includes('your_clerk_publishable_key')) {
+      localStorage.setItem('civicpulse_clerk_publishable_key', cleanKey);
+    } else {
+      localStorage.removeItem('civicpulse_clerk_publishable_key');
+    }
+  };
+
+  const isKeyValid = Boolean(
+    clerkKey &&
+    !clerkKey.includes('your_clerk_publishable_key') &&
+    (clerkKey.startsWith('pk_test_') || clerkKey.startsWith('pk_live_'))
+  );
+
+  // If no valid publishable key is present, run in resilient fallback mode
+  if (!isKeyValid) {
     return (
       <FallbackAuthProvider
         isAuthModalOpen={isAuthModalOpen}
@@ -223,7 +356,9 @@ export const ClerkAuthProvider: React.FC<ClerkAuthProviderProps> = ({ children }
         setAuthModalTab={setAuthModalTab}
         isDemoBypass={isDemoBypass}
         setIsDemoBypass={setIsDemoBypass}
-        error="Clerk publishable key is not set. Running in resilient Demo Mode."
+        clerkKey={clerkKey}
+        setClerkKey={handleSetClerkKey}
+        error="Clerk publishable key not active. Interactive CivicPulse Command Auth active."
       >
         {children}
       </FallbackAuthProvider>
@@ -240,13 +375,15 @@ export const ClerkAuthProvider: React.FC<ClerkAuthProviderProps> = ({ children }
           setAuthModalTab={setAuthModalTab}
           isDemoBypass={isDemoBypass}
           setIsDemoBypass={setIsDemoBypass}
-          error={`Clerk offline fallback: ${error.message}`}
+          clerkKey={clerkKey}
+          setClerkKey={handleSetClerkKey}
+          error={`Clerk initialization error: ${error.message}`}
         >
           {children}
         </FallbackAuthProvider>
       )}
     >
-      <ClerkProvider publishableKey={publishableKey} appearance={clerkAppearance}>
+      <ClerkProvider publishableKey={clerkKey} appearance={clerkAppearance}>
         <ClerkAuthBridge
           isAuthModalOpen={isAuthModalOpen}
           setIsAuthModalOpen={setIsAuthModalOpen}
@@ -254,6 +391,8 @@ export const ClerkAuthProvider: React.FC<ClerkAuthProviderProps> = ({ children }
           setAuthModalTab={setAuthModalTab}
           isDemoBypass={isDemoBypass}
           setIsDemoBypass={setIsDemoBypass}
+          clerkKey={clerkKey}
+          setClerkKey={handleSetClerkKey}
         >
           {children}
         </ClerkAuthBridge>
