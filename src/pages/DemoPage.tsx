@@ -62,34 +62,34 @@ export const DemoPage: React.FC = () => {
   return (
     <div className="space-y-8 pb-16 max-w-5xl mx-auto text-left animate-in fade-in duration-300">
       {/* Header */}
-      <div className="rounded-2xl border border-amber-500/40 bg-amber-950/20 p-6 space-y-3">
+      <div className="rounded-2xl border border-cyan-500/30 bg-cyan-950/10 p-6 space-y-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center">
-            <FlaskConical className="w-5 h-5 text-amber-400" />
+          <div className="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center">
+            <FlaskConical className="w-5 h-5 text-cyan-400" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-extrabold text-white">HACKATHON DEMO MODE</h1>
-              <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-full">
-                DETERMINISTIC
+              <h1 className="text-xl font-extrabold text-white">CivicPulse Walkthrough</h1>
+              <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 px-2 py-0.5 rounded-full">
+                INTERACTIVE
               </span>
             </div>
-            <p className="text-sm text-amber-200/70 mt-0.5">
-              No external APIs required. All data is pre-loaded and reliable for judging demonstrations.
+            <p className="text-sm text-slate-400 mt-0.5">
+              Full incident lifecycle from citizen capture to contractor accountability and AI-verified repair.
             </p>
           </div>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-xs font-mono">
           {[
-            { label: 'Demo Cases', val: demoIncidents.length.toString() },
-            { label: 'CV Adapter', val: 'DEMO' },
-            { label: 'APIs', val: 'MOCKED' },
-            { label: 'Data', val: 'STABLE' },
+            { label: 'Incidents', val: demoIncidents.length.toString() },
+            { label: 'CV Engine', val: 'Prototype' },
+            { label: 'Mode', val: 'Offline-Safe' },
+            { label: 'Data', val: 'Structured' },
           ].map(item => (
             <div key={item.label} className="p-3 rounded-xl bg-black/30 border border-white/5 text-center">
               <div className="text-[10px] text-slate-400 uppercase">{item.label}</div>
-              <div className="font-bold text-amber-400 text-base mt-0.5">{item.val}</div>
+              <div className="font-bold text-cyan-400 text-base mt-0.5">{item.val}</div>
             </div>
           ))}
         </div>

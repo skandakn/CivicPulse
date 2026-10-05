@@ -3,7 +3,8 @@ import {
   ShieldCheck,
   CheckCircle2,
   AlertTriangle,
-  Sparkles
+  Sparkles,
+  Camera
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { PotholeIncident, RepairVerification } from '../types';
@@ -13,9 +14,8 @@ export const RepairVerificationPage: React.FC = () => {
 
   const activeIncident: PotholeIncident = selectedIncident || incidents[0];
 
-  const [afterImage, setAfterImage] = useState<string>(
-    activeIncident.repairVerification?.contractorSubmittedPhoto ||
-    'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=800&q=80'
+  const [afterImage, setAfterImage] = useState<string | null>(
+    activeIncident.repairVerification?.contractorSubmittedPhoto || null
   );
 
   const [isAuditing, setIsAuditing] = useState(false);
@@ -144,20 +144,29 @@ export const RepairVerificationPage: React.FC = () => {
             </span>
           </div>
 
-          <div className="relative rounded-xl overflow-hidden h-64 bg-black border border-white/10">
-            <img
-              src={afterImage}
-              alt="Contractor repair submission"
-              className="w-full h-full object-cover"
-            />
-            {auditResult && (
-              <div className={`absolute bottom-2 left-2 px-2.5 py-1 rounded text-xs font-mono font-bold border backdrop-blur-md
-                ${auditResult.status === 'APPROVED'
-                  ? 'bg-emerald-950/90 text-emerald-300 border-emerald-500/40'
-                  : 'bg-red-950/90 text-red-300 border-red-500/40'
-                }
-              `}>
-                {auditResult.status === 'APPROVED' ? 'AI AUDIT: APPROVED' : 'AI AUDIT: REWORK REQUIRED'}
+          <div className="relative rounded-xl overflow-hidden h-64 bg-black border border-white/10 flex flex-col items-center justify-center">
+            {afterImage ? (
+              <>
+                <img
+                  src={afterImage}
+                  alt="Contractor repair submission"
+                  className="w-full h-full object-cover"
+                />
+                {auditResult && (
+                  <div className={`absolute bottom-2 left-2 px-2.5 py-1 rounded text-xs font-mono font-bold border backdrop-blur-md
+                    ${auditResult.status === 'APPROVED'
+                      ? 'bg-emerald-950/90 text-emerald-300 border-emerald-500/40'
+                      : 'bg-red-950/90 text-red-300 border-red-500/40'
+                    }
+                  `}>
+                    {auditResult.status === 'APPROVED' ? 'AI AUDIT: APPROVED' : 'AI AUDIT: REWORK REQUIRED'}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="flex flex-col items-center gap-2 text-slate-500">
+                <Camera className="w-8 h-8 opacity-50" />
+                <span className="text-sm font-mono">Awaiting repair evidence</span>
               </div>
             )}
           </div>

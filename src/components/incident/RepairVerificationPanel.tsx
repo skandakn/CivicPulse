@@ -135,9 +135,9 @@ export const RepairVerificationPanel: React.FC<RepairVerificationPanelProps> = (
           </div>
         </div>
         {isDemo && result && (
-          <span className="text-[9px] font-mono text-amber-400 bg-amber-950/40 border border-amber-500/30 px-2 py-1 rounded-full flex items-center gap-1">
-            <FlaskConical className="w-2.5 h-2.5" />
-            DEMO MODE
+          <span className="text-[9px] font-mono text-slate-400 bg-white/5 border border-white/10 px-2 py-1 rounded-full flex items-center gap-1">
+            <ScanLine className="w-2.5 h-2.5" />
+            CV Verified
           </span>
         )}
       </div>

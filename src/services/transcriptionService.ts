@@ -215,61 +215,15 @@ class SpeechTranscriptionProvider {
   /**
    * Natural Language Issue Interpreter: Extracts road corridor, ward, severity, depth, and department routing from citizen text
    */
-  interpretComplaint(text: string): InterpretedComplaint {
+  async interpretComplaint(text: string, currentCoords?: {lat: number, lng: number}): Promise<InterpretedComplaint> {
     const lower = text.toLowerCase();
 
-    // 1. Location & Corridor Resolution
-    let roadName = 'Outer Ring Road (Opposite Ecospace)';
-    let wardName = 'Bellandur';
-    let wardNumber = 150;
-    let coordinates = { lat: 12.9279, lng: 77.6833 };
-    let landmark = 'Near EcoSpace skywalk bus stop, center lane';
-
-    if (lower.includes('indiranagar') || lower.includes('100ft') || lower.includes('cmh')) {
-      roadName = '100 Feet Road, Near CMH Hospital';
-      wardName = 'Indiranagar';
-      wardNumber = 80;
-      coordinates = { lat: 12.9784, lng: 77.6408 };
-      landmark = 'Near CMH Hospital Junction, right lane';
-    } else if (lower.includes('whitefield') || lower.includes('itpl') || lower.includes('pillar')) {
-      roadName = 'ITPL Main Road, Pattandur Agrahara';
-      wardName = 'Whitefield';
-      wardNumber = 84;
-      coordinates = { lat: 12.9866, lng: 77.7381 };
-      landmark = 'Near ITPL Gate 2 & metro pillar 421';
-    } else if (lower.includes('koramangala') || lower.includes('80ft')) {
-      roadName = '80 Feet Road Koramangala 4th Block';
-      wardName = 'Koramangala';
-      wardNumber = 151;
-      coordinates = { lat: 12.9348, lng: 77.6256 };
-      landmark = 'Opposite Maharaja Signal';
-    }
-
-    // 2. Severity & Physical Dimensions Extraction
-    let severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' = 'HIGH';
-    let estimatedDepthCm = 12;
-
-    if (
-      lower.includes('very large') ||
-      lower.includes('severe') ||
-      lower.includes('crater') ||
-      lower.includes('bikes struggling') ||
-      lower.includes('invisible') ||
-      lower.includes('waterlogged')
-    ) {
-      severity = 'CRITICAL';
-      estimatedDepthCm = 18;
-    } else if (lower.includes('shallow') || lower.includes('small') || lower.includes('minor')) {
-      severity = 'MEDIUM';
-      estimatedDepthCm = 6;
-    }
-
-    // 3. Department Routing Analysis
+    // 1. Department Routing Analysis (Rule-based NLP)
     let department: InterpretedComplaint['department'] = {
       name: 'BBMP Road Infrastructure Department (Major Roads Division)',
       acronym: 'BBMP',
       nodalOfficer: 'Sri B. S. Prahlad, Chief Engineer (Roads)',
-      routingReason: 'Corridor classified as Major Arterial under BBMP jurisdiction (Clause 45.2 DLP Warranty active)'
+      routingReason: 'Standard road maintenance jurisdiction'
     };
 
     if (lower.includes('metro') || lower.includes('pillar') || lower.includes('bmrcl')) {
@@ -293,6 +247,76 @@ class SpeechTranscriptionProvider {
         nodalOfficer: 'Sri T. Narayana, SE Projects',
         routingReason: 'Defect induced by underground HT power cable trenching; routed for utility pavement reinstatement'
       };
+    }
+
+    // 2. Severity & Physical Dimensions Extraction
+    let severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' = 'HIGH';
+    let estimatedDepthCm = 12;
+
+    if (
+      lower.includes('very large') ||
+      lower.includes('severe') ||
+      lower.includes('crater') ||
+      lower.includes('bikes struggling') ||
+      lower.includes('invisible') ||
+      lower.includes('waterlogged')
+    ) {
+      severity = 'CRITICAL';
+      estimatedDepthCm = 18;
+    } else if (lower.includes('shallow') || lower.includes('small') || lower.includes('minor')) {
+      severity = 'MEDIUM';
+      estimatedDepthCm = 6;
+    }
+
+    // 3. Location Resolution & Geocoding
+    // We do NOT hallucinate GPS. If no coords are provided and we can't extract a reliable landmark to geocode,
+    // we require a location. For this implementation, we will use provided coordinates (e.g. from photo) 
+    // or known exact matches, otherwise return a 'Location required' fallback.
+    let roadName = 'Location required';
+    let wardName = 'Unknown Ward';
+    let wardNumber = 0;
+    let coordinates = currentCoords || { lat: 0, lng: 0 };
+    let landmark = 'Location required';
+
+    if (currentCoords) {
+      // Use GeoDataService to resolve real coordinates
+      try {
+        const { GeoDataService } = await import('./geoDataService');
+        const geoInfo = await GeoDataService.reverseGeocode(currentCoords.lat, currentCoords.lng);
+        roadName = geoInfo.roadName;
+        landmark = geoInfo.landmark;
+        wardName = geoInfo.wardName;
+        wardNumber = parseInt(geoInfo.wardNumber, 10);
+      } catch (e) {
+        console.error('Geocoding failed', e);
+      }
+    } else {
+      // Fallback NLP matches for demo scripts (deterministic known locations)
+      if (lower.includes('indiranagar') || lower.includes('100ft') || lower.includes('cmh')) {
+        roadName = '100 Feet Road, Near CMH Hospital';
+        wardName = 'Indiranagar';
+        wardNumber = 80;
+        coordinates = { lat: 12.9784, lng: 77.6408 };
+        landmark = 'Near CMH Hospital Junction, right lane';
+      } else if (lower.includes('whitefield') || lower.includes('itpl') || lower.includes('pillar')) {
+        roadName = 'ITPL Main Road, Pattandur Agrahara';
+        wardName = 'Whitefield';
+        wardNumber = 84;
+        coordinates = { lat: 12.9866, lng: 77.7381 };
+        landmark = 'Near ITPL Gate 2 & metro pillar 421';
+      } else if (lower.includes('koramangala') || lower.includes('80ft')) {
+        roadName = '80 Feet Road Koramangala 4th Block';
+        wardName = 'Koramangala';
+        wardNumber = 151;
+        coordinates = { lat: 12.9348, lng: 77.6256 };
+        landmark = 'Opposite Maharaja Signal';
+      } else if (lower.includes('bellandur') || lower.includes('ecospace') || lower.includes('outer ring road')) {
+        roadName = 'Outer Ring Road (Opposite Ecospace)';
+        wardName = 'Bellandur';
+        wardNumber = 150;
+        coordinates = { lat: 12.9279, lng: 77.6833 };
+        landmark = 'Near EcoSpace skywalk bus stop, center lane';
+      }
     }
 
     return {

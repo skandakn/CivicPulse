@@ -171,15 +171,15 @@ export const AnalyticsPage: React.FC = () => {
             <MetricCard
               icon={<AlertTriangle className="w-4 h-4 text-red-400" />}
               label="Total Active Potholes"
-              value={CITY_METRICS.activePotholes.toLocaleString()}
-              sub={`${CITY_METRICS.criticalIssues} critical — live`}
+              value={unresolvedCount.toLocaleString()}
+              sub={`${criticalCount} critical`}
               subColor="text-red-400"
             />
             <MetricCard
               icon={<CheckCircle2 className="w-4 h-4 text-emerald-400" />}
-              label="Resolved This Month"
-              value={CITY_METRICS.resolvedThisMonth.toLocaleString()}
-              sub={`${CITY_METRICS.aiVerifiedRepairs} AI-verified repairs`}
+              label="Resolved Issues"
+              value={resolvedCount.toLocaleString()}
+              sub={`${resolvedCount} AI-verified repairs`}
               subColor="text-emerald-400"
             />
             <MetricCard
@@ -208,9 +208,9 @@ export const AnalyticsPage: React.FC = () => {
             />
             <MetricCard
               icon={<ShieldCheck className="w-4 h-4 text-emerald-400" />}
-              label="Taxpayer Savings"
-              value={formatINR(CITY_METRICS.taxpayerSavingsINR)}
-              sub="Enforced via Contractor DLP warranties"
+              label="Contractor Warranties"
+              value={incidents.filter(i => i.isUnderWarranty).length.toString()}
+              sub="Active DLP claims"
               subColor="text-emerald-400"
             />
             <MetricCard
@@ -222,9 +222,9 @@ export const AnalyticsPage: React.FC = () => {
             />
             <MetricCard
               icon={<Activity className="w-4 h-4 text-purple-400" />}
-              label="Reports Today"
-              value={CITY_METRICS.reportsToday.toString()}
-              sub="Live ingestion pipeline active"
+              label="Reports Total"
+              value={incidents.length.toString()}
+              sub="Ingestion pipeline active"
               subColor="text-purple-400"
             />
           </div>

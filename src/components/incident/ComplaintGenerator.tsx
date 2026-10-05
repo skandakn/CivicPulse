@@ -168,13 +168,11 @@ export const ComplaintGenerator: React.FC<ComplaintGeneratorProps> = ({ incident
         </div>
         {complaint && (
           <span className={`text-[10px] font-mono font-bold px-2.5 py-1 rounded-full border ${
-            submissionStatus === 'SUBMITTED'
-              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-              : submissionStatus === 'COPIED'
+            submissionStatus === 'COPIED'
               ? 'bg-blue-500/10 text-blue-400 border-blue-500/30'
               : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
           }`}>
-            {submissionStatus === 'SUBMITTED' ? '✓ SUBMITTED' : submissionStatus === 'COPIED' ? 'COPIED' : 'DRAFT'}
+            {submissionStatus === 'COPIED' ? 'COPIED' : 'DRAFT READY'}
           </span>
         )}
       </div>
@@ -299,35 +297,22 @@ export const ComplaintGenerator: React.FC<ComplaintGeneratorProps> = ({ incident
             </div>
 
             {/* Action buttons */}
-            <div className="grid grid-cols-3 gap-2">
+            {/* Action buttons */}
+            <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={handleCopy}
                 className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-semibold text-slate-200 transition-all cursor-pointer"
               >
                 <Copy className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Copy</span>
+                <span>Copy Draft</span>
               </button>
               <button
                 onClick={handleDownload}
                 className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-semibold text-slate-200 transition-all cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5 text-blue-400" />
-                <span>Download</span>
+                <span>Download Draft</span>
               </button>
-              {submissionStatus !== 'SUBMITTED' ? (
-                <button
-                  onClick={handleMarkSubmitted}
-                  className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs font-bold text-emerald-400 transition-all cursor-pointer"
-                >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>Submit</span>
-                </button>
-              ) : (
-                <div className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-xs font-bold text-emerald-400">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Submitted</span>
-                </div>
-              )}
             </div>
 
             {/* Regenerate */}

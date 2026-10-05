@@ -133,7 +133,7 @@ export const DepartmentRoutingBadge: React.FC<DepartmentRoutingBadgeProps> = ({
                 {meta.name}
               </span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10">
-                OFFICIAL JURISDICTION
+                RECOMMENDED DEPARTMENT
               </span>
             </div>
             <div className="text-xs font-semibold text-white mt-0.5">

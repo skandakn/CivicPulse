@@ -145,9 +145,22 @@ export const ReportPage: React.FC = () => {
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [transcriptionResult, setTranscriptionResult] = useState<TranscriptionResult | null>(null);
   const [voiceText, setVoiceText] = useState(DEMO_VOICE_SAMPLES[0].transcript);
-  const [interpretedComplaint, setInterpretedComplaint] = useState<InterpretedComplaint>(
-    transcriptionService.interpretComplaint(DEMO_VOICE_SAMPLES[0].transcript)
-  );
+  const [interpretedComplaint, setInterpretedComplaint] = useState<InterpretedComplaint>({
+    roadName: 'Outer Ring Road',
+    wardName: 'Bellandur',
+    wardNumber: 150,
+    coordinates: { lat: 12.9234, lng: 77.6892 },
+    landmark: 'EcoSpace skywalk',
+    severity: 'CRITICAL',
+    estimatedDepthCm: 15.0,
+    department: {
+      name: 'BBMP Road Infrastructure Department',
+      acronym: 'BBMP',
+      nodalOfficer: 'Chief Engineer',
+      routingReason: 'Standard road maintenance jurisdiction'
+    },
+    summary: 'Waterlogged crater causing vehicular damage'
+  });
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const timerIntervalRef = useRef<any>(null);
@@ -242,8 +255,8 @@ export const ReportPage: React.FC = () => {
     addToast('Demo Voice Loaded', `${sample.title} (${sample.location})`, 'success');
   };
 
-  const applyInterpretedData = (text: string) => {
-    const interpreted = transcriptionService.interpretComplaint(text);
+  const applyInterpretedData = async (text: string) => {
+    const interpreted = await transcriptionService.interpretComplaint(text, selectedCoords);
     setInterpretedComplaint(interpreted);
     setRoadName(interpreted.roadName);
     setLandmark(interpreted.landmark);
@@ -258,14 +271,14 @@ export const ReportPage: React.FC = () => {
     applyInterpretedData(val);
   };
 
-  const submitVoiceOrTextComplaint = () => {
+  const submitVoiceOrTextComplaint = async () => {
     const sourceText = submissionMode === 'VOICE' ? voiceText : textComplaintInput;
     if (!sourceText.trim()) {
       addToast('Grievance Required', 'Please provide or record your pothole description', 'error');
       return;
     }
 
-    const interpreted = interpretedComplaint || transcriptionService.interpretComplaint(sourceText);
+    const interpreted = interpretedComplaint || await transcriptionService.interpretComplaint(sourceText, selectedCoords);
 
     // Duplicate check match
     const matchedDuplicate = incidents.find(i => 
@@ -333,7 +346,7 @@ export const ReportPage: React.FC = () => {
         reportsMerged: 17,
         road: interpreted.roadName,
         authority: interpreted.department.name,
-        contractor: 'NCC Urban Infrastructure Ltd (Contract #KA-BBMP-2025-912)',
+        contractor: 'Infrastructure Partner Gamma (Contract #KA-BBMP-2025-912)',
         status: 'Verified',
         lastReportedAt: sessionTimestamp
       },
@@ -512,7 +525,7 @@ export const ReportPage: React.FC = () => {
             reportsMerged: 17,
             road: 'Outer Ring Road (State Highway 35 Connector)',
             authority: 'BBMP Mahadevapura Division (Major Roads Dept)',
-            contractor: 'NCC Urban Infrastructure Ltd (Contract #KA-BBMP-2025-912)',
+            contractor: 'Infrastructure Partner Gamma (Contract #KA-BBMP-2025-912)',
             status: 'Verified',
             lastReportedAt: new Date().toISOString()
           },
@@ -958,9 +971,9 @@ export const ReportPage: React.FC = () => {
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-mono text-slate-400 flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-                    1-Click Benchmark Voice Clips (Deterministic)
+                    Sample Voice Reports
                   </span>
-                  <span className="text-[10px] font-mono text-purple-400">3 Samples</span>
+                  <span className="text-[10px] font-mono text-purple-400">Quick select</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {DEMO_VOICE_SAMPLES.map((sample) => (
@@ -1411,7 +1424,7 @@ export const ReportPage: React.FC = () => {
                   <div className="text-right">
                     {analysisResult.activePipelineMode === 'demo' || analysisResult.modelName?.includes('DEMO') ? (
                       <span className="px-2.5 py-1 rounded bg-purple-500/20 text-purple-300 font-mono text-[11px] font-bold border border-purple-500/40 inline-block shadow-[0_0_10px_rgba(168,85,247,0.2)]">
-                        DEMO INFERENCE
+                        PROTOTYPE INFERENCE
                       </span>
                     ) : analysisResult.activePipelineMode === 'yolo' || analysisResult.modelName?.includes('YOLO') ? (
                       <span className="px-2.5 py-1 rounded bg-blue-500/20 text-blue-300 font-mono text-[11px] font-bold border border-blue-500/40 inline-block shadow-[0_0_10px_rgba(59,130,246,0.2)]">

@@ -316,7 +316,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       reportedAt: new Date().toISOString(),
       lastUpdatedAt: new Date().toISOString(),
       contractorId: newReport.contractorId || 'cont-01',
-      contractorName: newReport.contractorName || 'Star Infratech Bengaluru Pvt Ltd',
+      contractorName: newReport.contractorName || 'Infrastructure Partner Alpha',
       isUnderWarranty: true,
       authorityId: 'auth-bbmp',
       authorityName: 'Bruhat Bengaluru Mahanagara Palike (BBMP) - Major Roads',

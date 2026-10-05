@@ -58,7 +58,7 @@ export const ComplaintsPage: React.FC = () => {
             Citizen Grievance & SLA Tracking
           </h1>
           <p className="text-sm text-slate-400 mt-1 max-w-2xl">
-            Live synchronization with the BBMP Sahaya 2.0 system. Potholes with breached SLAs automatically trigger escalation to Zonal Commissioners.
+            Standardized workflow formatting for municipal grievance tracking. Incidents are structured to support SLA monitoring and automated escalation routing.
           </p>
         </div>
 

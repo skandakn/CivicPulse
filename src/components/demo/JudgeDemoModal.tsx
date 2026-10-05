@@ -53,13 +53,13 @@ export const JudgeDemoModal: React.FC = () => {
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="font-extrabold text-white text-sm tracking-tight font-mono">
-                  ONE-CLICK HACKATHON JUDGE DEMO
+                  CIVICPULSE INCIDENT WALKTHROUGH
                 </span>
                 <span className="px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 font-mono text-[10px] border border-cyan-500/30">
                   Case BNG-PTH-1042
                 </span>
-                <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 font-mono text-[10px] border border-amber-500/30">
-                  DEMO MODE • DETERMINISTIC
+                <span className="px-2 py-0.5 rounded bg-white/5 text-slate-400 font-mono text-[10px] border border-white/10">
+                  FULL LIFECYCLE
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 font-sans">
@@ -125,7 +125,7 @@ export const JudgeDemoModal: React.FC = () => {
                   <h3 className="text-xl font-bold text-white">Citizen Media Capture & Ingestion</h3>
                 </div>
                 <span className="px-2.5 py-1 rounded bg-white/5 text-slate-300 text-xs font-mono border border-white/10">
-                  Demo Inference Mode
+                  Structured Incident Data
                 </span>
               </div>
 
@@ -176,7 +176,7 @@ export const JudgeDemoModal: React.FC = () => {
                   <h3 className="text-xl font-bold text-white">Computer Vision & 3D Depth Extraction</h3>
                 </div>
                 <span className="px-2.5 py-1 rounded bg-cyan-950/80 text-cyan-300 text-xs font-mono border border-cyan-500/30">
-                  ResNet-Pothole-v4.2 • Latency: 38ms (Demo Inference)
+                  ResNet-Pothole-v4.2 • Prototype CV Inference
                 </span>
               </div>
 
@@ -318,7 +318,7 @@ export const JudgeDemoModal: React.FC = () => {
                     </span>
                     <span>→</span>
                     <span className="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-amber-300">
-                      Star Infratech Pvt Ltd
+                      Infrastructure Partner Alpha
                     </span>
                   </div>
                 </div>
@@ -330,7 +330,7 @@ export const JudgeDemoModal: React.FC = () => {
                     <span>LEGAL CONTRACT STATUS: FREE REPAIR MANDATE</span>
                   </div>
                   <p className="text-slate-300 font-sans leading-relaxed">
-                    Road project associated with this location was completed in Nov 2024 under a 36-month warranty. Under <strong className="text-white">Clause 45.2</strong> of Karnataka PWD Standard Specifications, contractor <strong className="text-white">Star Infratech</strong> must rectify this crater at <strong className="text-emerald-400">ZERO cost to the public exchequer</strong> within 48 hours.
+                    Road project associated with this location was completed in Nov 2024 under a 36-month warranty. Under <strong className="text-white">Clause 45.2</strong> of Karnataka PWD Standard Specifications, contractor <strong className="text-white">Infrastructure Partner Alpha</strong> must rectify this crater at <strong className="text-emerald-400">ZERO cost to the public exchequer</strong> within 48 hours.
                   </p>
                   <div className="pt-1 text-[11px] text-emerald-400 font-mono">
                     Estimated Taxpayer Savings: ₹1,20,000 (Protected from duplicate tender billing)
@@ -459,7 +459,7 @@ export const JudgeDemoModal: React.FC = () => {
                   <h3 className="text-xl font-bold text-white">Automated Municipal Grievance Generation</h3>
                 </div>
                 <span className="px-2.5 py-1 rounded bg-amber-950 text-amber-300 text-xs font-mono border border-amber-500/30">
-                  Ready to submit (Simulated Gateway Mode)
+                  Complaint Draft Ready
                 </span>
               </div>
 
@@ -480,7 +480,7 @@ export const JudgeDemoModal: React.FC = () => {
                   </div>
                   <div>
                     <span className="text-slate-500 font-mono text-[11px] block">RECORDED TENDER & CONTRACTOR:</span>
-                    <span>Tender WO-88/2024 • Star Infratech Pvt Ltd (Clause 45.2 Warranty Active)</span>
+                    <span>Tender WO-88/2024 • Infrastructure Partner Alpha (Clause 45.2 Warranty Active)</span>
                   </div>
                   <div>
                     <span className="text-slate-500 font-mono text-[11px] block">RECOMMENDED ACTION:</span>

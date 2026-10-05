@@ -37,7 +37,7 @@ const BENGALURU_ROAD_CORRIDORS = [
     color: '#EF4444',
     potholesCount: 68,
     trafficDensity: 'High (32,000 PCU/hr)',
-    contractor: 'NCC Urban Infrastructure Ltd',
+    contractor: 'Infrastructure Partner Gamma',
     warranty: 'Active Clause 45.2'
   },
   {
@@ -74,7 +74,7 @@ const BENGALURU_ROAD_CORRIDORS = [
     color: '#EAB308',
     potholesCount: 19,
     trafficDensity: 'Moderate (18,000 PCU/hr)',
-    contractor: 'Sri Venkateshwara Bitumen Works',
+    contractor: 'Infrastructure Partner Beta',
     warranty: 'BBMP Municipal O&M'
   },
   {
@@ -181,9 +181,9 @@ const BENGALURU_MUNICIPAL_ZONES = [
 
 // Contractor Palette Mapping
 const CONTRACTOR_COLORS: Record<string, { color: string; bg: string }> = {
-  'NCC Urban Infrastructure Ltd': { color: '#3B82F6', bg: 'rgba(59, 130, 246, 0.25)' },
+  'Infrastructure Partner Gamma': { color: '#3B82F6', bg: 'rgba(59, 130, 246, 0.25)' },
   'L&T Transportation Infrastructure': { color: '#8B5CF6', bg: 'rgba(139, 92, 246, 0.25)' },
-  'Sri Venkateshwara Bitumen Works': { color: '#F97316', bg: 'rgba(249, 115, 22, 0.25)' },
+  'Infrastructure Partner Beta': { color: '#F97316', bg: 'rgba(249, 115, 22, 0.25)' },
   'KMV Projects Urban Division': { color: '#EC4899', bg: 'rgba(236, 72, 153, 0.25)' },
   'BBMP In-House Hot Mix Plant': { color: '#10B981', bg: 'rgba(16, 185, 129, 0.25)' }
 };
@@ -234,7 +234,12 @@ export const BengaluruMap: React.FC<BengaluruMapProps> = ({
     });
 
     // Dark Matter CartoDB Basemap for high-contrast dark cyberpunk aesthetic
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    const cartoApiKey = import.meta.env.VITE_CARTO_API_KEY || '';
+    const tileUrl = cartoApiKey 
+      ? `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?api_key=${cartoApiKey}`
+      : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+      
+    L.tileLayer(tileUrl, {
       subdomains: 'abcd',
       maxZoom: 19
     }).addTo(map);

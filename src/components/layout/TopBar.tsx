@@ -70,7 +70,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     {
       id: 'n-3',
       title: 'Contractor Warranty Alert',
-      desc: 'Defect Liability notice dispatched to Star Infratech Pvt Ltd (Clause 45.2)',
+      desc: 'Defect Liability notice dispatched to Infrastructure Partner Alpha (Clause 45.2)',
       time: '2h ago',
       type: 'warning'
     }
@@ -133,23 +133,24 @@ export const TopBar: React.FC<TopBarProps> = ({
 
       {/* Center/Right: 1-Click Demo, Search, Status, Notifications, Role Profile */}
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* 1-Click Judge Demo Quick Action */}
+        {/* Load Canonical Case Quick Action */}
         <button
           onClick={loadDemoCase}
           className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/40 text-cyan-300 font-bold font-mono text-xs shadow-[0_0_15px_rgba(0,240,255,0.2)] transition-all cursor-pointer hover:scale-105"
+          title="Load canonical incident BNG-PTH-1042 for walkthrough"
         >
           <Zap className="w-3.5 h-3.5 fill-cyan-400 text-cyan-400" />
-          <span>Judge Demo</span>
+          <span>Load Case</span>
         </button>
 
-        {/* Reset Demo Quick Action */}
+        {/* Reset Quick Action */}
         <button
           onClick={resetDemo}
           className="hidden md:flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 font-mono text-xs transition-colors cursor-pointer"
-          title="Reset application to clean initial seed"
+          title="Reset application to initial seed state"
         >
           <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
-          <span>Reset Demo</span>
+          <span>Reset</span>
         </button>
 
         {/* Global Quick Search Button */}
@@ -172,16 +173,13 @@ export const TopBar: React.FC<TopBarProps> = ({
           <Search className="w-4 h-4 text-cyan-400" />
         </button>
 
-        {/* Live AI Status Badge with DEMO MODE */}
+        {/* Live AI Status Badge */}
         <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-cyan-950/40 border border-cyan-500/30 text-[11px] font-mono text-cyan-300 shadow-[0_0_12px_rgba(0,240,255,0.15)]">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
           </span>
           <span className="hidden xl:inline">AI Vision v4.2</span>
-          <span className="px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-300 text-[10px] border border-amber-500/30">
-            DEMO MODE
-          </span>
           <span className="text-slate-500">|</span>
           <span className="text-slate-400">28ms</span>
         </div>

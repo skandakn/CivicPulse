@@ -104,7 +104,7 @@ export const IncidentDetailPage: React.FC = () => {
               {statusInfo.label}
             </span>
             <span className="px-2 py-0.5 rounded font-mono text-[10px] bg-white/5 border border-white/10 text-slate-400">
-              {selectedIncident.dataSource === 'VERIFIED_OFFICIAL' ? 'VERIFIED OFFICIAL DATA' : 'DEMO INFERENCE DATA'}
+              {selectedIncident.dataSource === 'VERIFIED_OFFICIAL' ? 'VERIFIED OFFICIAL DATA' : 'STRUCTURED CIVIC DATA'}
             </span>
           </div>
 

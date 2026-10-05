@@ -96,42 +96,42 @@ export const AuthModal: React.FC = () => {
             </div>
           ) : (
             <div className="p-5 rounded-xl bg-white/[0.02] border border-white/10 text-center space-y-3">
-              <div className="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-400">
+              <div className="w-10 h-10 rounded-full bg-slate-500/10 border border-slate-500/30 flex items-center justify-center mx-auto text-slate-400">
                 <Lock className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-white">Clerk Offline / Demo Mode</h4>
+                <h4 className="text-sm font-bold text-white">Clerk Offline / Guest Access</h4>
                 <p className="text-xs text-slate-400 mt-1">
-                  Clerk publishable key is not active or internet connection is offline. You can proceed without interruption using Guest Judge Demo Mode.
+                  Clerk publishable key is not active or internet connection is offline. You can continue as a guest to explore all features.
                 </p>
               </div>
             </div>
           )}
 
-          {/* Hackathon Judge / Presentation Bypass Card */}
-          <div className="p-4 rounded-xl bg-[#0C101D] border border-amber-500/30 shadow-[0_0_20px_rgba(245,158,11,0.08)] space-y-3">
+          {/* Guest / Presentation Access Card */}
+          <div className="p-4 rounded-xl bg-[#0C101D] border border-cyan-500/20 shadow-[0_0_20px_rgba(0,240,255,0.06)] space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Zap className="w-4 h-4 fill-amber-400 text-amber-400" />
-                <span className="text-xs font-mono font-bold text-amber-300 uppercase tracking-wider">
-                  Hackathon Judge Bypass
+                <Zap className="w-4 h-4 fill-cyan-400 text-cyan-400" />
+                <span className="text-xs font-mono font-bold text-cyan-300 uppercase tracking-wider">
+                  Guest Access
                 </span>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                ZERO FRICTION
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                NO ACCOUNT NEEDED
               </span>
             </div>
 
             <p className="text-[11px] text-slate-300 leading-relaxed font-sans">
-              Evaluating CivicPulse for live hackathon judging? Skip authentication to inspect God’s Eye geospatial intelligence, Pothole Vision, and contractor liability records instantly.
+              Explore CivicPulse without creating an account — God's Eye geospatial intelligence, Pothole Vision, and contractor accountability records.
             </p>
 
             <button
               onClick={enableDemoBypass}
-              className="w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(245,158,11,0.25)] transition-all cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
+              className="w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-cyan-500 to-sky-500 hover:from-cyan-400 hover:to-sky-400 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(0,240,255,0.2)] transition-all cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
             >
               <Zap className="w-3.5 h-3.5 fill-slate-950" />
-              <span>⚡ Enter as Guest Judge (Explore All Features)</span>
+              <span>⚡ Continue as Guest (Explore All Features)</span>
             </button>
           </div>
         </div>

@@ -24,7 +24,7 @@ export const LandingPage: React.FC = () => {
     { step: '01', title: 'DETECT', desc: 'Stereoscopic depth & asphalt cracking via citizen photo/video', icon: Cpu, color: 'text-cyan-400' },
     { step: '02', title: 'PRIORITIZE', desc: 'Traffic volume × hospital corridor × depth algorithmic ranking', icon: Flame, color: 'text-amber-400' },
     { step: '03', title: 'ASSIGN', desc: 'Clause 45.2 Defect Liability Period zero-cost contractor mandate', icon: Building2, color: 'text-purple-400' },
-    { step: '04', title: 'TRACK', desc: 'Live BBMP Sahaya SLA sync with automated escalation daemon', icon: Activity, color: 'text-blue-400' },
+    { step: '04', title: 'TRACK', desc: 'Standardized grievance formatting ready for municipal SLA tracking', icon: Activity, color: 'text-blue-400' },
     { step: '05', title: 'VERIFY', desc: 'Post-repair computer vision audit verifying surface smoothness', icon: ShieldCheck, color: 'text-emerald-400' }
   ];
 
@@ -66,7 +66,7 @@ export const LandingPage: React.FC = () => {
                 className="flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-extrabold text-sm shadow-[0_0_30px_rgba(0,240,255,0.5)] transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
               >
                 <Zap className="w-4 h-4 fill-slate-950 text-slate-950" />
-                <span>⚡ 1-Click Judge Demo</span>
+                <span>⚡ Load Sample Case</span>
               </button>
 
               <button
@@ -91,7 +91,7 @@ export const LandingPage: React.FC = () => {
                 title="Reset application to initial clean seed state"
               >
                 <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
-                <span>Reset Demo</span>
+                <span>Reset Data</span>
               </button>
             </div>
 
@@ -199,7 +199,7 @@ export const LandingPage: React.FC = () => {
               <div className="flex items-center justify-between pt-1">
                 <div className="flex items-center gap-1.5 text-xs text-slate-400 font-mono">
                   <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Contractor: Star Infratech</span>
+                  <span>Contractor: Infrastructure Partner Alpha</span>
                 </div>
                 <button
                   onClick={loadDemoCase}

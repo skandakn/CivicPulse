@@ -109,7 +109,7 @@ export const SearchModal: React.FC = () => {
             <div className="py-8 text-center text-slate-500 text-xs">
               <p className="font-mono text-cyan-400 mb-2">QUICK SUGGESTIONS</p>
               <div className="flex flex-wrap justify-center gap-2 max-w-md mx-auto">
-                {['Outer Ring Road', 'Silk Board', 'Star Infratech', 'Ward 150', 'BLR-POT-2026-0842', 'BBMP-SHY-2026'].map(tag => (
+                {['Outer Ring Road', 'Silk Board', 'Infrastructure Partner Alpha', 'Ward 150', 'BLR-POT-2026-0842', 'BBMP-SHY-2026'].map(tag => (
                   <button
                     key={tag}
                     onClick={() => setTerm(tag)}

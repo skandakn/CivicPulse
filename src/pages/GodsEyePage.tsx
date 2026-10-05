@@ -57,10 +57,10 @@ export const GodsEyePage: React.FC = () => {
             <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
           </div>
           <div className="text-2xl font-extrabold text-white font-mono mt-1">
-            {CITY_METRICS.activePotholes.toLocaleString()}
+            {activeCount.toLocaleString()}
           </div>
           <div className="text-[11px] text-cyan-400 mt-1 flex items-center gap-1 font-mono">
-            <span>+{activeCount} live in feed</span>
+            <span>Live in feed</span>
           </div>
         </div>
 
@@ -71,49 +71,49 @@ export const GodsEyePage: React.FC = () => {
             <Flame className="w-4 h-4 text-red-400 animate-bounce" />
           </div>
           <div className="text-2xl font-extrabold text-red-400 font-mono mt-1">
-            {CITY_METRICS.criticalIssues}
+            {criticalCount}
           </div>
           <div className="text-[11px] text-red-300 mt-1 flex items-center gap-1 font-mono">
-            <span>{criticalCount} active in live queue</span>
+            <span>In active queue</span>
           </div>
         </div>
 
         {/* Metric 3: Reports Today */}
         <div className="p-4 rounded-2xl bg-[#0B0E1A] border border-white/10 relative overflow-hidden group hover:border-white/20 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono text-slate-400">REPORTS TODAY</span>
+            <span className="text-xs font-mono text-slate-400">TOTAL REPORTS</span>
             <Clock className="w-4 h-4 text-amber-400" />
           </div>
           <div className="text-2xl font-extrabold text-white font-mono mt-1">
-            {CITY_METRICS.reportsToday}
+            {filteredIncidents.length}
           </div>
           <div className="text-[11px] text-slate-400 mt-1 font-mono">
-            Avg ingestion: 4.2 / hr
+            Incidents tracked
           </div>
         </div>
 
         {/* Metric 4: Resolved This Month */}
         <div className="p-4 rounded-2xl bg-[#0B0E1A] border border-white/10 relative overflow-hidden group hover:border-emerald-500/30 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono text-slate-400">RESOLVED (MONTH)</span>
+            <span className="text-xs font-mono text-slate-400">CV VERIFIED REPAIRS</span>
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           </div>
           <div className="text-2xl font-extrabold text-emerald-400 font-mono mt-1">
-            {CITY_METRICS.resolvedThisMonth.toLocaleString()}
+            {filteredIncidents.filter(i => i.status === 'AI_VERIFIED').length.toLocaleString()}
           </div>
           <div className="text-[11px] text-slate-400 mt-1 font-mono">
-            MTTR: 42.5 hours
+            Successfully closed
           </div>
         </div>
 
         {/* Metric 5: AI Verified Repairs */}
         <div className="p-4 rounded-2xl bg-cyan-950/20 border border-cyan-500/30 relative overflow-hidden group hover:border-cyan-500/50 transition-all shadow-[0_0_20px_rgba(0,240,255,0.1)]">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono text-cyan-300">AI VERIFIED REPAIRS</span>
+            <span className="text-xs font-mono text-cyan-300">WARRANTY CLAIMS</span>
             <Zap className="w-4 h-4 text-cyan-400" />
           </div>
           <div className="text-2xl font-extrabold text-cyan-400 font-mono mt-1">
-            {CITY_METRICS.aiVerifiedRepairs.toLocaleString()}
+            {underWarrantyCount.toLocaleString()}
           </div>
           <div className="text-[11px] text-cyan-300 mt-1 font-mono">
             95.1% pass rate on first audit
