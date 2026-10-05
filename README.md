@@ -76,13 +76,26 @@ We have built a dedicated **1-Click Judge Demo** that walks evaluators through t
 
 | Layer | Technology |
 |---|---|
+| **Authentication** | Clerk Auth (`@clerk/clerk-react` + `@clerk/themes` Dark Command Center) |
 | **Frontend Framework** | React 19 + TypeScript (Vite 8) |
 | **Styling & Design System** | Tailwind CSS + Dark Command-Center Theme |
 | **Geospatial Mapping** | Leaflet + CartoDB Dark Matter Basemap |
 | **Icons & Visual Language** | Lucide React |
-| **State Management** | React Context (`AppContext`) with dynamic incident ingestion & upvoting |
+| **State Management** | React Context (`AppContext` + `AuthContext`) |
 | **Micro-Interactions** | Canvas Confetti, Radar scanning animations, audio-free visual alerts |
 | **Linting & Quality** | TypeScript strict mode + ESLint / Oxlint |
+
+---
+
+## 🔐 Clerk Authentication & Access Architecture
+
+CivicPulse utilizes Clerk for authentication, custom-themed with our dark command-center aesthetic:
+
+- **Public Surfaces:** The Landing Page, Product Overview, and the **⚡ 1-Click Judge Demo** remain accessible without requiring an account.
+- **Protected Command Center:** Core operational views (God’s Eye geospatial intelligence, Report Pothole, Priority Queue, Contractor Intelligence, Complaints, and Repair Verification) are guarded by `ProtectedView`.
+- **Resilient Judge Demo Bypass:** If testing offline or without creating an account, judges can click **"⚡ Enter via Guest Judge Demo Mode"** on any protected screen or the sign-in modal to immediately unlock all features.
+- **Zero-Crash Offline Fallback:** If network is unavailable or Clerk credentials are unconfigured, `ClerkAuthProvider` automatically falls back to an offline session provider with zero runtime crashes or blank screens.
+- **Security:** Clerk secret keys are never exposed in frontend code. Only `VITE_CLERK_PUBLISHABLE_KEY` is loaded on the client side.
 
 ---
 
@@ -113,6 +126,10 @@ cd CivicPulse
 
 # Install dependencies
 npm install
+
+# Configure Clerk environment variables (Optional for offline demo)
+cp .env.example .env
+# Set VITE_CLERK_PUBLISHABLE_KEY in .env
 
 # Start development server
 npm run dev

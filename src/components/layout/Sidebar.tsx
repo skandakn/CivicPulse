@@ -11,9 +11,12 @@ import {
   ShieldCheck,
   ChevronLeft,
   ChevronRight,
-  FileCheck2
+  FileCheck2,
+  Lock,
+  LogIn
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { useAuthSession } from '../../context/AuthContext';
 import { ViewMode } from '../../types';
 
 interface SidebarProps {
@@ -30,6 +33,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   setIsMobileOpen
 }) => {
   const { currentView, setCurrentView, incidents, complaints } = useApp();
+  const { isSignedIn, isDemoBypass, user, openSignIn } = useAuthSession();
 
   const criticalCount = incidents.filter(i => i.severity === 'CRITICAL' && i.status !== 'AI_VERIFIED').length;
   const activeComplaintsCount = complaints.filter(c => c.status !== 'RESOLVED').length;
@@ -156,24 +160,51 @@ export const Sidebar: React.FC<SidebarProps> = ({
           })}
         </nav>
 
-        {/* Footer info */}
+        {/* Footer info & Auth Status */}
         <div className="p-3 border-t border-white/10 bg-[#07080D]">
           {!isCollapsed ? (
-            <div className="p-2.5 rounded-lg bg-white/[0.03] border border-white/5">
-              <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  AI Neural Core
-                </span>
-                <span className="font-mono text-cyan-400">v4.2</span>
+            <div className="space-y-2">
+              <div className="p-2.5 rounded-lg bg-white/[0.03] border border-white/5">
+                <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1">
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    AI Neural Core
+                  </span>
+                  <span className="font-mono text-cyan-400">v4.2</span>
+                </div>
+                <p className="text-[10px] text-slate-500 leading-tight">
+                  BBMP Sahaya API Synced • 28ms latency
+                </p>
               </div>
-              <p className="text-[10px] text-slate-500 leading-tight">
-                BBMP Sahaya API Synced • 28ms latency
-              </p>
+
+              {/* Auth Status Strip */}
+              <div className="px-2.5 py-1.5 rounded-lg bg-black/40 border border-white/5 flex items-center justify-between text-[10px] font-mono">
+                {isSignedIn ? (
+                  <div className="flex items-center gap-1.5 text-cyan-400 truncate">
+                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                    <span className="truncate">{user?.firstName || 'Connected'}</span>
+                    {isDemoBypass && <span className="text-[9px] text-amber-400">(Demo)</span>}
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-slate-500 flex items-center gap-1">
+                      <Lock className="w-3 h-3 text-slate-600" />
+                      Public
+                    </span>
+                    <button
+                      onClick={openSignIn}
+                      className="text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                    >
+                      <LogIn className="w-3 h-3" />
+                      <span>Sign In</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
-            <div className="flex justify-center" title="AI Vision Online">
-              <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#10B981]" />
+            <div className="flex justify-center" title={isSignedIn ? 'Authenticated Session' : 'Public Session'}>
+              <div className={`w-2.5 h-2.5 rounded-full ${isSignedIn ? 'bg-cyan-400 shadow-[0_0_8px_#00F0FF]' : 'bg-slate-600'}`} />
             </div>
           )}
         </div>

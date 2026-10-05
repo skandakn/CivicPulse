@@ -387,3 +387,14 @@ export type ViewMode =
   | 'COMPLAINTS' 
   | 'ANALYTICS';
 
+export type UserRole = 'CITIZEN' | 'WARD_ENGINEER' | 'CHIEF_COMMISSIONER' | 'AUDITOR';
+
+export interface AuthUserProfile {
+  id: string;
+  fullName: string | null;
+  firstName: string | null;
+  email: string | null;
+  imageUrl: string | null;
+  role: UserRole;
+}
+

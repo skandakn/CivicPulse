@@ -105,3 +105,11 @@ Traditional civic complaint apps (like BBMP Sahaya, FixMyStreet) are passive gri
 2. **Intelligent Deduplication:** Merges repeated reports into high-signal master cases automatically using spatial + visual embeddings.
 3. **Legal & Financial Accountability:** Maps exact road tender contract IDs, DLP warranty windows, and liquidated damages under Clause 45.2.
 4. **Autonomous AI Repair Verification:** Verifies whether road repairs actually solved the problem or just dumped loose gravel, before closing public tickets.
+
+---
+
+### 15. How does authentication and access control work?
+- **Clerk Authentication Engine:** Built-in enterprise authentication via Clerk (`@clerk/clerk-react`) supporting email/password, social OAuth (Google), and multi-factor session security.
+- **Public vs. Protected Surfaces:** Landing page and the **⚡ 1-Click Judge Demo** are publicly accessible without authentication. Internal operational views (God's Eye geospatial map, live reporting, repair audits, contractor records) are protected sessions.
+- **Presentation & Offline Resilience:** Evaluators can click **"⚡ Enter via Guest Judge Demo Mode"** to bypass account registration instantly. If hackathon venue Wi-Fi drops, our `ClerkAuthProvider` error boundary automatically drops into resilient offline mode, ensuring zero presentation failures.
+- **Role Preparation:** Designed with role perspectives for Citizen Reporters, BBMP Ward Engineers, Chief Commissioners, and Quality Auditors.
