@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Upload,
   Camera,
@@ -9,12 +9,26 @@ import {
   Layers,
   FileCheck,
   Building2,
-  ShieldAlert
+  ShieldAlert,
+  Mic,
+  Square,
+  FileText,
+  Radio,
+  CheckCircle2
 } from 'lucide-react';
 import { BengaluruMap } from '../components/map/BengaluruMap';
 import { useApp } from '../context/AppContext';
 import { PotholeAnalysisResponse } from '../types';
 import confetti from 'canvas-confetti';
+import {
+  transcriptionService,
+  InterpretedComplaint,
+  TranscriptionResult,
+  DEMO_VOICE_SAMPLES,
+  DemoVoiceSample
+} from '../services/transcriptionService';
+import { ComplaintTrackingStepper } from '../components/common/ComplaintTrackingStepper';
+import { DepartmentRoutingBadge } from '../components/common/DepartmentRoutingBadge';
 
 interface PresetSample {
   id: string;
@@ -118,6 +132,224 @@ export const ReportPage: React.FC = () => {
     'Priority calculation'
   ];
   const [activeStepIndex, setActiveStepIndex] = useState<number>(0);
+
+  // WebNova Ingestion Channel Mode: Photo / Voice / Text
+  type SubmissionMode = 'PHOTO' | 'VOICE' | 'TEXT';
+  const [submissionMode, setSubmissionMode] = useState<SubmissionMode>('PHOTO');
+
+  // Voice Complaint Subsystem State
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingDuration, setRecordingDuration] = useState(0);
+  const [_audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [transcriptionResult, setTranscriptionResult] = useState<TranscriptionResult | null>(null);
+  const [voiceText, setVoiceText] = useState(DEMO_VOICE_SAMPLES[0].transcript);
+  const [interpretedComplaint, setInterpretedComplaint] = useState<InterpretedComplaint>(
+    transcriptionService.interpretComplaint(DEMO_VOICE_SAMPLES[0].transcript)
+  );
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const timerIntervalRef = useRef<any>(null);
+
+  // Text Complaint Subsystem State
+  const [textComplaintInput, setTextComplaintInput] = useState(
+    'Massive waterlogged crater cluster on ITPL Main Road near Metro pillar 421. Water covers the hole, making it invisible to cars.'
+  );
+  const [sessionTimestamp] = useState(() => new Date().toISOString());
+
+  useEffect(() => {
+    return () => {
+      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+      if (audioUrl) URL.revokeObjectURL(audioUrl);
+    };
+  }, [audioUrl]);
+
+  const startVoiceRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioChunksRef.current = [];
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        setAudioBlob(blob);
+        const url = URL.createObjectURL(blob);
+        setAudioUrl(url);
+        stream.getTracks().forEach(track => track.stop());
+
+        await handleTranscribe(blob, recordingDuration);
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+      setRecordingDuration(0);
+      timerIntervalRef.current = setInterval(() => {
+        setRecordingDuration(prev => prev + 1);
+      }, 1000);
+      addToast('Voice Recording', 'Microphone active — describe the road condition & location', 'info');
+    } catch (err: any) {
+      console.warn('Microphone access restricted:', err);
+      addToast('Mic Access Restricted', 'Switched to 1-Click Demo Voice Mode', 'info');
+      handleSelectDemoVoice(DEMO_VOICE_SAMPLES[0]);
+    }
+  };
+
+  const stopVoiceRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+        timerIntervalRef.current = null;
+      }
+    }
+  };
+
+  const handleTranscribe = async (blob: Blob, duration: number, preferredProvider?: 'gemini' | 'groq' | 'demo') => {
+    setIsTranscribing(true);
+    try {
+      const result = await transcriptionService.transcribeAudio(blob, duration, preferredProvider);
+      setTranscriptionResult(result);
+      setVoiceText(result.text);
+      applyInterpretedData(result.text);
+      addToast('Speech Transcribed', `Processed via ${result.providerLabel}`, 'success');
+    } catch (_err: any) {
+      const fallback = transcriptionService.getDemoFallbackTranscription(duration);
+      setTranscriptionResult(fallback);
+      setVoiceText(fallback.text);
+      applyInterpretedData(fallback.text);
+      addToast('Voice Processed', fallback.providerLabel, 'info');
+    } finally {
+      setIsTranscribing(false);
+    }
+  };
+
+  const handleSelectDemoVoice = (sample: DemoVoiceSample) => {
+    const duration = parseInt(sample.duration.split(':')[1]) || 5;
+    setRecordingDuration(duration);
+    const fallback = transcriptionService.getDemoFallbackTranscription(duration, sample.id);
+    setTranscriptionResult(fallback);
+    setVoiceText(sample.transcript);
+    applyInterpretedData(sample.transcript);
+    addToast('Demo Voice Loaded', `${sample.title} (${sample.location})`, 'success');
+  };
+
+  const applyInterpretedData = (text: string) => {
+    const interpreted = transcriptionService.interpretComplaint(text);
+    setInterpretedComplaint(interpreted);
+    setRoadName(interpreted.roadName);
+    setLandmark(interpreted.landmark);
+    setWardName(interpreted.wardName);
+    setWardNumber(interpreted.wardNumber);
+    setSelectedCoords(interpreted.coordinates);
+    setDescription(text);
+  };
+
+  const handleTextComplaintChange = (val: string) => {
+    setTextComplaintInput(val);
+    applyInterpretedData(val);
+  };
+
+  const submitVoiceOrTextComplaint = () => {
+    const sourceText = submissionMode === 'VOICE' ? voiceText : textComplaintInput;
+    if (!sourceText.trim()) {
+      addToast('Grievance Required', 'Please provide or record your pothole description', 'error');
+      return;
+    }
+
+    const interpreted = interpretedComplaint || transcriptionService.interpretComplaint(sourceText);
+
+    // Duplicate check match
+    const matchedDuplicate = incidents.find(i => 
+      i.roadName.toLowerCase().includes(interpreted.wardName.toLowerCase()) || 
+      i.wardNumber === interpreted.wardNumber
+    ) || incidents[0];
+
+    const analysisPayload: PotholeAnalysisResponse = {
+      detected: true,
+      confidence: 0.962,
+      detections: [
+        {
+          id: 'pothole-01',
+          label: 'pothole',
+          confidence: 0.962,
+          box: { x: 330, y: 380, width: 290, height: 180, x_norm: 0.32, y_norm: 0.49, width_norm: 0.28, height_norm: 0.23 },
+          severity: interpreted.severity === 'CRITICAL' ? 'Critical' : interpreted.severity === 'HIGH' ? 'High' : 'Medium',
+          areaSqPx: 52200,
+          relativeArea: 0.066,
+          depthEstimate: `Cavity (~${interpreted.estimatedDepthCm} cm)`
+        }
+      ],
+      estimatedSeverity: interpreted.severity,
+      damageArea: `${(interpreted.estimatedDepthCm * 0.12).toFixed(1)} m²`,
+      potholeCount: 1,
+      roadCondition: `${interpreted.roadName} — ${interpreted.department.routingReason}`,
+      explanation: `${interpreted.summary} Pothole depth estimated at ${interpreted.estimatedDepthCm}cm.`,
+      imageMetadata: { width: 1024, height: 768, sizeBytes: 340000, format: 'jpeg' },
+      damageImpact: {
+        totalAreaSqMeters: parseFloat((interpreted.estimatedDepthCm * 0.12).toFixed(1)),
+        roadObstructionPct: interpreted.severity === 'CRITICAL' ? 62.4 : 45.0,
+        twoWheelerRisk: interpreted.severity === 'CRITICAL' ? 'Extreme (High Skidding & Rim Fracture Risk)' : 'High',
+        busTransitDisruption: interpreted.severity === 'CRITICAL' ? 'Severe (Speed Reduction < 10 km/h)' : 'Moderate',
+        laneClosureRecommended: interpreted.severity === 'CRITICAL',
+        repairUrgency: interpreted.severity === 'CRITICAL' ? 'Emergency Cold Patching (< 24h)' : 'Priority Patching (< 48h)'
+      },
+      severityEngine: {
+        score: interpreted.severity === 'CRITICAL' ? 94 : interpreted.severity === 'HIGH' ? 82 : 65,
+        level: interpreted.severity,
+        factors: { visual_size: 19.5, pothole_count: 15.0, road_obstruction: 15.0, confidence: 9.3, road_importance: 15.0, hub_proximity: 8.5, previous_reports: 8.0, persistence: 3.7 },
+        explanations: [
+          `Corridor: ${interpreted.roadName}`,
+          `Report density: 17 merged citizen submissions`,
+          `Routed directly to ${interpreted.department.name}`
+        ]
+      },
+      duplicateCheck: {
+        isDuplicate: true,
+        duplicateProbability: 0.94,
+        matchedIncidentId: matchedDuplicate?.code || 'BNG-PTH-1042',
+        reason: `94% likely duplicate of ${matchedDuplicate?.code || 'BNG-PTH-1042'} on ${interpreted.roadName}`,
+        distanceMeters: 14.2
+      },
+      incident: {
+        id: matchedDuplicate?.code || 'BNG-PTH-1042',
+        canonicalLocation: {
+          lat: interpreted.coordinates.lat,
+          lng: interpreted.coordinates.lng,
+          address: interpreted.roadName,
+          ward: `Ward ${interpreted.wardNumber} - ${interpreted.wardName}`,
+          zone: 'Mahadevapura'
+        },
+        priority: interpreted.severity === 'CRITICAL' ? 94 : 82,
+        severity: interpreted.severity,
+        reportsMerged: 17,
+        road: interpreted.roadName,
+        authority: interpreted.department.name,
+        contractor: 'NCC Urban Infrastructure Ltd (Contract #KA-BBMP-2025-912)',
+        status: 'Verified',
+        lastReportedAt: sessionTimestamp
+      },
+      inferenceTimeMs: 24.5,
+      modelName: submissionMode === 'VOICE' ? 'Gemini-3.8-Flash-Multimodal-STT + NLP' : 'CivicPulse-NLP-Triage-Engine',
+      activePipelineMode: 'demo'
+    };
+
+    setAnalysisResult(analysisPayload);
+    finalizeAndGoToReport();
+    addToast(
+      submissionMode === 'VOICE' ? 'Voice Grievance Ingested' : 'Text Grievance Ingested',
+      `Routed to ${interpreted.department.acronym} under Priority ${analysisPayload.incident.priority}/100`,
+      'success'
+    );
+  };
 
   // Handle Preset Select
   const handleSelectPreset = (preset: PresetSample) => {
@@ -352,9 +584,68 @@ export const ReportPage: React.FC = () => {
         </div>
       </div>
 
-      {/* STAGE 1: INPUT & UPLOAD VIEW */}
+      {/* STAGE 1: INPUT & MULTIMODAL INGESTION VIEW */}
       {reportStep === 'INPUT' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="space-y-6">
+          {/* WebNova 4-Channel Ingestion Bar */}
+          <div className="flex flex-wrap items-center justify-between gap-4 p-2.5 rounded-2xl bg-[#0A0D1A] border border-white/10 shadow-lg">
+            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-black/50 border border-white/5">
+              <button
+                type="button"
+                onClick={() => setSubmissionMode('PHOTO')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                  submissionMode === 'PHOTO'
+                    ? 'bg-cyan-500 text-slate-950 shadow-[0_0_15px_#00F0FF]'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <Camera className="w-3.5 h-3.5" />
+                <span>Photo / Dashcam</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setSubmissionMode('VOICE')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                  submissionMode === 'VOICE'
+                    ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-[0_0_18px_rgba(168,85,247,0.5)] ring-1 ring-purple-400'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <Mic className="w-3.5 h-3.5 text-purple-300" />
+                <span>Voice Complaint</span>
+                <span className="px-1.5 py-0.2 rounded text-[9px] bg-purple-900/90 text-purple-200 border border-purple-400/40 font-mono">
+                  AI STT
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setSubmissionMode('TEXT')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                  submissionMode === 'TEXT'
+                    ? 'bg-cyan-500 text-slate-950 shadow-[0_0_15px_#00F0FF]'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Text Grievance</span>
+              </button>
+            </div>
+
+            <div className="flex items-center gap-3 text-xs font-mono pr-2">
+              <div className="flex items-center gap-1.5 text-slate-300">
+                <MapPin className="w-3.5 h-3.5 text-cyan-400" />
+                <span>GPS Geotagging: <strong className="text-cyan-400">Locked</strong></span>
+              </div>
+              <span className="text-slate-600">|</span>
+              <span className="text-slate-400 text-[11px]">
+                Active: <strong className="text-emerald-400">Photo • Voice • Text • Map</strong>
+              </span>
+            </div>
+          </div>
+
+          {/* CHANNEL 1: PHOTO / DASHCAM (Default CV Engine) */}
+          {submissionMode === 'PHOTO' && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Column: Upload, Presets & Preview */}
           <div className="lg:col-span-6 space-y-6">
             {/* Curated Benchmark Samples Bar */}
@@ -594,6 +885,379 @@ export const ReportPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* CHANNEL 2: VOICE COMPLAINT (WebNova Multimodal Channel) */}
+      {submissionMode === 'VOICE' && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-in fade-in duration-300">
+          {/* Left Column: Voice Recording Cockpit & STT Transcription */}
+          <div className="lg:col-span-6 space-y-6">
+            {/* Voice Status & Provider Header */}
+            <div className="p-5 rounded-2xl bg-[#090D1A] border border-purple-500/30 space-y-4 shadow-[0_0_25px_rgba(168,85,247,0.12)]">
+              <div className="flex items-center justify-between text-xs font-mono">
+                <div className="flex items-center gap-2">
+                  <Radio className={`w-4 h-4 ${isRecording ? 'text-red-400 animate-pulse' : 'text-purple-400'}`} />
+                  <span className="font-bold text-white uppercase tracking-wider">
+                    {isRecording ? 'Recording In Progress...' : isTranscribing ? 'Transcribing via Gemini 3.8 Flash...' : 'Spoken Grievance Cockpit'}
+                  </span>
+                </div>
+                <span className="px-2.5 py-0.5 rounded text-[10px] font-bold bg-purple-950 border border-purple-500/40 text-purple-300">
+                  {transcriptionResult?.providerLabel || 'Gemini 3.8 Flash Neural Speech'}
+                </span>
+              </div>
+
+              {/* Central Interactive Microphone Record Button */}
+              <div className="py-6 text-center space-y-4">
+                <div className="relative inline-flex items-center justify-center">
+                  {isRecording && (
+                    <span className="absolute w-32 h-32 rounded-full bg-red-500/20 animate-ping" />
+                  )}
+                  <button
+                    type="button"
+                    onClick={isRecording ? stopVoiceRecording : startVoiceRecording}
+                    className={`relative z-10 w-24 h-24 rounded-full flex flex-col items-center justify-center transition-all cursor-pointer shadow-2xl ${
+                      isRecording
+                        ? 'bg-gradient-to-br from-red-600 to-rose-700 text-white shadow-[0_0_35px_rgba(239,68,68,0.6)] scale-105'
+                        : 'bg-gradient-to-br from-purple-600 via-indigo-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white shadow-[0_0_30px_rgba(168,85,247,0.4)] hover:scale-105'
+                    }`}
+                  >
+                    {isRecording ? (
+                      <>
+                        <Square className="w-8 h-8 fill-current mb-1" />
+                        <span className="text-[10px] font-mono font-black uppercase tracking-wider">STOP</span>
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="w-8 h-8 mb-1" />
+                        <span className="text-[10px] font-mono font-black uppercase tracking-wider">RECORD</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <div className="space-y-1">
+                  <div className="font-mono text-3xl font-black text-white">
+                    00:{recordingDuration < 10 ? `0${recordingDuration}` : recordingDuration}
+                  </div>
+                  <p className="text-xs text-slate-400">
+                    {isRecording
+                      ? 'Speak clearly — mention corridor, landmark, crater severity, or waterlogging'
+                      : 'Tap Record to speak, or pick an offline benchmark voice clip below'}
+                  </p>
+                </div>
+
+                {/* HTML5 Audio Playback (if recorded) */}
+                {audioUrl && (
+                  <div className="pt-2 max-w-sm mx-auto">
+                    <audio controls src={audioUrl} className="w-full h-8 opacity-80" />
+                  </div>
+                )}
+              </div>
+
+              {/* 1-Click Benchmark Voice Clips */}
+              <div className="pt-3 border-t border-white/10 space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-mono text-slate-400 flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+                    1-Click Benchmark Voice Clips (Deterministic)
+                  </span>
+                  <span className="text-[10px] font-mono text-purple-400">3 Samples</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  {DEMO_VOICE_SAMPLES.map((sample) => (
+                    <button
+                      key={sample.id}
+                      type="button"
+                      onClick={() => handleSelectDemoVoice(sample)}
+                      className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                        voiceText === sample.transcript
+                          ? 'bg-purple-950/60 border-purple-500/70 text-purple-200 shadow-[0_0_12px_rgba(168,85,247,0.25)]'
+                          : 'bg-white/[0.03] border-white/5 text-slate-300 hover:bg-white/[0.07]'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-xs truncate">{sample.title.split(' ')[0]}</span>
+                        <span className="text-[10px] font-mono text-slate-400">{sample.duration}</span>
+                      </div>
+                      <div className="text-[10px] text-slate-400 truncate mt-0.5">{sample.location.split(',')[0]}</div>
+                      <span className={`inline-block mt-1 text-[9px] font-mono px-1.5 py-0.2 rounded ${
+                        sample.severity === 'CRITICAL' ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                      }`}>
+                        {sample.severity}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Editable Transcription Text Area */}
+            <div className="p-4 rounded-2xl bg-[#090C17] border border-white/10 space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5 text-cyan-400" />
+                  Transcribed Spoken Complaint (Editable)
+                </label>
+                <span className="text-[10px] font-mono text-emerald-400 flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" />
+                  Auto-Triage Active
+                </span>
+              </div>
+              <textarea
+                rows={3}
+                value={voiceText}
+                onChange={(e) => {
+                  setVoiceText(e.target.value);
+                  applyInterpretedData(e.target.value);
+                }}
+                placeholder="Citizen spoken complaint transcription..."
+                className="w-full rounded-xl bg-white/[0.03] border border-white/10 p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500/60 leading-relaxed font-sans"
+              />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div>
+                  <label className="block text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1">
+                    Complainant Contact (SMS Tracking)
+                  </label>
+                  <input
+                    type="text"
+                    value={reporterPhone}
+                    onChange={(e) => setReporterPhone(e.target.value)}
+                    className="w-full rounded-xl bg-white/[0.03] border border-white/10 px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-purple-500/60"
+                  />
+                </div>
+                <div className="flex items-end">
+                  <button
+                    type="button"
+                    onClick={submitVoiceOrTextComplaint}
+                    className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-white font-extrabold text-xs shadow-[0_0_20px_rgba(168,85,247,0.4)] flex items-center justify-center gap-2 transition-all cursor-pointer"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    <span>Submit Voice Grievance</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Real-time AI NLP Triage, Department Routing & Map */}
+          <div className="lg:col-span-6 space-y-6">
+            {/* Automated Department Routing Card */}
+            <DepartmentRoutingBadge
+              department={interpretedComplaint?.department.acronym || 'BBMP'}
+              roadName={interpretedComplaint?.roadName || roadName}
+              nodalOfficer={interpretedComplaint?.department.nodalOfficer}
+              routingReason={interpretedComplaint?.department.routingReason}
+            />
+
+            {/* Location Picker Map */}
+            <div className="rounded-2xl border border-white/10 bg-[#090C16] p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-cyan-400" />
+                  <span className="font-mono text-xs font-bold text-white uppercase tracking-wider">
+                    AI Resolved Bengaluru Location
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono text-cyan-400">
+                  Click map to adjust GPS
+                </span>
+              </div>
+
+              <div className="h-56 rounded-xl overflow-hidden border border-white/10 relative">
+                <BengaluruMap
+                  height="100%"
+                  isPickerMode={true}
+                  pickerCoordinates={selectedCoords}
+                  onPickCoordinates={(coords) => {
+                    setSelectedCoords(coords);
+                    addToast('Coordinates Updated', `${coords.lat.toFixed(4)}°N, ${coords.lng.toFixed(4)}°E`, 'info');
+                  }}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 text-xs bg-white/[0.02] p-3 rounded-xl border border-white/5 font-mono">
+                <div>
+                  <span className="text-slate-500 block text-[10px]">CORRIDOR RESOLVED</span>
+                  <span className="text-white font-medium truncate block">{interpretedComplaint?.roadName || roadName}</span>
+                </div>
+                <div>
+                  <span className="text-slate-500 block text-[10px]">SEVERITY TRIAGE</span>
+                  <span className={`font-bold ${interpretedComplaint?.severity === 'CRITICAL' ? 'text-red-400' : 'text-amber-400'}`}>
+                    {interpretedComplaint?.severity || 'HIGH'} (~{interpretedComplaint?.estimatedDepthCm || 12} cm)
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* 4-Stage Stepper Preview */}
+            <ComplaintTrackingStepper
+              status="REPORTED"
+              filedAt={sessionTimestamp}
+              assignedAuthority={interpretedComplaint?.department.name || 'BBMP Road Infrastructure Dept'}
+              compact={true}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* CHANNEL 3: TEXT COMPLAINT (WebNova Natural Language Channel) */}
+      {submissionMode === 'TEXT' && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-in fade-in duration-300">
+          {/* Left Column: Text Grievance Cockpit */}
+          <div className="lg:col-span-6 space-y-6">
+            <div className="p-5 rounded-2xl bg-[#090D1A] border border-cyan-500/30 space-y-4 shadow-[0_0_25px_rgba(0,240,255,0.08)]">
+              <div className="flex items-center justify-between text-xs font-mono">
+                <div className="flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-cyan-400" />
+                  <span className="font-bold text-white uppercase tracking-wider">
+                    Natural Language Grievance Ingestion
+                  </span>
+                </div>
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-950 border border-cyan-500/40 text-cyan-300">
+                  Real-time NLP Parser
+                </span>
+              </div>
+
+              {/* 1-Click Quick Prompts */}
+              <div className="space-y-2">
+                <span className="text-[11px] font-mono text-slate-400 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                  Quick Grievance Templates
+                </span>
+                <div className="space-y-1.5">
+                  {[
+                    {
+                      title: 'Bellandur ORR Arterial Crater',
+                      text: 'There is a very large pothole near Bellandur Outer Ring Road opposite EcoSpace skywalk and bikes are struggling to avoid it.'
+                    },
+                    {
+                      title: 'Indiranagar 100ft Road Cavity',
+                      text: 'Severe cavity on 100 Feet Road Indiranagar near CMH Hospital junction. Two-wheelers are swerving dangerously into oncoming traffic.'
+                    },
+                    {
+                      title: 'Whitefield ITPL Waterlogged Cluster',
+                      text: 'Waterlogged road crater cluster on ITPL Main Road near Metro pillar 421. Water covers the hole making it completely invisible to cars.'
+                    }
+                  ].map((tmpl, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => handleTextComplaintChange(tmpl.text)}
+                      className={`w-full p-2.5 rounded-xl border text-left text-xs transition-all cursor-pointer ${
+                        textComplaintInput === tmpl.text
+                          ? 'bg-cyan-500/15 border-cyan-500/60 text-cyan-200'
+                          : 'bg-white/[0.02] border-white/5 text-slate-300 hover:bg-white/[0.06]'
+                      }`}
+                    >
+                      <div className="font-bold">{tmpl.title}</div>
+                      <div className="text-[11px] text-slate-400 truncate mt-0.5">{tmpl.text}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Direct Textarea */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider block">
+                  Hazard Description & Location Context
+                </label>
+                <textarea
+                  rows={4}
+                  value={textComplaintInput}
+                  onChange={(e) => handleTextComplaintChange(e.target.value)}
+                  placeholder="Describe road name, nearest landmark, crater size, waterlogging..."
+                  className="w-full rounded-xl bg-white/[0.03] border border-white/10 p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 leading-relaxed font-sans"
+                />
+              </div>
+
+              {/* Reporter contact & submit */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <div>
+                  <label className="block text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1">
+                    Contact Phone (SMS Tracking)
+                  </label>
+                  <input
+                    type="text"
+                    value={reporterPhone}
+                    onChange={(e) => setReporterPhone(e.target.value)}
+                    className="w-full rounded-xl bg-white/[0.03] border border-white/10 px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-cyan-500/60"
+                  />
+                </div>
+                <div className="flex items-end">
+                  <button
+                    type="button"
+                    onClick={submitVoiceOrTextComplaint}
+                    className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-400 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs shadow-[0_0_20px_rgba(0,240,255,0.3)] flex items-center justify-center gap-2 transition-all cursor-pointer"
+                  >
+                    <Sparkles className="w-4 h-4 text-slate-950" />
+                    <span>Submit Grievance</span>
+                    <ArrowRight className="w-4 h-4 text-slate-950" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Department Routing, Map Picker & Stepper */}
+          <div className="lg:col-span-6 space-y-6">
+            <DepartmentRoutingBadge
+              department={interpretedComplaint?.department.acronym || 'BBMP'}
+              roadName={interpretedComplaint?.roadName || roadName}
+              nodalOfficer={interpretedComplaint?.department.nodalOfficer}
+              routingReason={interpretedComplaint?.department.routingReason}
+            />
+
+            <div className="rounded-2xl border border-white/10 bg-[#090C16] p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-cyan-400" />
+                  <span className="font-mono text-xs font-bold text-white uppercase tracking-wider">
+                    Interactive Bengaluru GPS Pinpoint
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono text-cyan-400">
+                  Click map to adjust GPS
+                </span>
+              </div>
+
+              <div className="h-56 rounded-xl overflow-hidden border border-white/10 relative">
+                <BengaluruMap
+                  height="100%"
+                  isPickerMode={true}
+                  pickerCoordinates={selectedCoords}
+                  onPickCoordinates={(coords) => {
+                    setSelectedCoords(coords);
+                    addToast('Coordinates Updated', `${coords.lat.toFixed(4)}°N, ${coords.lng.toFixed(4)}°E`, 'info');
+                  }}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 text-xs bg-white/[0.02] p-3 rounded-xl border border-white/5 font-mono">
+                <div>
+                  <span className="text-slate-500 block text-[10px]">ROAD CORRIDOR</span>
+                  <span className="text-white font-medium truncate block">{interpretedComplaint?.roadName || roadName}</span>
+                </div>
+                <div>
+                  <span className="text-slate-500 block text-[10px]">SEVERITY TRIAGE</span>
+                  <span className={`font-bold ${interpretedComplaint?.severity === 'CRITICAL' ? 'text-red-400' : 'text-amber-400'}`}>
+                    {interpretedComplaint?.severity || 'HIGH'} (~{interpretedComplaint?.estimatedDepthCm || 12} cm)
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <ComplaintTrackingStepper
+              status="REPORTED"
+              filedAt={sessionTimestamp}
+              assignedAuthority={interpretedComplaint?.department.name || 'BBMP Road Infrastructure Dept'}
+              compact={true}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  )}
 
       {/* STAGE 2: CINEMATIC VISUAL ANALYSIS SCREEN */}
       {reportStep === 'CINEMATIC_ANALYSIS' && analysisResult && (
@@ -1021,6 +1685,21 @@ export const ReportPage: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* WebNova 4-Stage Lifecycle Stepper */}
+          <ComplaintTrackingStepper
+            status="REPORTED"
+            filedAt={analysisResult.incident.lastReportedAt}
+            assignedAuthority={analysisResult.incident.authority}
+            contractorName={analysisResult.incident.contractor}
+          />
+
+          {/* WebNova Automated Department Routing */}
+          <DepartmentRoutingBadge
+            department={analysisResult.incident.authority?.includes('BMRCL') ? 'BMRCL' : analysisResult.incident.authority?.includes('BWSSB') ? 'BWSSB' : analysisResult.incident.authority?.includes('BESCOM') ? 'BESCOM' : 'BBMP'}
+            roadName={analysisResult.incident.road}
+            routingReason="Official maintenance covenant active. Automatically triaged and dispatched to municipal authority."
+          />
         </div>
       )}
     </div>
