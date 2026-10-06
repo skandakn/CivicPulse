@@ -1,4 +1,4 @@
-import React, { useState, Component, ErrorInfo, ReactNode } from 'react';
+import React, { useState, useEffect, Component, ErrorInfo, ReactNode } from 'react';
 import { ClerkProvider, useUser, useClerk } from '@clerk/clerk-react';
 import { AuthContext, AuthContextType } from '../../context/AuthContext';
 import { AuthUserProfile } from '../../types';
@@ -77,6 +77,12 @@ const ClerkAuthBridge: React.FC<{
     }
     return null;
   });
+
+  useEffect(() => {
+    if (isClerkSignedIn && isAuthModalOpen) {
+      setIsAuthModalOpen(false);
+    }
+  }, [isClerkSignedIn, isAuthModalOpen, setIsAuthModalOpen]);
 
   const handleSignOut = async () => {
     try {
