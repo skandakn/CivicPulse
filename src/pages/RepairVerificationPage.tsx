@@ -3,7 +3,9 @@ import {
   ShieldCheck,
   CheckCircle2,
   AlertTriangle,
-  Sparkles
+  Sparkles,
+  ArrowRight,
+  Layers
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { PotholeIncident, RepairVerification } from '../types';
@@ -25,14 +27,14 @@ export const RepairVerificationPage: React.FC = () => {
 
   const runVerificationAudit = async (shouldPass: boolean = true) => {
     setIsAuditing(true);
-    addToast('Surface Scan Commenced', 'Running stereoscopic texture comparison', 'info');
+    addToast('Surface Scan Commenced', 'Running stereoscopic texture comparison against IRC-SP-100', 'info');
 
     const submittedPhoto = shouldPass
       ? 'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=800&q=80'
       : 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80';
     setAfterImage(submittedPhoto);
 
-    await new Promise(r => setTimeout(r, 1200));
+    await new Promise(r => setTimeout(r, 800));
 
     const result: RepairVerification = {
       incidentId: activeIncident.id,
@@ -55,109 +57,138 @@ export const RepairVerificationPage: React.FC = () => {
     setAuditResult(result);
     setIsAuditing(false);
     verifyRepair(activeIncident.id, result);
+
+    if (shouldPass) {
+      addToast('Repair Verification Approved', 'Contractor patch passed quality threshold. DLP period initiated.', 'success');
+    } else {
+      addToast('Repair Verification Rejected', 'Rework notice dispatched to contractor under Clause 45.2.', 'error');
+    }
   };
 
   return (
-    <div className="space-y-8 pb-16 max-w-6xl mx-auto text-left animate-in fade-in duration-300">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-5">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/40 text-xs font-mono text-emerald-300 mb-2">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>AI POST-REPAIR QUALITY AUDIT • DEMO VERIFICATION MODE</span>
+    <div className="space-y-6 pb-16 max-w-6xl mx-auto text-left">
+      {/* Header matching Approva */}
+      <div className="brut-lg bg-white p-6 sm:p-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-[3px] border-[#121210] pb-4">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="tag bg-[#2E8C42] text-white">
+                <ShieldCheck className="w-3.5 h-3.5 stroke-[3]" />
+                IRC-SP-100 QUALITY AUDIT
+              </span>
+              <span className="tag bg-[#CFE8D6] text-[#121210]">
+                DEMO AUDIT MODE
+              </span>
+            </div>
+            <h1 className="text-3xl font-display font-extrabold text-[#121210] tracking-tight">
+              AI Repair Verification Lab
+            </h1>
+            <p className="text-sm font-body text-[#121210]/70 mt-1 max-w-2xl">
+              Forensic validation of contractor road repairs. Compares pre-repair defect dimensions against post-patch hot-mix compaction.
+            </p>
           </div>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">
-            AI Repair Verification Lab
-          </h1>
-          <p className="text-sm text-slate-400 mt-1 max-w-2xl">
-            Automating objective forensic verification of contractor road repairs. Compares pre-repair defect topography against post-patch hot-mix compaction.
-          </p>
+
+          {/* Incident Switcher */}
+          <div className="flex items-center gap-2 font-mono text-xs">
+            <span className="font-bold text-[#121210]">CASE:</span>
+            <select
+              value={activeIncident.id}
+              onChange={(e) => {
+                const inc = incidents.find(i => i.id === e.target.value);
+                if (inc) {
+                  setSelectedIncident(inc);
+                  setAfterImage(
+                    inc.repairVerification?.contractorSubmittedPhoto ||
+                    'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=800&q=80'
+                  );
+                  setAuditResult(inc.repairVerification || null);
+                }
+              }}
+              className="brut-sm bg-white px-3 py-1.5 font-mono font-bold text-[#121210] outline-none cursor-pointer"
+            >
+              {incidents.map((inc) => (
+                <option key={inc.id} value={inc.id}>
+                  {inc.code} — {inc.roadName.substring(0, 26)}...
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        {/* Incident Switcher */}
-        <div className="flex items-center gap-2 font-mono text-xs">
-          <span className="text-slate-500">Case:</span>
-          <select
-            value={activeIncident.id}
-            onChange={(e) => {
-              const inc = incidents.find(i => i.id === e.target.value);
-              if (inc) {
-                setSelectedIncident(inc);
-                setAfterImage(
-                  inc.repairVerification?.contractorSubmittedPhoto ||
-                  'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=800&q=80'
-                );
-                setAuditResult(inc.repairVerification || null);
-              }
-            }}
-            className="px-3 py-1.5 rounded-lg bg-[#0E121B] border border-white/15 text-cyan-400 font-bold outline-none cursor-pointer"
-          >
-            {incidents.map((inc) => (
-              <option key={inc.id} value={inc.id} className="bg-[#0A0D16] text-slate-200">
-                {inc.code} — {inc.roadName.substring(0, 30)}...
-              </option>
-            ))}
-          </select>
+        {/* Selected Case Quick Strip */}
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+          <div>
+            <span className="text-[#121210]/60">ROAD: </span>
+            <span className="font-bold text-[#121210]">{activeIncident.roadName}</span>
+          </div>
+          <div>
+            <span className="text-[#121210]/60">CONTRACTOR: </span>
+            <span className="font-bold text-[#121210]">{activeIncident.contractorName}</span>
+          </div>
+          <div>
+            <span className="text-[#121210]/60">DEFECT DEPTH: </span>
+            <span className="font-bold text-[#C03A3A]">{activeIncident.depthCm} cm</span>
+          </div>
         </div>
       </div>
 
-      {/* Before vs After Side-by-Side Visual Inspection */}
+      {/* Side-by-Side Visual Inspection matching Approva */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* BEFORE BOX */}
-        <div className="p-5 rounded-2xl bg-[#090C16] border border-red-500/30 space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-mono text-red-400 font-bold">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
+        <div className="brut bg-white p-5 space-y-3">
+          <div className="flex items-center justify-between border-b-2 border-[#121210] pb-2">
+            <div className="flex items-center gap-2 font-display font-extrabold text-sm text-[#C03A3A]">
+              <span className="w-2.5 h-2.5 bg-[#C03A3A] border border-[#121210]" />
               <span>BEFORE: REPORTED DEFECT</span>
             </div>
-            <span className="text-[11px] font-mono text-slate-400">
-              Severity: {activeIncident.severity}
+            <span className="tag bg-[#C03A3A] text-white">
+              {activeIncident.severity}
             </span>
           </div>
 
-          <div className="relative rounded-xl overflow-hidden h-64 bg-black border border-white/10">
+          <div className="relative overflow-hidden h-64 bg-black border-2 border-[#121210]">
             <img
               src={activeIncident.images.original}
               alt="Defect before repair"
               className="w-full h-full object-cover"
             />
-            <div className="absolute bottom-2 left-2 bg-black/80 px-2 py-0.5 rounded text-[10px] font-mono text-red-400">
-              Depth: {activeIncident.depthCm}cm • Area: {activeIncident.surfaceAreaSqM}m²
+            <div className="absolute bottom-2 left-2 bg-[#121210] text-white px-2 py-0.5 text-[10px] font-mono font-bold">
+              DEPTH: {activeIncident.depthCm}cm · AREA: {activeIncident.surfaceAreaSqM}m²
             </div>
           </div>
 
-          <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/5 font-mono text-xs text-slate-300">
-            <div>Road: {activeIncident.roadName}</div>
-            <div className="text-[11px] text-slate-500">Contractor: {activeIncident.contractorName}</div>
+          <div className="p-3 border-2 border-[#121210] bg-[#CFE8D6]/30 font-mono text-xs">
+            <div><strong className="text-[#121210]">Roadway:</strong> {activeIncident.roadName}</div>
+            <div className="text-[11px] text-[#121210]/70 mt-0.5">Assigned: {activeIncident.contractorName}</div>
           </div>
         </div>
 
         {/* AFTER BOX */}
-        <div className="p-5 rounded-2xl bg-[#090C16] border border-emerald-500/30 space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 font-bold">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+        <div className="brut bg-white p-5 space-y-3">
+          <div className="flex items-center justify-between border-b-2 border-[#121210] pb-2">
+            <div className="flex items-center gap-2 font-display font-extrabold text-sm text-[#2E8C42]">
+              <span className="w-2.5 h-2.5 bg-[#2E8C42] border border-[#121210]" />
               <span>AFTER: CONTRACTOR WORK SUBMISSION</span>
             </div>
-            <span className="text-[11px] font-mono text-cyan-400">
-              Contractor Audit Photo
+            <span className="tag bg-[#CFE8D6] text-[#121210]">
+              SITE PHOTOGRAMMETRY
             </span>
           </div>
 
-          <div className="relative rounded-xl overflow-hidden h-64 bg-black border border-white/10">
+          <div className="relative overflow-hidden h-64 bg-black border-2 border-[#121210]">
             <img
               src={afterImage}
               alt="Contractor repair submission"
               className="w-full h-full object-cover"
             />
             {auditResult && (
-              <div className={`absolute bottom-2 left-2 px-2.5 py-1 rounded text-xs font-mono font-bold border backdrop-blur-md
-                ${auditResult.status === 'APPROVED'
-                  ? 'bg-emerald-950/90 text-emerald-300 border-emerald-500/40'
-                  : 'bg-red-950/90 text-red-300 border-red-500/40'
-                }
-              `}>
-                {auditResult.status === 'APPROVED' ? 'AI AUDIT: APPROVED' : 'AI AUDIT: REWORK REQUIRED'}
+              <div className="absolute top-4 right-4 pointer-events-none">
+                <span
+                  className={`stamp ${auditResult.status === 'APPROVED' ? 'text-[#2E8C42]' : 'text-[#C03A3A]'} text-xs bg-white`}
+                  style={{ transform: auditResult.status === 'APPROVED' ? 'rotate(-6deg)' : 'rotate(6deg)' }}
+                >
+                  {auditResult.status === 'APPROVED' ? 'APPROVED' : 'REWORK MANDATED'}
+                </span>
               </div>
             )}
           </div>
@@ -166,80 +197,78 @@ export const RepairVerificationPage: React.FC = () => {
             <button
               onClick={() => runVerificationAudit(true)}
               disabled={isAuditing}
-              className="flex-1 py-2 px-3 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
+              className="flex-1 brut bg-[#2E8C42] text-white hover:bg-[#257335] py-2.5 px-3 font-display font-extrabold text-xs btn-press cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span>{isAuditing ? 'Analyzing...' : 'Simulate Verified Patch (Pass)'}</span>
+              <span>{isAuditing ? 'ANALYZING...' : 'SIMULATE VERIFIED PATCH (PASS)'}</span>
             </button>
             <button
               onClick={() => runVerificationAudit(false)}
               disabled={isAuditing}
-              className="py-2 px-3 rounded-lg bg-white/5 hover:bg-white/10 text-red-400 border border-red-500/30 font-semibold text-xs transition-all cursor-pointer disabled:opacity-50"
+              className="brut bg-[#C03A3A] text-white hover:bg-[#a62e2e] py-2.5 px-3 font-display font-extrabold text-xs btn-press cursor-pointer disabled:opacity-50"
             >
-              <span>Simulate Defect (Fail)</span>
+              <span>SIMULATE DEFECT (FAIL)</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Audit Quantitative Scorecard */}
+      {/* Audit Quantitative Scorecard in Brutalist format */}
       {auditResult && (
-        <div className={`p-6 rounded-2xl border space-y-4 animate-in fade-in
-          ${auditResult.status === 'APPROVED'
-            ? 'bg-emerald-950/20 border-emerald-500/40'
-            : 'bg-red-950/20 border-red-500/40'
-          }
-        `}>
-          <div className="flex items-center justify-between pb-3 border-b border-white/10">
+        <div className="brut bg-white p-6 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b-[3px] border-[#121210]">
             <div className="flex items-center gap-2">
               {auditResult.status === 'APPROVED' ? (
-                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                <CheckCircle2 className="w-6 h-6 text-[#2E8C42] stroke-[2.5]" />
               ) : (
-                <AlertTriangle className="w-5 h-5 text-red-400" />
+                <AlertTriangle className="w-6 h-6 text-[#C03A3A] stroke-[2.5]" />
               )}
-              <span className="font-mono text-sm font-bold text-white uppercase">
+              <span className="font-display font-extrabold text-lg text-[#121210] uppercase">
                 {auditResult.status === 'APPROVED' ? 'VERIFICATION VERDICT: PASS' : 'VERIFICATION VERDICT: REJECTED'}
               </span>
             </div>
-            <span className="text-xs font-mono text-slate-400">
-              Auditor: {auditResult.verifiedBy} ({auditResult.mode})
+            <span className="font-mono text-xs font-bold text-[#121210]/60">
+              AUDITOR: {auditResult.verifiedBy} ({auditResult.mode})
             </span>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono text-center">
-            <div className="p-3 rounded-xl bg-black/40 border border-white/5">
-              <span className="text-[10px] text-slate-400 block">AREA REDUCTION</span>
-              <span className="text-xl font-extrabold text-emerald-400">
+            <div className="p-3 border-2 border-[#121210] bg-[#CFE8D6]/30">
+              <span className="text-[10px] text-[#121210]/60 block font-bold">AREA REDUCTION</span>
+              <span className="text-2xl font-extrabold text-[#2E8C42]">
                 {auditResult.areaReductionPercent}%
               </span>
-              <span className="text-[9px] text-slate-500 block">Calculated</span>
+              <span className="text-[9px] text-[#121210]/60 block font-bold">Calculated</span>
             </div>
-            <div className="p-3 rounded-xl bg-black/40 border border-white/5">
-              <span className="text-[10px] text-slate-400 block">SURFACE CONSISTENCY</span>
-              <span className="text-xl font-extrabold text-white">
+
+            <div className="p-3 border-2 border-[#121210] bg-white">
+              <span className="text-[10px] text-[#121210]/60 block font-bold">SURFACE CONSISTENCY</span>
+              <span className="text-2xl font-extrabold text-[#121210]">
                 {auditResult.surfaceSmoothnessScore} / 100
               </span>
-              <span className="text-[9px] text-slate-500 block">IRC-SP-100 Standard</span>
+              <span className="text-[9px] text-[#121210]/60 block font-bold">IRC-SP-100 SPEC</span>
             </div>
-            <div className="p-3 rounded-xl bg-black/40 border border-white/5">
-              <span className="text-[10px] text-slate-500 block">NEURAL CONFIDENCE</span>
-              <span className="text-xl font-extrabold text-cyan-400">
+
+            <div className="p-3 border-2 border-[#121210] bg-white">
+              <span className="text-[10px] text-[#121210]/60 block font-bold">NEURAL CONFIDENCE</span>
+              <span className="text-2xl font-extrabold text-[#121210]">
                 {(auditResult.passConfidence * 100).toFixed(1)}%
               </span>
-              <span className="text-[9px] text-slate-500 block">Model-Generated</span>
+              <span className="text-[9px] text-[#121210]/60 block font-bold">Edge Vision Lab</span>
             </div>
-            <div className="p-3 rounded-xl bg-black/40 border border-white/5">
-              <span className="text-[10px] text-slate-400 block">UNRESOLVED DAMAGE</span>
-              <span className={`text-xl font-extrabold ${auditResult.unresolvedDamageDetected ? 'text-red-400' : 'text-emerald-400'}`}>
+
+            <div className="p-3 border-2 border-[#121210] bg-[#CFE8D6]/30">
+              <span className="text-[10px] text-[#121210]/60 block font-bold">UNRESOLVED DAMAGE</span>
+              <span className={`text-2xl font-extrabold ${auditResult.unresolvedDamageDetected ? 'text-[#C03A3A]' : 'text-[#2E8C42]'}`}>
                 {auditResult.unresolvedDamageDetected ? 'DETECTED' : 'NONE'}
               </span>
-              <span className="text-[9px] text-slate-500 block">Subbase Void Scan</span>
+              <span className="text-[9px] text-[#121210]/60 block font-bold">Subbase Scan</span>
             </div>
           </div>
 
-          <p className="text-xs text-slate-300 font-sans leading-relaxed pt-1">
-            <strong>Audit Notes:</strong> {auditResult.notes}
-          </p>
+          <div className="p-3 border-2 border-[#121210] bg-[#CFE8D6]/40 font-mono text-xs">
+            <strong className="text-[#121210]">AUDIT CONCLUSION:</strong> {auditResult.notes}
+          </div>
         </div>
       )}
     </div>

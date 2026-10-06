@@ -55,101 +55,86 @@ export const PriorityExplainer: React.FC<PriorityExplainerProps> = ({
     },
   ];
 
-  const scoreColor = overallScore >= 90
-    ? 'text-red-400'
-    : overallScore >= 75
-    ? 'text-amber-400'
-    : overallScore >= 55
-    ? 'text-yellow-400'
-    : 'text-cyan-400';
-
-  const ringColor = overallScore >= 90
-    ? 'border-red-500/60 shadow-[0_0_20px_rgba(239,68,68,0.25)]'
-    : overallScore >= 75
-    ? 'border-amber-500/60 shadow-[0_0_20px_rgba(245,158,11,0.2)]'
-    : 'border-cyan-500/40 shadow-[0_0_15px_rgba(0,240,255,0.15)]';
-
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#090C16] overflow-hidden">
-      {/* Collapsed header — always visible */}
+    <div className="bg-white brut overflow-hidden">
+      {/* Collapsed header */}
       <button
         onClick={() => setIsOpen(prev => !prev)}
-        className="w-full p-5 flex items-center justify-between hover:bg-white/[0.02] transition-colors cursor-pointer"
+        className="w-full p-4 flex items-center justify-between hover:bg-[#CFE8D6]/30 transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-3">
-          <div className={`w-14 h-14 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${ringColor}`}>
-            <span className={`font-mono text-xl font-extrabold ${scoreColor}`}>{overallScore}</span>
+          <div className="w-14 h-14 bg-[#121210] text-[#CFE8D6] border-2 border-[#121210] flex items-center justify-center shrink-0 shadow-[2px_2px_0_#121210]">
+            <span className="font-display font-black text-2xl">{overallScore}</span>
           </div>
           <div className="text-left">
-            <div className="text-xs font-mono text-slate-400 uppercase tracking-wider">AI Priority Score</div>
-            <div className="text-sm font-bold text-white mt-0.5">
+            <div className="text-[10px] font-mono font-bold text-[#4A4A46] uppercase tracking-wider">AI Priority Score</div>
+            <div className="font-display text-sm font-black text-[#121210] uppercase mt-0.5">
               {overallScore >= 90 ? 'Extreme Hazard' : overallScore >= 75 ? 'High Priority' : overallScore >= 55 ? 'Medium Priority' : 'Low Priority'}
             </div>
-            <div className="text-[11px] text-cyan-400 font-mono mt-0.5 flex items-center gap-1">
-              <Sparkles className="w-3 h-3" />
-              <span>Why this score?</span>
+            <div className="text-[11px] text-[#2E8C42] font-mono font-bold mt-0.5 flex items-center gap-1">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Inspect ledger formula</span>
             </div>
           </div>
         </div>
-        <div className="text-slate-400">
-          {isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+        <div className="text-[#121210] p-1 border-2 border-[#121210] bg-white">
+          {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </div>
       </button>
 
       {/* Expanded explainer */}
       {isOpen && (
-        <div className="border-t border-white/10 p-5 space-y-4 animate-in slide-in-from-top-2 duration-200">
+        <div className="border-t-2 border-[#121210] p-4 space-y-4 bg-[#CFE8D6]/20">
           {/* Confidence */}
-          <div className="flex items-center gap-2 text-[11px] font-mono text-slate-400">
-            <Info className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
+          <div className="flex items-center gap-2 text-xs font-mono text-[#121210] font-bold">
+            <Info className="w-3.5 h-3.5 text-[#2E8C42] shrink-0" />
             <span>
-              Model confidence: <strong className="text-white">{Math.round(priorityDetails.confidence * 100)}%</strong>
-              {' '}— computed {new Date(priorityDetails.calculatedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })} today
+              Model confidence: <strong>{Math.round(priorityDetails.confidence * 100)}%</strong>
+              {' '}— computed {new Date(priorityDetails.calculatedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
 
           {/* Factor breakdown table */}
-          <div className="space-y-2">
-            <div className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">Score Breakdown</div>
+          <div className="space-y-2 font-mono text-xs">
+            <div className="text-[10px] uppercase font-bold text-[#4A4A46]">Score Breakdown Factors</div>
 
             <div className="space-y-2">
-              {displayFactors.map((f, idx) => {
+              {displayFactors.map((f) => {
                 const barWidth = Math.min(100, Math.round((f.contribution / overallScore) * 100));
-                const barColor = idx === 0 ? 'bg-red-500' : idx === 1 ? 'bg-amber-500' : idx === 2 ? 'bg-yellow-500' : idx === 3 ? 'bg-cyan-500' : idx === 4 ? 'bg-blue-500' : 'bg-purple-500';
 
                 return (
-                  <div key={f.factor} className="p-3 rounded-xl bg-white/[0.02] border border-white/5 space-y-2 hover:bg-white/[0.04] transition-colors">
+                  <div key={f.factor} className="p-3 bg-white border-2 border-[#121210] space-y-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="text-base leading-none">{f.icon}</span>
-                        <span className="text-xs font-semibold text-slate-200">{f.factor}</span>
+                        <span className="font-bold text-[#121210]">{f.factor}</span>
                       </div>
-                      <div className="flex items-center gap-1.5 font-mono text-sm">
-                        <span className="text-slate-500">+</span>
-                        <span className="font-extrabold text-white">{f.contribution}</span>
+                      <div className="flex items-center gap-1 font-mono text-sm font-black text-[#121210]">
+                        <span>+</span>
+                        <span>{f.contribution}</span>
                       </div>
                     </div>
 
-                    <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                    <div className="w-full bg-[#CFE8D6]/40 border border-[#121210] h-2 overflow-hidden p-0.5">
                       <div
-                        className={`h-full rounded-full ${barColor} transition-all duration-500`}
+                        className="h-full bg-[#121210] transition-all duration-500"
                         style={{ width: `${barWidth}%` }}
                       />
                     </div>
 
-                    <p className="text-[10px] text-slate-400 leading-relaxed">{f.detail}</p>
+                    <p className="text-[11px] text-[#4A4A46] font-body">{f.detail}</p>
                   </div>
                 );
               })}
             </div>
 
             {/* Total */}
-            <div className="flex items-center justify-between p-3 rounded-xl bg-white/[0.04] border border-white/10 font-mono text-xs">
-              <span className="text-slate-300 font-semibold">Total Score</span>
+            <div className="flex items-center justify-between p-3 bg-white border-2 border-[#121210] font-mono text-xs">
+              <span className="font-display font-black text-sm uppercase text-[#121210]">TOTAL PRIORITY LEDGER</span>
               <div className="flex items-center gap-1">
-                <span className="text-slate-500">= </span>
-                <span className={`text-xl font-extrabold ${scoreColor}`}>{overallScore}</span>
-                <span className="text-slate-500 text-sm">/100</span>
+                <span className="tag bg-[#121210] text-[#CFE8D6] text-base font-bold">
+                  {overallScore} / 100
+                </span>
               </div>
             </div>
           </div>
@@ -157,11 +142,11 @@ export const PriorityExplainer: React.FC<PriorityExplainerProps> = ({
           {/* Explanation bullets */}
           {priorityDetails.explanation.length > 0 && (
             <div className="space-y-1.5">
-              <div className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">Contextual Notes</div>
+              <div className="text-[10px] font-mono font-bold text-[#4A4A46] uppercase">Contextual Audit Notes</div>
               <div className="space-y-1.5">
                 {priorityDetails.explanation.map((e, i) => (
-                  <div key={i} className="flex items-start gap-2 text-[11px] text-slate-300 leading-relaxed">
-                    <span className="text-cyan-500 mt-0.5 flex-shrink-0">›</span>
+                  <div key={i} className="flex items-start gap-2 text-xs text-[#121210] font-body">
+                    <span className="text-[#2E8C42] font-black shrink-0">›</span>
                     <span>{e}</span>
                   </div>
                 ))}
@@ -169,8 +154,8 @@ export const PriorityExplainer: React.FC<PriorityExplainerProps> = ({
             </div>
           )}
 
-          <div className="text-[10px] font-mono text-slate-600 text-center">
-            Score computed by CivicPulse Neural Engine v4.2 — IRC-SP-100 risk matrix
+          <div className="text-[10px] font-mono text-[#4A4A46] text-center pt-1 border-t border-[#121210]">
+            Score computed by CivicPulse Engine v4.2 — IRC-SP-100 risk matrix
           </div>
         </div>
       )}

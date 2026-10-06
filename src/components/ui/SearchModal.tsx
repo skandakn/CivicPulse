@@ -70,50 +70,50 @@ export const SearchModal: React.FC = () => {
   return (
     <div
       onClick={closeModal}
-      className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/80 backdrop-blur-sm animate-in fade-in"
+      className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-[#121210]/60 backdrop-blur-sm animate-in fade-in"
     >
       <div
-        className="w-full max-w-2xl bg-[#0C101A] border border-cyan-500/30 rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150"
+        className="w-full max-w-2xl bg-white brut shadow-[8px_8px_0_#121210] overflow-hidden animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Input Bar */}
-        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/10 bg-[#090C14]">
-          <Search className="w-5 h-5 text-cyan-400 flex-shrink-0" />
+        <div className="flex items-center gap-3 px-4 py-3.5 border-b-2 border-[#121210] bg-[#CFE8D6]">
+          <Search className="w-5 h-5 text-[#121210] flex-shrink-0" />
           <input
             ref={inputRef}
             type="text"
             value={term}
             onChange={(e) => setTerm(e.target.value)}
-            placeholder="Search Bengaluru potholes, roads, BBMP Sahaya tickets, contractors..."
-            className="flex-1 bg-transparent text-sm text-slate-100 placeholder-slate-500 outline-none"
+            placeholder="Search vendor, PO#, requester, ward, or contractor..."
+            className="flex-1 bg-transparent text-sm font-mono font-bold text-[#121210] placeholder-[#4A4A46] outline-none"
           />
           {term && (
             <button
               onClick={() => setTerm('')}
-              className="p-1 rounded text-slate-400 hover:text-white"
+              className="p-1 text-[#121210] hover:bg-white cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
           )}
           <button
             onClick={closeModal}
-            className="px-2 py-1 text-[11px] font-mono text-slate-400 hover:text-white bg-white/5 rounded border border-white/10"
+            className="px-2 py-1 text-[11px] font-mono font-bold text-[#121210] bg-white border border-[#121210] cursor-pointer"
           >
             ESC
           </button>
         </div>
 
         {/* Results Body */}
-        <div className="max-h-[60vh] overflow-y-auto p-4 space-y-4">
+        <div className="max-h-[60vh] overflow-y-auto p-4 space-y-4 text-left">
           {!term && (
-            <div className="py-8 text-center text-slate-500 text-xs">
-              <p className="font-mono text-cyan-400 mb-2">QUICK SUGGESTIONS</p>
+            <div className="py-8 text-center text-xs">
+              <p className="font-mono font-bold text-[#121210] mb-2 uppercase">INDEXED QUICK SUGGESTIONS</p>
               <div className="flex flex-wrap justify-center gap-2 max-w-md mx-auto">
                 {['Outer Ring Road', 'Silk Board', 'Star Infratech', 'Ward 150', 'BLR-POT-2026-0842', 'BBMP-SHY-2026'].map(tag => (
                   <button
                     key={tag}
                     onClick={() => setTerm(tag)}
-                    className="px-2.5 py-1 rounded-md bg-white/[0.03] hover:bg-white/[0.08] text-slate-300 border border-white/5 text-xs transition-colors"
+                    className="tag bg-[#CFE8D6] text-[#121210] hover:bg-[#121210] hover:text-[#CFE8D6] font-mono text-xs cursor-pointer transition-colors"
                   >
                     {tag}
                   </button>
@@ -123,7 +123,7 @@ export const SearchModal: React.FC = () => {
           )}
 
           {term && !hasResults && (
-            <div className="py-10 text-center text-slate-400 text-xs font-mono">
+            <div className="py-10 text-center text-[#4A4A46] text-xs font-mono">
               No matching intelligence entities found for "{term}". Try searching by road name or ward number.
             </div>
           )}
@@ -131,9 +131,9 @@ export const SearchModal: React.FC = () => {
           {/* Matched Incidents */}
           {matchedIncidents.length > 0 && (
             <div>
-              <div className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 mb-2 flex items-center gap-1.5">
-                <AlertTriangle className="w-3.5 h-3.5 text-cyan-400" />
-                Pothole Incidents ({matchedIncidents.length})
+              <div className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#121210] mb-2 flex items-center gap-1.5">
+                <AlertTriangle className="w-3.5 h-3.5 text-[#C03A3A]" />
+                Pothole Hazard Queue ({matchedIncidents.length})
               </div>
               <div className="space-y-1.5">
                 {matchedIncidents.map(inc => (
@@ -143,19 +143,19 @@ export const SearchModal: React.FC = () => {
                       selectIncidentById(inc.id, 'INCIDENT_DETAIL');
                       closeModal();
                     }}
-                    className="p-2.5 rounded-lg bg-white/[0.03] hover:bg-cyan-500/10 border border-white/5 hover:border-cyan-500/30 flex items-center justify-between cursor-pointer group transition-all"
+                    className="p-3 bg-white hover:bg-[#CFE8D6] border-2 border-[#121210] flex items-center justify-between cursor-pointer group transition-all"
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-bold text-slate-100">{inc.code}</span>
-                        <span className={`text-[10px] px-1.5 py-0.2 rounded font-mono ${inc.severity === 'CRITICAL' ? 'bg-red-500/20 text-red-400' : 'bg-amber-500/20 text-amber-400'}`}>
-                          {inc.severity} • {inc.priorityDetails.overallScore}/100
+                        <span className="font-mono text-xs font-bold text-[#121210]">{inc.code}</span>
+                        <span className={`tag font-mono text-[10px] font-bold ${inc.severity === 'CRITICAL' ? 'bg-[#C03A3A] text-white' : 'bg-[#E8A030] text-[#121210]'}`}>
+                          {inc.severity} · {inc.priorityDetails.overallScore}/100
                         </span>
                       </div>
-                      <div className="text-xs text-slate-300 mt-0.5">{inc.roadName}</div>
-                      <div className="text-[11px] text-slate-500">{inc.landmark} • Ward {inc.wardNumber} ({inc.wardName})</div>
+                      <div className="font-display text-xs font-bold text-[#121210] mt-0.5">{inc.roadName}</div>
+                      <div className="text-[11px] text-[#4A4A46] font-mono">{inc.landmark} · Ward {inc.wardNumber} ({inc.wardName})</div>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all" />
+                    <ArrowRight className="w-4 h-4 text-[#121210] group-hover:translate-x-1 transition-all" />
                   </div>
                 ))}
               </div>
@@ -165,8 +165,8 @@ export const SearchModal: React.FC = () => {
           {/* Matched Roads */}
           {matchedRoads.length > 0 && (
             <div>
-              <div className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 mb-2 flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-cyan-400" />
+              <div className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#121210] mb-2 flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-[#2E8C42]" />
                 Bengaluru Road Corridors ({matchedRoads.length})
               </div>
               <div className="space-y-1.5">
@@ -177,15 +177,15 @@ export const SearchModal: React.FC = () => {
                       setCurrentView('GODS_EYE');
                       closeModal();
                     }}
-                    className="p-2.5 rounded-lg bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 flex items-center justify-between cursor-pointer group transition-all"
+                    className="p-3 bg-white hover:bg-[#CFE8D6] border-2 border-[#121210] flex items-center justify-between cursor-pointer group transition-all"
                   >
                     <div>
-                      <div className="text-xs font-semibold text-slate-200">{road.name}</div>
-                      <div className="text-[11px] text-slate-400">
-                        {road.category} • {road.lengthKm} km • Active Potholes: {road.activePotholesCount}
+                      <div className="font-display text-xs font-bold text-[#121210]">{road.name}</div>
+                      <div className="text-[11px] text-[#4A4A46] font-mono">
+                        {road.category} · {road.lengthKm} km · Active Potholes: {road.activePotholesCount}
                       </div>
                     </div>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-500/30">
+                    <span className="tag bg-[#121210] text-[#CFE8D6] font-mono text-[10px] font-bold">
                       View on Map
                     </span>
                   </div>
@@ -197,8 +197,8 @@ export const SearchModal: React.FC = () => {
           {/* Matched Contractors */}
           {matchedContractors.length > 0 && (
             <div>
-              <div className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 mb-2 flex items-center gap-1.5">
-                <Building2 className="w-3.5 h-3.5 text-cyan-400" />
+              <div className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#121210] mb-2 flex items-center gap-1.5">
+                <Building2 className="w-3.5 h-3.5 text-[#E8A030]" />
                 Contractors & Tender Intelligence ({matchedContractors.length})
               </div>
               <div className="space-y-1.5">
@@ -209,15 +209,15 @@ export const SearchModal: React.FC = () => {
                       setCurrentView('CONTRACTORS');
                       closeModal();
                     }}
-                    className="p-2.5 rounded-lg bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 flex items-center justify-between cursor-pointer group transition-all"
+                    className="p-3 bg-white hover:bg-[#CFE8D6] border-2 border-[#121210] flex items-center justify-between cursor-pointer group transition-all"
                   >
                     <div>
-                      <div className="text-xs font-semibold text-slate-200">{c.name}</div>
-                      <div className="text-[11px] text-slate-400">
-                        {c.registrationNumber} • Quality Score: {c.qualityScore}/100 • Defect Rate: {c.warrantyDefectRate}%
+                      <div className="font-display text-xs font-bold text-[#121210]">{c.name}</div>
+                      <div className="text-[11px] text-[#4A4A46] font-mono">
+                        {c.registrationNumber} · Quality: {c.qualityScore}/100 · Defect Rate: {c.warrantyDefectRate}%
                       </div>
                     </div>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-500/30">
+                    <span className="tag bg-[#2E8C42] text-white font-mono text-[10px] font-bold">
                       Scorecard
                     </span>
                   </div>
@@ -229,8 +229,8 @@ export const SearchModal: React.FC = () => {
           {/* Matched Complaints */}
           {matchedComplaints.length > 0 && (
             <div>
-              <div className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 mb-2 flex items-center gap-1.5">
-                <FileText className="w-3.5 h-3.5 text-cyan-400" />
+              <div className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#121210] mb-2 flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5 text-[#2E8C42]" />
                 BBMP Sahaya Grievances ({matchedComplaints.length})
               </div>
               <div className="space-y-1.5">
@@ -241,15 +241,15 @@ export const SearchModal: React.FC = () => {
                       setCurrentView('COMPLAINTS');
                       closeModal();
                     }}
-                    className="p-2.5 rounded-lg bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 flex items-center justify-between cursor-pointer group transition-all"
+                    className="p-3 bg-white hover:bg-[#CFE8D6] border-2 border-[#121210] flex items-center justify-between cursor-pointer group transition-all"
                   >
                     <div>
-                      <div className="font-mono text-xs font-bold text-amber-300">{cmp.sahayaTicketNo}</div>
-                      <div className="text-[11px] text-slate-400">
-                        Citizen: {cmp.citizenName} • Status: {cmp.status} • Upvotes: {cmp.upvotes}
+                      <div className="font-mono text-xs font-bold text-[#121210]">{cmp.sahayaTicketNo}</div>
+                      <div className="text-[11px] text-[#4A4A46] font-mono">
+                        Citizen: {cmp.citizenName} · Status: {cmp.status} · Upvotes: {cmp.upvotes}
                       </div>
                     </div>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-500/30">
+                    <span className="tag bg-[#E8A030] text-[#121210] font-mono text-[10px] font-bold">
                       Track SLA
                     </span>
                   </div>
@@ -260,8 +260,8 @@ export const SearchModal: React.FC = () => {
         </div>
 
         {/* Footer info */}
-        <div className="px-4 py-2.5 bg-[#080A10] border-t border-white/5 flex items-center justify-between text-[11px] text-slate-500 font-mono">
-          <span>Search indexed across 198 BBMP Wards & Realtime AI Feeds</span>
+        <div className="px-4 py-2.5 bg-[#CFE8D6]/40 border-t-2 border-[#121210] flex items-center justify-between text-[11px] text-[#4A4A46] font-mono">
+          <span>Search indexed across 198 BBMP Wards & Realtime Ledger</span>
           <span>Press ESC to exit</span>
         </div>
       </div>

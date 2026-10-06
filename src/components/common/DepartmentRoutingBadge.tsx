@@ -26,9 +26,8 @@ const DEPARTMENT_METADATA: Record<MunicipalDepartment, {
   fullName: string;
   division: string;
   icon: React.ComponentType<{ className?: string }>;
-  color: string;
-  border: string;
-  badgeBg: string;
+  tagBg: string;
+  tagColor: string;
   defaultNodal: string;
   defaultReason: string;
 }> = {
@@ -37,9 +36,8 @@ const DEPARTMENT_METADATA: Record<MunicipalDepartment, {
     fullName: 'Bruhat Bengaluru Mahanagara Palike',
     division: 'Major Roads & Infrastructure Division',
     icon: Building2,
-    color: 'text-cyan-300',
-    border: 'border-cyan-500/30',
-    badgeBg: 'bg-cyan-950/40',
+    tagBg: 'bg-[#CFE8D6]',
+    tagColor: 'text-[#121210]',
     defaultNodal: 'Sri B. S. Prahlad, Chief Engineer (Roads)',
     defaultReason: 'Classified as Arterial / Sub-Arterial road under BBMP DLP Warranty'
   },
@@ -48,9 +46,8 @@ const DEPARTMENT_METADATA: Record<MunicipalDepartment, {
     fullName: 'Bangalore Metro Rail Corporation Limited',
     division: 'Namma Metro Infrastructure & Alignment',
     icon: Train,
-    color: 'text-purple-300',
-    border: 'border-purple-500/30',
-    badgeBg: 'bg-purple-950/40',
+    tagBg: 'bg-[#CFE8D6]',
+    tagColor: 'text-[#121210]',
     defaultNodal: 'Sri V. Ravichandran, GM Infrastructure',
     defaultReason: 'Metro Phase 2A/2B alignment corridor under BMRCL maintenance covenant'
   },
@@ -59,9 +56,8 @@ const DEPARTMENT_METADATA: Record<MunicipalDepartment, {
     fullName: 'Bangalore Water Supply and Sewerage Board',
     division: 'Water Supply Pipeline & Drainage Restorations',
     icon: Droplets,
-    color: 'text-sky-300',
-    border: 'border-sky-500/30',
-    badgeBg: 'bg-sky-950/40',
+    tagBg: 'bg-[#CFE8D6]',
+    tagColor: 'text-[#121210]',
     defaultNodal: 'Sri R. Manjunath, SE Water Supply Infrastructure',
     defaultReason: 'Defect induced by pipeline trenching or sewerage cut-and-cover work'
   },
@@ -70,9 +66,8 @@ const DEPARTMENT_METADATA: Record<MunicipalDepartment, {
     fullName: 'Bangalore Electricity Supply Company Limited',
     division: 'Underground Cable Trenching & Utility Restorations',
     icon: Zap,
-    color: 'text-amber-300',
-    border: 'border-amber-500/30',
-    badgeBg: 'bg-amber-950/40',
+    tagBg: 'bg-[#E8A030]',
+    tagColor: 'text-[#121210]',
     defaultNodal: 'Sri T. Narayana, SE Electrical Infrastructure',
     defaultReason: 'Underground HT/LT power cable laying work requiring road reinstatement'
   },
@@ -81,9 +76,8 @@ const DEPARTMENT_METADATA: Record<MunicipalDepartment, {
     fullName: 'Bangalore Development Authority',
     division: 'Peripheral Ring Road & Layout Arterials',
     icon: MapPin,
-    color: 'text-emerald-300',
-    border: 'border-emerald-500/30',
-    badgeBg: 'bg-emerald-950/40',
+    tagBg: 'bg-[#2E8C42]',
+    tagColor: 'text-white',
     defaultNodal: 'Executive Engineer (BDA Engineering Division)',
     defaultReason: 'Corridor located within BDA layout boundary prior to civic handover'
   }
@@ -99,7 +93,7 @@ export const DepartmentRoutingBadge: React.FC<DepartmentRoutingBadgeProps> = ({
   className = ''
 }) => {
   // Normalize acronym
-  const normalizedDept = (department.toUpperCase() in DEPARTMENT_METADATA
+  const normalizedDept = (department && department.toUpperCase() in DEPARTMENT_METADATA
     ? department.toUpperCase()
     : 'BBMP') as MunicipalDepartment;
 
@@ -108,74 +102,74 @@ export const DepartmentRoutingBadge: React.FC<DepartmentRoutingBadgeProps> = ({
 
   if (compact) {
     return (
-      <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg ${meta.badgeBg} border ${meta.border} ${className}`}>
-        <Icon className={`w-3.5 h-3.5 ${meta.color}`} />
-        <span className={`font-mono text-xs font-bold ${meta.color}`}>
+      <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 bg-white brut-sm ${className}`}>
+        <Icon className="w-3.5 h-3.5 text-[#121210]" />
+        <span className="font-mono text-xs font-black text-[#121210]">
           {meta.name}
         </span>
-        <span className="text-[10px] text-slate-400">
-          • {meta.division.split('&')[0]}
+        <span className="text-[10px] text-[#4A4A46] font-mono">
+          · {meta.division.split('&')[0]}
         </span>
       </div>
     );
   }
 
   return (
-    <div className={`p-4 rounded-xl ${meta.badgeBg} border ${meta.border} text-left shadow-lg ${className}`}>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/10">
+    <div className={`p-4 bg-white brut text-left ${className}`}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b-2 border-[#121210]">
         <div className="flex items-center gap-3">
-          <div className={`w-9 h-9 rounded-xl flex items-center justify-center bg-white/5 border border-white/10 shadow-inner`}>
-            <Icon className={`w-5 h-5 ${meta.color}`} />
+          <div className="w-10 h-10 bg-[#CFE8D6] border-2 border-[#121210] flex items-center justify-center">
+            <Icon className="w-5 h-5 text-[#121210]" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className={`font-mono text-sm font-extrabold ${meta.color}`}>
+              <span className={`tag ${meta.tagBg} ${meta.tagColor} font-mono text-xs font-black`}>
                 {meta.name}
               </span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10">
+              <span className="stamp border-[#2E8C42] text-[#2E8C42] text-[10px] font-black">
                 OFFICIAL JURISDICTION
               </span>
             </div>
-            <div className="text-xs font-semibold text-white mt-0.5">
+            <div className="font-display text-sm font-black text-[#121210] mt-1">
               {meta.fullName}
             </div>
             {roadName && (
-              <div className="text-[11px] text-slate-400 font-mono mt-0.5">
-                Corridor: {roadName}
+              <div className="text-[11px] text-[#4A4A46] font-mono mt-0.5">
+                Corridor: <span className="font-bold text-[#121210]">{roadName}</span>
               </div>
             )}
           </div>
         </div>
 
         <div className="text-right font-mono text-xs">
-          <span className="text-slate-400 text-[10px] block">MUNICIPAL DESK</span>
-          <span className="text-slate-200 font-semibold">{meta.division}</span>
+          <span className="text-[#4A4A46] text-[10px] font-bold uppercase block">MUNICIPAL DESK</span>
+          <span className="text-[#121210] font-black">{meta.division}</span>
         </div>
       </div>
 
       {/* Nodal Officer & Routing Justification */}
       <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-        <div className="p-2.5 rounded-lg bg-black/30 border border-white/5 space-y-1">
-          <div className="flex items-center gap-1.5 text-slate-400 text-[11px] font-mono">
-            <UserCheck className="w-3.5 h-3.5 text-cyan-400" />
+        <div className="p-3 bg-[#CFE8D6]/30 border-2 border-[#121210] space-y-1">
+          <div className="flex items-center gap-1.5 text-[#4A4A46] text-[10px] font-mono font-bold uppercase">
+            <UserCheck className="w-3.5 h-3.5 text-[#2E8C42]" />
             <span>DESIGNATED NODAL OFFICER</span>
           </div>
-          <div className="text-slate-200 font-medium">
+          <div className="text-[#121210] font-bold">
             {nodalOfficer || meta.defaultNodal}
           </div>
           {contactNumber && (
-            <div className="text-[11px] font-mono text-cyan-400">
+            <div className="text-[11px] font-mono font-bold text-[#2E8C42]">
               Helpline: {contactNumber}
             </div>
           )}
         </div>
 
-        <div className="p-2.5 rounded-lg bg-black/30 border border-white/5 space-y-1">
-          <div className="flex items-center gap-1.5 text-slate-400 text-[11px] font-mono">
-            <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+        <div className="p-3 bg-[#CFE8D6]/30 border-2 border-[#121210] space-y-1">
+          <div className="flex items-center gap-1.5 text-[#4A4A46] text-[10px] font-mono font-bold uppercase">
+            <ShieldAlert className="w-3.5 h-3.5 text-[#E8A030]" />
             <span>AUTOMATED ROUTING RATIONALE</span>
           </div>
-          <div className="text-slate-300 text-[11px] leading-relaxed">
+          <div className="font-body text-[#121210] text-[11px] leading-relaxed">
             {routingReason || meta.defaultReason}
           </div>
         </div>

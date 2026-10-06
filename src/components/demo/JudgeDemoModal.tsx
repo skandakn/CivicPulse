@@ -39,30 +39,30 @@ export const JudgeDemoModal: React.FC = () => {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-[#121210]/60 backdrop-blur-sm animate-in fade-in">
       <div
-        className="w-full max-w-4xl bg-[#090C16] border border-cyan-500/40 rounded-2xl shadow-[0_0_50px_rgba(0,240,255,0.2)] overflow-hidden flex flex-col max-h-[92vh]"
+        className="w-full max-w-4xl bg-white brut shadow-[8px_8px_0_#121210] overflow-hidden flex flex-col max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header */}
-        <div className="p-4 bg-[#060810] border-b border-white/10 flex items-center justify-between">
+        <div className="p-4 bg-[#CFE8D6] border-b-2 border-[#121210] flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
+            <div className="w-8 h-8 bg-[#121210] text-[#CFE8D6] flex items-center justify-center border-2 border-[#121210]">
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="font-extrabold text-white text-sm tracking-tight font-mono">
+                <span className="font-display font-black text-[#121210] text-sm tracking-tight uppercase">
                   ONE-CLICK HACKATHON JUDGE DEMO
                 </span>
-                <span className="px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 font-mono text-[10px] border border-cyan-500/30">
+                <span className="tag bg-white font-mono text-[10px] font-bold">
                   Case BNG-PTH-1042
                 </span>
-                <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 font-mono text-[10px] border border-amber-500/30">
-                  DEMO MODE • DETERMINISTIC
+                <span className="stamp border-[#2E8C42] text-[#2E8C42] text-[10px] font-black">
+                  DETERMINISTIC
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 font-sans">
+              <p className="text-[11px] text-[#4A4A46] font-mono">
                 Full lifecycle: from citizen photo to contractor legal liability and AI-verified repair
               </p>
             </div>
@@ -71,24 +71,24 @@ export const JudgeDemoModal: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={resetDemo}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-[11px] font-mono text-slate-300 border border-white/10 hover:border-cyan-500/30 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-white brut-sm text-[11px] font-mono font-bold text-[#121210] hover:bg-[#CFE8D6] transition-colors cursor-pointer"
               title="Reset all demo state to initial seed"
             >
-              <RotateCcw className="w-3 h-3 text-cyan-400" />
+              <RotateCcw className="w-3 h-3" />
               <span className="hidden sm:inline">Reset Demo</span>
             </button>
 
             <button
               onClick={() => setIsJudgeDemoOpen(false)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+              className="p-1.5 border-2 border-[#121210] hover:bg-white transition-colors cursor-pointer"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4 text-[#121210]" />
             </button>
           </div>
         </div>
 
         {/* Progress Stepper Bar */}
-        <div className="bg-[#0B0E1A] px-4 py-2 border-b border-white/5 overflow-x-auto">
+        <div className="bg-white px-4 py-2 border-b-2 border-[#121210] overflow-x-auto">
           <div className="flex items-center gap-2 min-w-max">
             {steps.map((s, idx) => {
               const current = step === idx + 1;
@@ -97,12 +97,12 @@ export const JudgeDemoModal: React.FC = () => {
                 <button
                   key={idx}
                   onClick={() => setStep(idx + 1)}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono transition-all
+                  className={`flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono font-bold uppercase transition-all cursor-pointer
                     ${current
-                      ? 'bg-cyan-500 text-slate-950 font-bold shadow-[0_0_10px_#00F0FF]'
+                      ? 'bg-[#121210] text-[#CFE8D6] brut-sm'
                       : passed
-                      ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-500/30'
-                      : 'bg-white/[0.02] text-slate-500 hover:text-slate-300'
+                      ? 'bg-[#CFE8D6] text-[#121210] border border-[#121210]'
+                      : 'bg-white text-[#4A4A46] hover:bg-[#CFE8D6]/30'
                     }
                   `}
                 >
@@ -119,47 +119,47 @@ export const JudgeDemoModal: React.FC = () => {
           {/* STEP 1: Ingestion */}
           {step === 1 && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between border-b-2 border-[#121210] pb-2">
                 <div>
-                  <span className="text-xs font-mono text-cyan-400 font-bold uppercase">STEP 01 OF 08</span>
-                  <h3 className="text-xl font-bold text-white">Citizen Media Capture & Ingestion</h3>
+                  <span className="text-xs font-mono font-bold text-[#2E8C42] uppercase">STEP 01 OF 08</span>
+                  <h3 className="font-display text-xl font-black text-[#121210]">Citizen Media Capture & Ingestion</h3>
                 </div>
-                <span className="px-2.5 py-1 rounded bg-white/5 text-slate-300 text-xs font-mono border border-white/10">
+                <span className="tag bg-[#CFE8D6] text-[#121210] font-mono text-xs font-bold">
                   Demo Inference Mode
                 </span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                <div className="relative rounded-xl overflow-hidden border border-white/10 h-52 sm:h-60 bg-black">
+                <div className="relative border-2 border-[#121210] h-52 sm:h-60 bg-black overflow-hidden">
                   <img
                     src={demoIncident.images.original}
                     alt="Raw citizen capture"
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute top-2 left-2 bg-black/70 px-2 py-0.5 rounded text-[10px] font-mono text-cyan-400">
+                  <div className="absolute top-2 left-2 bg-[#121210] text-[#CFE8D6] px-2 py-0.5 text-[10px] font-mono font-bold">
                     RAW CITIZEN DASHCAM CAPTURE
                   </div>
                 </div>
 
                 <div className="space-y-3 text-xs font-mono">
-                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                    <span className="text-slate-500 block text-[10px]">RECORDED LOCATION</span>
-                    <strong className="text-white text-sm">{demoIncident.roadName}</strong>
-                    <div className="text-slate-400 text-xs mt-0.5">{demoIncident.landmark}</div>
+                  <div className="p-3 bg-[#CFE8D6]/30 border-2 border-[#121210]">
+                    <span className="text-[#4A4A46] block text-[10px] uppercase font-bold">RECORDED LOCATION</span>
+                    <strong className="font-display text-sm font-bold text-[#121210]">{demoIncident.roadName}</strong>
+                    <div className="text-[#4A4A46] text-xs mt-0.5">{demoIncident.landmark}</div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/5">
-                      <span className="text-slate-500 block text-[10px]">GPS GEOLOCATION</span>
-                      <span className="text-cyan-400 font-bold">12.9298° N, 77.6835° E</span>
+                    <div className="p-2.5 bg-white border-2 border-[#121210]">
+                      <span className="text-[#4A4A46] block text-[10px] uppercase font-bold">GPS GEOLOCATION</span>
+                      <span className="text-[#121210] font-bold">12.9298° N, 77.6835° E</span>
                     </div>
-                    <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/5">
-                      <span className="text-slate-500 block text-[10px]">BBMP WARD</span>
-                      <span className="text-slate-200 font-semibold">Ward 150 (Bellandur)</span>
+                    <div className="p-2.5 bg-white border-2 border-[#121210]">
+                      <span className="text-[#4A4A46] block text-[10px] uppercase font-bold">BBMP WARD</span>
+                      <span className="text-[#121210] font-bold">Ward 150 (Bellandur)</span>
                     </div>
                   </div>
 
-                  <p className="text-[11px] text-slate-400 font-sans leading-relaxed">
+                  <p className="font-body text-xs text-[#121210] leading-relaxed">
                     Citizen uploads image through the mobile app. The media is instantly ingested with geotags, device accelerometer vectors, and camera EXIF metadata.
                   </p>
                 </div>
@@ -170,76 +170,74 @@ export const JudgeDemoModal: React.FC = () => {
           {/* STEP 2: Computer Vision & Depth */}
           {step === 2 && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between border-b-2 border-[#121210] pb-2">
                 <div>
-                  <span className="text-xs font-mono text-cyan-400 font-bold uppercase">STEP 02 OF 08</span>
-                  <h3 className="text-xl font-bold text-white">Computer Vision & 3D Depth Extraction</h3>
+                  <span className="text-xs font-mono font-bold text-[#2E8C42] uppercase">STEP 02 OF 08</span>
+                  <h3 className="font-display text-xl font-black text-[#121210]">Computer Vision & 3D Depth Extraction</h3>
                 </div>
-                <span className="px-2.5 py-1 rounded bg-cyan-950/80 text-cyan-300 text-xs font-mono border border-cyan-500/30">
-                  ResNet-Pothole-v4.2 • Latency: 38ms (Demo Inference)
+                <span className="tag bg-[#CFE8D6] text-[#121210] font-mono text-xs font-bold">
+                  ResNet-Pothole-v4.2 · Latency: 38ms
                 </span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                <div className="relative rounded-xl overflow-hidden border border-red-500/40 h-52 sm:h-60 bg-black">
+                <div className="relative border-2 border-[#121210] h-52 sm:h-60 bg-black overflow-hidden">
                   <img
                     src={demoIncident.images.original}
                     alt="Vision analysis"
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-red-600/30 via-transparent to-transparent mix-blend-overlay" />
                   <div
-                    className="absolute border-2 border-red-500 bg-red-500/15 rounded-lg flex items-center justify-center"
+                    className="absolute border-4 border-[#C03A3A] bg-[#C03A3A]/20 flex items-center justify-center shadow-[4px_4px_0_#121210]"
                     style={{ top: '25%', left: '25%', width: '50%', height: '50%' }}
                   >
-                    <span className="bg-black/80 px-2 py-0.5 rounded text-[10px] font-mono text-red-400 font-bold">
-                      DEPTH: 18.0 CM • 96.8% CONFIDENCE
+                    <span className="bg-[#121210] text-white px-2 py-0.5 text-[10px] font-mono font-bold">
+                      DEPTH: 18.0 CM · 96.8% CONFIDENCE
                     </span>
                   </div>
                 </div>
 
                 <div className="space-y-3 font-mono text-xs">
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="p-3 rounded-xl bg-red-950/20 border border-red-500/30">
+                    <div className="p-3 bg-[#C03A3A]/10 border-2 border-[#121210]">
                       <div className="flex items-center justify-between">
-                        <span className="text-red-400 block text-[10px]">ESTIMATED DEPTH</span>
-                        <span className="text-[9px] text-slate-500 uppercase">Monocular Disparity</span>
+                        <span className="text-[#C03A3A] block text-[10px] font-bold uppercase">ESTIMATED DEPTH</span>
+                        <span className="text-[9px] text-[#4A4A46] uppercase font-bold">Disparity</span>
                       </div>
-                      <span className="text-xl font-extrabold text-red-300">18.0 cm</span>
-                      <div className="text-[10px] text-slate-400 mt-0.5">IRC safety limit: &lt;4.0 cm</div>
+                      <span className="text-2xl font-black text-[#C03A3A]">18.0 cm</span>
+                      <div className="text-[10px] text-[#4A4A46] mt-0.5 font-sans">IRC limit: &lt;4.0 cm</div>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                    <div className="p-3 bg-white border-2 border-[#121210]">
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-500 block text-[10px]">NEURAL CONFIDENCE</span>
-                        <span className="text-[9px] text-cyan-400 uppercase">Model Output</span>
+                        <span className="text-[#4A4A46] block text-[10px] font-bold uppercase">NEURAL CONFIDENCE</span>
+                        <span className="text-[9px] text-[#2E8C42] uppercase font-bold">Model</span>
                       </div>
-                      <span className="text-xl font-extrabold text-cyan-400">96.8%</span>
-                      <div className="text-[10px] text-slate-400 mt-0.5">Crater pattern match</div>
+                      <span className="text-2xl font-black text-[#2E8C42]">96.8%</span>
+                      <div className="text-[10px] text-[#4A4A46] mt-0.5 font-sans">Crater pattern match</div>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                    <div className="p-3 bg-white border-2 border-[#121210]">
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-500 block text-[10px]">SURFACE AREA</span>
-                        <span className="text-[9px] text-slate-500 uppercase">Calculated</span>
+                        <span className="text-[#4A4A46] block text-[10px] font-bold uppercase">SURFACE AREA</span>
+                        <span className="text-[9px] text-[#4A4A46] uppercase font-bold">Calculated</span>
                       </div>
-                      <span className="text-xl font-extrabold text-slate-100">1.48 m²</span>
-                      <div className="text-[10px] text-slate-400 mt-0.5">Bitumen fill: 38.5 L</div>
+                      <span className="text-2xl font-black text-[#121210]">1.48 m²</span>
+                      <div className="text-[10px] text-[#4A4A46] mt-0.5 font-sans">Bitumen fill: 38.5 L</div>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-red-950/10 border border-red-500/20">
+                    <div className="p-3 bg-[#C03A3A]/10 border-2 border-[#121210]">
                       <div className="flex items-center justify-between">
-                        <span className="text-red-400 block text-[10px]">SEVERITY SCORE</span>
-                        <span className="text-[9px] text-red-400 uppercase">Hazard Index</span>
+                        <span className="text-[#C03A3A] block text-[10px] font-bold uppercase">SEVERITY SCORE</span>
+                        <span className="text-[9px] text-[#C03A3A] uppercase font-bold">Index</span>
                       </div>
-                      <span className="text-xl font-extrabold text-red-400">94 / 100</span>
-                      <div className="text-[10px] text-red-400 mt-0.5 font-bold">CRITICAL HAZARD</div>
+                      <span className="text-2xl font-black text-[#C03A3A]">94 / 100</span>
+                      <div className="text-[10px] text-[#C03A3A] mt-0.5 font-bold font-sans">CRITICAL HAZARD</div>
                     </div>
                   </div>
 
-                  {/* Compact Explainability */}
-                  <div className="p-2.5 rounded-lg bg-red-950/20 border border-red-500/20 text-[11px] font-sans text-slate-300">
-                    <strong className="text-red-300 font-mono">Why CRITICAL?</strong> 18.0cm crater depth exceeds 4cm IRC safety threshold, causing severe rim collapse and two-wheeler instability.
+                  <div className="p-2.5 bg-[#C03A3A]/10 border-2 border-[#121210] text-xs font-body text-[#121210]">
+                    <strong className="font-mono font-bold text-[#C03A3A]">Why CRITICAL?</strong> 18.0cm crater depth exceeds 4cm IRC safety threshold, causing severe rim collapse and two-wheeler instability.
                   </div>
                 </div>
               </div>
@@ -249,39 +247,38 @@ export const JudgeDemoModal: React.FC = () => {
           {/* STEP 3: Duplicate Clustering */}
           {step === 3 && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between border-b-2 border-[#121210] pb-2">
                 <div>
-                  <span className="text-xs font-mono text-cyan-400 font-bold uppercase">STEP 03 OF 08</span>
-                  <h3 className="text-xl font-bold text-white">Spatial Clustering & Duplicate Merging</h3>
+                  <span className="text-xs font-mono font-bold text-[#2E8C42] uppercase">STEP 03 OF 08</span>
+                  <h3 className="font-display text-xl font-black text-[#121210]">Spatial Clustering & Duplicate Merging</h3>
                 </div>
-                <span className="px-2.5 py-1 rounded bg-purple-950 text-purple-300 text-xs font-mono border border-purple-500/30">
+                <span className="tag bg-[#CFE8D6] text-[#121210] font-mono text-xs font-bold">
                   94% Similarity Match
                 </span>
               </div>
 
-              <div className="p-4 rounded-xl bg-purple-950/20 border border-purple-500/30 space-y-3 text-xs">
+              <div className="p-4 bg-white border-2 border-[#121210] space-y-3 text-xs">
                 <div className="flex items-center justify-between font-mono">
-                  <span className="text-purple-300 font-bold">3 CITIZEN REPORTS MERGED INTO ONE MASTER INCIDENT</span>
-                  <span className="text-cyan-400">Radius: &lt;15 meters</span>
+                  <span className="font-bold text-[#121210]">3 CITIZEN REPORTS MERGED INTO ONE MASTER INCIDENT</span>
+                  <span className="tag bg-[#CFE8D6] font-mono text-[10px] font-bold">Radius: &lt;15 meters</span>
                 </div>
-                <p className="text-slate-300 font-sans leading-relaxed">
-                  Instead of creating 3 fragmented tickets and redundant map pins, CivicPulse merges identical reports into Master Case <strong className="text-white font-mono">BNG-PTH-1042</strong>. Each merge increments report density and elevates priority score while keeping municipal GIS clean.
+                <p className="font-body text-[#121210] leading-relaxed">
+                  Instead of creating 3 fragmented tickets and redundant map pins, CivicPulse merges identical reports into Master Case <strong className="font-mono text-[#121210]">BNG-PTH-1042</strong>. Each merge increments report density and elevates priority score while keeping municipal GIS clean.
                 </p>
 
                 <div className="space-y-2 pt-1 font-mono">
                   {demoIncident.supportingReports.map((r, i) => (
-                    <div key={i} className="p-2.5 rounded-lg bg-black/40 border border-white/5 flex items-center justify-between text-[11px]">
+                    <div key={i} className="p-2.5 bg-[#CFE8D6]/30 border border-[#121210] flex items-center justify-between text-xs">
                       <div>
-                        <strong className="text-white">{r.citizenName}</strong>: <span className="text-slate-400">"{r.notes}"</span>
+                        <strong className="text-[#121210]">{r.citizenName}</strong>: <span className="text-[#4A4A46]">"{r.notes}"</span>
                       </div>
-                      <span className="text-emerald-400 font-bold">{r.similarityScore}% match</span>
+                      <span className="tag bg-[#2E8C42] text-white font-bold">{r.similarityScore}% match</span>
                     </div>
                   ))}
                 </div>
 
-                {/* Compact Explainability */}
-                <div className="p-2.5 rounded-lg bg-purple-950/30 border border-purple-500/20 text-[11px] font-sans text-slate-300">
-                  <strong className="text-purple-300 font-mono">Why duplicate?</strong> 15 m spatial proximity + 94% visual feature similarity merged 3 citizen reports into 1 master case.
+                <div className="p-2.5 bg-[#CFE8D6]/40 border-2 border-[#121210] text-xs font-body text-[#121210]">
+                  <strong className="font-mono font-bold text-[#121210]">Why duplicate?</strong> 15 m spatial proximity + 94% visual feature similarity merged 3 citizen reports into 1 master case.
                 </div>
               </div>
             </div>
@@ -290,49 +287,47 @@ export const JudgeDemoModal: React.FC = () => {
           {/* STEP 4: Responsibility Intelligence & Clause 45.2 */}
           {step === 4 && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between border-b-2 border-[#121210] pb-2">
                 <div>
-                  <span className="text-xs font-mono text-cyan-400 font-bold uppercase">STEP 04 OF 08</span>
-                  <h3 className="text-xl font-bold text-white">Responsibility Resolution & Tender Clause 45.2</h3>
+                  <span className="text-xs font-mono font-bold text-[#2E8C42] uppercase">STEP 04 OF 08</span>
+                  <h3 className="font-display text-xl font-black text-[#121210]">Responsibility Resolution & Tender Clause 45.2</h3>
                 </div>
-                <span className="px-2.5 py-1 rounded bg-emerald-950 text-emerald-300 text-xs font-mono border border-emerald-500/30">
-                  Defect Liability Period: ACTIVE
+                <span className="stamp border-[#2E8C42] text-[#2E8C42] text-[10px] font-black">
+                  DLP WARRANTY ACTIVE
                 </span>
               </div>
 
               <div className="space-y-3 text-xs font-mono">
-                {/* Chain Breakdown */}
-                <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/5 space-y-2">
-                  <div className="text-[10px] text-slate-500 uppercase">MUNICIPAL ATTRIBUTION CHAIN</div>
-                  <div className="flex flex-wrap items-center gap-2 text-slate-300">
-                    <span className="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-cyan-400">
+                <div className="p-3.5 bg-white border-2 border-[#121210] space-y-2">
+                  <div className="text-[10px] text-[#4A4A46] uppercase font-bold">MUNICIPAL ATTRIBUTION CHAIN</div>
+                  <div className="flex flex-wrap items-center gap-2 text-[#121210]">
+                    <span className="tag bg-[#CFE8D6] text-[#121210] font-bold">
                       GPS 12.9298° N, 77.6835° E
                     </span>
                     <span>→</span>
-                    <span className="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-white">
+                    <span className="tag bg-white font-bold">
                       Outer Ring Road (BLR-ARR-004)
                     </span>
                     <span>→</span>
-                    <span className="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-white">
+                    <span className="tag bg-white font-bold">
                       Work Order: BBMP/WO-88/2024
                     </span>
                     <span>→</span>
-                    <span className="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-amber-300">
+                    <span className="tag bg-[#E8A030] text-[#121210] font-bold">
                       Star Infratech Pvt Ltd
                     </span>
                   </div>
                 </div>
 
-                {/* Neutral Language & Liability Card */}
-                <div className="p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/40 space-y-2">
-                  <div className="flex items-center gap-2 font-bold text-emerald-300">
-                    <ShieldCheck className="w-4 h-4" />
-                    <span>LEGAL CONTRACT STATUS: FREE REPAIR MANDATE</span>
+                <div className="p-4 bg-[#CFE8D6]/40 border-2 border-[#121210] space-y-2">
+                  <div className="flex items-center gap-2 font-bold text-[#2E8C42]">
+                    <ShieldCheck className="w-5 h-5 text-[#2E8C42]" />
+                    <span className="font-display font-black text-sm uppercase text-[#121210]">LEGAL CONTRACT STATUS: ZERO PUBLIC COST REPAIR</span>
                   </div>
-                  <p className="text-slate-300 font-sans leading-relaxed">
-                    Road project associated with this location was completed in Nov 2024 under a 36-month warranty. Under <strong className="text-white">Clause 45.2</strong> of Karnataka PWD Standard Specifications, contractor <strong className="text-white">Star Infratech</strong> must rectify this crater at <strong className="text-emerald-400">ZERO cost to the public exchequer</strong> within 48 hours.
+                  <p className="font-body text-[#121210] text-xs leading-relaxed">
+                    Road project associated with this location was completed in Nov 2024 under a 36-month warranty. Under <strong className="text-[#121210]">Clause 45.2</strong> of Karnataka PWD Standard Specifications, contractor <strong className="text-[#121210]">Star Infratech</strong> must rectify this crater at <strong className="text-[#2E8C42] font-black">ZERO cost to the public exchequer</strong> within 48 hours.
                   </p>
-                  <div className="pt-1 text-[11px] text-emerald-400 font-mono">
+                  <div className="pt-1 text-xs text-[#2E8C42] font-mono font-bold">
                     Estimated Taxpayer Savings: ₹1,20,000 (Protected from duplicate tender billing)
                   </div>
                 </div>
@@ -343,67 +338,60 @@ export const JudgeDemoModal: React.FC = () => {
           {/* STEP 5: Explainable Priority Score 94/100 */}
           {step === 5 && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between border-b-2 border-[#121210] pb-2">
                 <div>
-                  <span className="text-xs font-mono text-cyan-400 font-bold uppercase">STEP 05 OF 08</span>
-                  <h3 className="text-xl font-bold text-white">Explainable Priority Score: 94 / 100</h3>
+                  <span className="text-xs font-mono font-bold text-[#2E8C42] uppercase">STEP 05 OF 08</span>
+                  <h3 className="font-display text-xl font-black text-[#121210]">Explainable Priority Score: 94 / 100</h3>
                 </div>
-                <span className="px-2.5 py-1 rounded bg-red-950 text-red-300 text-xs font-mono border border-red-500/30">
+                <span className="tag bg-[#C03A3A] text-white font-mono text-xs font-bold">
                   CRITICAL DISPATCH
                 </span>
               </div>
 
-              {/* Exact Itemized Scoring Table */}
-              <div className="p-4 rounded-xl bg-[#060810] border border-white/10 space-y-3 font-mono text-xs">
-                <div className="flex justify-between border-b border-white/10 pb-2 text-slate-400 text-[11px]">
+              <div className="p-4 bg-white border-2 border-[#121210] space-y-2 font-mono text-xs">
+                <div className="flex justify-between border-b-2 border-[#121210] pb-2 text-[#4A4A46] font-bold text-[11px]">
                   <span>SCORING FACTOR</span>
                   <span>POINTS ALLOCATED</span>
                 </div>
 
-                <div className="flex justify-between items-center text-slate-300">
+                <div className="flex justify-between items-center text-[#121210]">
                   <span>Visual severity & depth (18cm crater)</span>
-                  <span className="font-bold text-cyan-400">+31</span>
+                  <span className="font-bold text-[#C03A3A]">+31</span>
                 </div>
-                <div className="flex justify-between items-center text-slate-300">
+                <div className="flex justify-between items-center text-[#121210]">
                   <span>Traffic exposure (24,500 PCU/hr)</span>
-                  <span className="font-bold text-cyan-400">+21</span>
+                  <span className="font-bold text-[#121210]">+21</span>
                 </div>
-                <div className="flex justify-between items-center text-slate-300">
+                <div className="flex justify-between items-center text-[#121210]">
                   <span>Report density (3 reports merged)</span>
-                  <span className="font-bold text-cyan-400">+17</span>
+                  <span className="font-bold text-[#121210]">+17</span>
                 </div>
-                <div className="flex justify-between items-center text-slate-300">
+                <div className="flex justify-between items-center text-[#121210]">
                   <span>Persistence (Unresolved &gt;48h)</span>
-                  <span className="font-bold text-cyan-400">+12</span>
+                  <span className="font-bold text-[#121210]">+12</span>
                 </div>
-                <div className="flex justify-between items-center text-slate-300">
+                <div className="flex justify-between items-center text-[#121210]">
                   <span>Road importance (Arterial corridor)</span>
-                  <span className="font-bold text-cyan-400">+8</span>
+                  <span className="font-bold text-[#121210]">+8</span>
                 </div>
-                <div className="flex justify-between items-center text-slate-300">
+                <div className="flex justify-between items-center text-[#121210]">
                   <span>Sensitive location (Ambulance transit)</span>
-                  <span className="font-bold text-cyan-400">+5</span>
+                  <span className="font-bold text-[#121210]">+5</span>
                 </div>
 
-                <div className="pt-2 border-t border-white/15 flex justify-between items-center text-base font-extrabold text-white">
-                  <span>TOTAL AI PRIORITY SCORE</span>
-                  <span className="text-red-400 text-xl">94 — CRITICAL</span>
+                <div className="pt-2 border-t-2 border-[#121210] flex justify-between items-center text-sm font-black text-[#121210]">
+                  <span className="font-display uppercase">TOTAL AI PRIORITY SCORE</span>
+                  <span className="tag bg-[#121210] text-[#CFE8D6] text-base font-bold">94 — CRITICAL</span>
                 </div>
               </div>
 
-              {/* Short AI Explanation & Compact Rationale */}
-              <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/10 space-y-2 text-xs">
-                <div>
-                  <span className="text-[10px] font-mono text-cyan-400 uppercase tracking-wider block mb-0.5">
-                    AI Natural Language Rationale
-                  </span>
-                  <p className="text-slate-200 font-sans italic leading-relaxed">
-                    "High-confidence pothole on a high-traffic corridor with multiple supporting reports and prolonged unresolved status."
-                  </p>
-                </div>
-                <div className="pt-2 border-t border-white/5 text-[11px] font-sans text-slate-300">
-                  <strong className="text-cyan-400 font-mono">Why priority 94?</strong> Severe defect + high traffic + multiple reports + persistence.
-                </div>
+              <div className="p-3.5 bg-[#CFE8D6]/30 border-2 border-[#121210] space-y-1 text-xs">
+                <span className="text-[10px] font-mono text-[#4A4A46] uppercase font-bold block">
+                  AI Natural Language Rationale
+                </span>
+                <p className="font-body text-[#121210] italic">
+                  "High-confidence pothole on a high-traffic corridor with multiple supporting reports and prolonged unresolved status."
+                </p>
               </div>
             </div>
           )}
@@ -411,39 +399,39 @@ export const JudgeDemoModal: React.FC = () => {
           {/* STEP 6: God's Eye Map */}
           {step === 6 && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between border-b-2 border-[#121210] pb-2">
                 <div>
-                  <span className="text-xs font-mono text-cyan-400 font-bold uppercase">STEP 06 OF 08</span>
-                  <h3 className="text-xl font-bold text-white">God's Eye Command Center Integration</h3>
+                  <span className="text-xs font-mono font-bold text-[#2E8C42] uppercase">STEP 06 OF 08</span>
+                  <h3 className="font-display text-xl font-black text-[#121210]">God's Eye Command Center Integration</h3>
                 </div>
                 <button
                   onClick={() => {
                     setIsJudgeDemoOpen(false);
                     selectIncidentById(demoIncident.id, 'GODS_EYE');
                   }}
-                  className="px-3 py-1 rounded bg-cyan-500 text-slate-950 font-bold text-xs font-mono"
+                  className="px-3 py-1 bg-[#121210] text-[#CFE8D6] hover:bg-[#2E8C42] hover:text-white font-bold text-xs font-mono uppercase brut-sm cursor-pointer"
                 >
                   Jump to Live Map
                 </button>
               </div>
 
-              <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10 space-y-3 text-xs font-mono">
-                <p className="text-slate-300 font-sans leading-relaxed">
+              <div className="p-4 bg-white border-2 border-[#121210] space-y-3 text-xs font-mono">
+                <p className="font-body text-[#121210] leading-relaxed">
                   The verified master incident automatically renders on the city-wide geospatial canvas with glowing red severity markers, corridor health layer, and priority queue ordering.
                 </p>
 
                 <div className="grid grid-cols-3 gap-3">
-                  <div className="p-3 rounded-lg bg-black/40 border border-white/5">
-                    <span className="text-slate-500 block text-[10px]">CORRIDOR PCI</span>
-                    <span className="text-red-400 font-bold text-sm">28 / 100</span>
+                  <div className="p-3 bg-[#CFE8D6]/30 border-2 border-[#121210]">
+                    <span className="text-[#4A4A46] block text-[10px] uppercase font-bold">CORRIDOR PCI</span>
+                    <span className="text-[#C03A3A] font-black text-xl">28 / 100</span>
                   </div>
-                  <div className="p-3 rounded-lg bg-black/40 border border-white/5">
-                    <span className="text-slate-500 block text-[10px]">QUEUE POSITION</span>
-                    <span className="text-cyan-400 font-bold text-sm">#1 in Bengaluru</span>
+                  <div className="p-3 bg-white border-2 border-[#121210]">
+                    <span className="text-[#4A4A46] block text-[10px] uppercase font-bold">QUEUE POSITION</span>
+                    <span className="text-[#121210] font-black text-xl">#1 in City</span>
                   </div>
-                  <div className="p-3 rounded-lg bg-black/40 border border-white/5">
-                    <span className="text-slate-500 block text-[10px]">MAP COORDINATES</span>
-                    <span className="text-slate-200 font-bold text-xs">12.9298° N, 77.6835° E</span>
+                  <div className="p-3 bg-white border-2 border-[#121210]">
+                    <span className="text-[#4A4A46] block text-[10px] uppercase font-bold">COORDINATES</span>
+                    <span className="text-[#121210] font-bold text-xs">12.9298° N, 77.6835° E</span>
                   </div>
                 </div>
               </div>
@@ -453,42 +441,42 @@ export const JudgeDemoModal: React.FC = () => {
           {/* STEP 7: AI Complaint Generation */}
           {step === 7 && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between border-b-2 border-[#121210] pb-2">
                 <div>
-                  <span className="text-xs font-mono text-cyan-400 font-bold uppercase">STEP 07 OF 08</span>
-                  <h3 className="text-xl font-bold text-white">Automated Municipal Grievance Generation</h3>
+                  <span className="text-xs font-mono font-bold text-[#2E8C42] uppercase">STEP 07 OF 08</span>
+                  <h3 className="font-display text-xl font-black text-[#121210]">Automated Municipal Grievance Generation</h3>
                 </div>
-                <span className="px-2.5 py-1 rounded bg-amber-950 text-amber-300 text-xs font-mono border border-amber-500/30">
-                  Ready to submit (Simulated Gateway Mode)
+                <span className="stamp border-[#E8A030] text-[#E8A030] text-[10px] font-black">
+                  SIMULATED GATEWAY READY
                 </span>
               </div>
 
-              <div className="p-5 rounded-xl bg-[#060810] border border-amber-500/30 space-y-3 font-mono text-xs">
-                <div className="flex justify-between items-center border-b border-white/10 pb-2">
-                  <span className="text-amber-400 font-bold">BBMP SAHAYA 2.0 DRAFT NOTICE</span>
-                  <span className="text-[10px] text-slate-500">ID: DFT-BBMP-2026-90412</span>
+              <div className="p-5 bg-white border-2 border-[#121210] space-y-3 font-mono text-xs">
+                <div className="flex justify-between items-center border-b-2 border-[#121210] pb-2">
+                  <span className="font-display text-xs font-black text-[#121210] uppercase">BBMP SAHAYA 2.0 DRAFT NOTICE</span>
+                  <span className="tag bg-[#CFE8D6] text-[10px] font-bold">DFT-BBMP-2026-90412</span>
                 </div>
 
-                <div className="space-y-2 text-slate-300 font-sans">
+                <div className="space-y-2 text-[#121210] font-body">
                   <div>
-                    <span className="text-slate-500 font-mono text-[11px] block">LOCATION:</span>
+                    <span className="text-[#4A4A46] font-mono text-[11px] block font-bold uppercase">LOCATION:</span>
                     <strong>Outer Ring Road, Bellandur (Ward 150)</strong>
                   </div>
                   <div>
-                    <span className="text-slate-500 font-mono text-[11px] block">PRIORITY & SEVERITY:</span>
-                    <span>Score 94/100 (CRITICAL) • 18.0cm Depth (Estimated Disparity) • 3 Merged Reports</span>
+                    <span className="text-[#4A4A46] font-mono text-[11px] block font-bold uppercase">PRIORITY & SEVERITY:</span>
+                    <span>Score 94/100 (CRITICAL) · 18.0cm Depth (Estimated Disparity) · 3 Merged Reports</span>
                   </div>
                   <div>
-                    <span className="text-slate-500 font-mono text-[11px] block">RECORDED TENDER & CONTRACTOR:</span>
-                    <span>Tender WO-88/2024 • Star Infratech Pvt Ltd (Clause 45.2 Warranty Active)</span>
+                    <span className="text-[#4A4A46] font-mono text-[11px] block font-bold uppercase">RECORDED TENDER & CONTRACTOR:</span>
+                    <span>Tender WO-88/2024 · Star Infratech Pvt Ltd (Clause 45.2 Warranty Active)</span>
                   </div>
                   <div>
-                    <span className="text-slate-500 font-mono text-[11px] block">RECOMMENDED ACTION:</span>
-                    <span className="text-emerald-400">Notice to contractor under Clause 45.2 for emergency cold-mix compaction within 24h at zero public expense.</span>
+                    <span className="text-[#4A4A46] font-mono text-[11px] block font-bold uppercase">RECOMMENDED ACTION:</span>
+                    <span className="text-[#2E8C42] font-bold">Notice to contractor under Clause 45.2 for emergency cold-mix compaction within 24h at zero public expense.</span>
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-white/10 text-[10px] text-slate-500 italic">
+                <div className="pt-2 border-t border-[#121210] text-[10px] text-[#4A4A46] font-mono italic">
                   Watermark: AI-generated — review before submission.
                 </div>
               </div>
@@ -498,40 +486,40 @@ export const JudgeDemoModal: React.FC = () => {
           {/* STEP 8: Post-Repair AI Verification */}
           {step === 8 && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between border-b-2 border-[#121210] pb-2">
                 <div>
-                  <span className="text-xs font-mono text-emerald-400 font-bold uppercase">STEP 08 OF 08</span>
-                  <h3 className="text-xl font-bold text-white">Post-Repair AI Verification (Before vs After)</h3>
+                  <span className="text-xs font-mono font-bold text-[#2E8C42] uppercase">STEP 08 OF 08</span>
+                  <h3 className="font-display text-xl font-black text-[#121210]">Post-Repair AI Verification (Before vs After)</h3>
                 </div>
-                <span className="px-2.5 py-1 rounded bg-emerald-950 text-emerald-300 text-xs font-mono border border-emerald-500/30">
-                  Demo Verification Mode (Approved)
+                <span className="stamp border-[#2E8C42] text-[#2E8C42] text-[10px] font-black">
+                  APPROVED VERDICT
                 </span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <div className="text-[10px] font-mono text-red-400 font-bold">BEFORE: RAW DEFECT</div>
-                  <div className="relative rounded-xl overflow-hidden border border-red-500/40 h-48 bg-black">
+                  <div className="text-[10px] font-mono text-[#C03A3A] font-black uppercase">BEFORE: RAW DEFECT</div>
+                  <div className="relative border-2 border-[#121210] h-48 bg-black overflow-hidden">
                     <img
                       src={demoIncident.images.original}
                       alt="Before"
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute bottom-2 left-2 bg-black/80 px-2 py-0.5 rounded text-[10px] font-mono text-red-400">
-                      18.0cm Depth • Crater Active
+                    <div className="absolute bottom-2 left-2 bg-[#121210] text-white px-2 py-0.5 text-[10px] font-mono font-bold">
+                      18.0cm Depth · Active Crater
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <div className="text-[10px] font-mono text-emerald-400 font-bold">AFTER: HOT-MIX PATCH</div>
-                  <div className="relative rounded-xl overflow-hidden border border-emerald-500/40 h-48 bg-black">
+                  <div className="text-[10px] font-mono text-[#2E8C42] font-black uppercase">AFTER: HOT-MIX PATCH</div>
+                  <div className="relative border-2 border-[#121210] h-48 bg-black overflow-hidden">
                     <img
                       src="https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=800&q=80"
                       alt="After patch"
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute bottom-2 left-2 bg-emerald-950/90 border border-emerald-500/40 px-2 py-0.5 rounded text-[10px] font-mono text-emerald-300">
+                    <div className="absolute bottom-2 left-2 bg-[#2E8C42] text-white px-2 py-0.5 text-[10px] font-mono font-bold">
                       AI Verified: 98.4% Smoothness
                     </div>
                   </div>
@@ -539,25 +527,21 @@ export const JudgeDemoModal: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-4 gap-2 font-mono text-xs text-center">
-                <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/5">
-                  <span className="text-[10px] text-slate-500 block">AREA REDUCTION</span>
-                  <span className="text-emerald-400 font-bold">98.2%</span>
-                  <span className="text-[9px] text-slate-500 block">Calculated</span>
+                <div className="p-2.5 bg-white border-2 border-[#121210]">
+                  <span className="text-[10px] text-[#4A4A46] block uppercase font-bold">AREA REDUCTION</span>
+                  <span className="text-[#2E8C42] font-black text-lg">98.2%</span>
                 </div>
-                <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/5">
-                  <span className="text-[10px] text-slate-500 block">SURFACE SMOOTH</span>
-                  <span className="text-emerald-400 font-bold">94 / 100</span>
-                  <span className="text-[9px] text-slate-500 block">IRC-SP-100</span>
+                <div className="p-2.5 bg-white border-2 border-[#121210]">
+                  <span className="text-[10px] text-[#4A4A46] block uppercase font-bold">SURFACE SMOOTH</span>
+                  <span className="text-[#2E8C42] font-black text-lg">94 / 100</span>
                 </div>
-                <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/5">
-                  <span className="text-[10px] text-slate-500 block">CONFIDENCE</span>
-                  <span className="text-cyan-400 font-bold">98.4%</span>
-                  <span className="text-[9px] text-slate-500 block">Model Output</span>
+                <div className="p-2.5 bg-white border-2 border-[#121210]">
+                  <span className="text-[10px] text-[#4A4A46] block uppercase font-bold">CONFIDENCE</span>
+                  <span className="text-[#121210] font-black text-lg">98.4%</span>
                 </div>
-                <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/5">
-                  <span className="text-[10px] text-slate-500 block">AUDIT VERDICT</span>
-                  <span className="text-emerald-400 font-bold">APPROVED</span>
-                  <span className="text-[9px] text-emerald-400/80 block">Zero Voids</span>
+                <div className="p-2.5 bg-[#2E8C42] text-white border-2 border-[#121210]">
+                  <span className="text-[10px] text-white/80 block uppercase font-bold">AUDIT VERDICT</span>
+                  <span className="font-black text-lg">APPROVED</span>
                 </div>
               </div>
             </div>
@@ -565,24 +549,24 @@ export const JudgeDemoModal: React.FC = () => {
         </div>
 
         {/* Modal Footer Controls */}
-        <div className="p-4 bg-[#060810] border-t border-white/10 flex items-center justify-between">
+        <div className="p-4 bg-[#CFE8D6]/40 border-t-2 border-[#121210] flex items-center justify-between">
           <button
             onClick={() => setStep(prev => Math.max(1, prev - 1))}
             disabled={step === 1}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-mono text-slate-300 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 bg-white brut-sm text-xs font-mono font-bold text-[#121210] disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Previous Stage</span>
           </button>
 
-          <span className="font-mono text-xs text-slate-500">
+          <span className="font-mono text-xs font-bold text-[#121210]">
             Step {step} of 8
           </span>
 
           {step < 8 ? (
             <button
               onClick={() => setStep(prev => Math.min(8, prev + 1))}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs font-mono shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-2 bg-[#121210] text-[#CFE8D6] hover:bg-[#2E8C42] hover:text-white font-mono font-bold text-xs uppercase brut-sm transition-all cursor-pointer btn-press"
             >
               <span>Next Stage</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -594,7 +578,7 @@ export const JudgeDemoModal: React.FC = () => {
                 setCurrentView('GODS_EYE');
                 addToast('Demo Concluded', 'Returning to Bengaluru Command Center', 'info');
               }}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs font-mono shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-2 bg-[#2E8C42] text-white hover:bg-[#121210] hover:text-[#CFE8D6] font-mono font-bold text-xs uppercase brut-sm transition-all cursor-pointer btn-press"
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>Explore Live Platform</span>

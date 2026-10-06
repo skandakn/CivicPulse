@@ -8,13 +8,13 @@ import {
   FileText,
   Building2,
   BarChart3,
-  ShieldCheck,
   ChevronLeft,
   ChevronRight,
   FileCheck2,
   Sparkles,
   Lock,
-  LogIn
+  LogIn,
+  CheckSquare
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { useAuthSession } from '../../context/AuthContext';
@@ -44,18 +44,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
     label: string;
     icon: React.ElementType;
     badge?: number | string;
-    badgeColor?: string;
+    badgeStyle?: string;
   }[] = [
-    { id: 'LANDING', label: 'Overview', icon: Compass },
-    { id: 'REPORT', label: 'Report Pothole', icon: PlusCircle, badge: 'Live', badgeColor: 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' },
-    { id: 'GODS_EYE', label: 'God’s Eye', icon: Eye, badge: incidents.length, badgeColor: 'bg-cyan-500/20 text-cyan-400' },
-    { id: 'AI_ANALYSIS', label: 'Pothole Intelligence', icon: Cpu },
-    { id: 'PRIORITY_QUEUE', label: 'Priority Queue', icon: ListOrdered, badge: criticalCount, badgeColor: 'bg-red-500/20 text-red-400 border border-red-500/30' },
-    { id: 'VERIFICATION', label: 'Repair Verification', icon: FileCheck2, badge: 'AI Audit', badgeColor: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' },
-    { id: 'COMPLAINTS', label: 'Complaints', icon: FileText, badge: activeComplaintsCount, badgeColor: 'bg-amber-500/20 text-amber-400' },
-    { id: 'CONTRACTORS', label: 'Contractors', icon: Building2 },
-    { id: 'ANALYTICS', label: 'Analytics', icon: BarChart3 },
-    { id: 'DEMO', label: 'Judge Walkthrough', icon: Sparkles, badge: 'Demo', badgeColor: 'bg-purple-500/20 text-purple-300 border border-purple-500/30' }
+    { id: 'PRIORITY_QUEUE', label: 'Hazard Queue', icon: ListOrdered, badge: criticalCount, badgeStyle: 'bg-[#C03A3A] text-white' },
+    { id: 'REPORT', label: 'Report Incident', icon: PlusCircle, badge: 'NEW', badgeStyle: 'bg-[#121210] text-white' },
+    { id: 'GODS_EYE', label: 'God’s Eye Map', icon: Eye, badge: incidents.length, badgeStyle: 'bg-[#121210] text-white' },
+    { id: 'AI_ANALYSIS', label: 'Vision Lab', icon: Cpu },
+    { id: 'VERIFICATION', label: 'AI Verification', icon: FileCheck2, badge: 'AUDIT', badgeStyle: 'bg-[#2E8C42] text-white' },
+    { id: 'COMPLAINTS', label: 'SLA Escalations', icon: FileText, badge: activeComplaintsCount, badgeStyle: 'bg-[#E8A030] text-[#121210]' },
+    { id: 'CONTRACTORS', label: 'Contractor DLP', icon: Building2 },
+    { id: 'ANALYTICS', label: 'Civic Analytics', icon: BarChart3 },
+    { id: 'LANDING', label: 'Platform Spec', icon: Compass },
+    { id: 'DEMO', label: 'Judge Walkthrough', icon: Sparkles, badge: 'DEMO', badgeStyle: 'bg-[#121210] text-white' }
   ];
 
   return (
@@ -64,57 +64,59 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {isMobileOpen && (
         <div
           onClick={() => setIsMobileOpen(false)}
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-[#121210]/70 backdrop-blur-xs z-40 lg:hidden"
         />
       )}
 
-      {/* Main Sidebar */}
+      {/* Approva Brutalist Sidebar */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-[#090B10] border-r border-white/10 transition-all duration-300 ease-in-out
+        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-[#CFE8D6] border-r-[3px] border-[#121210] transition-all duration-200
           ${isCollapsed ? 'w-20' : 'w-64'}
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
-        {/* Brand Header */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-white/10">
+        {/* Brand Stamp Header */}
+        <div className="h-18 flex items-center justify-between px-4 border-b-[3px] border-[#121210] bg-[#CFE8D6]">
           <div
             onClick={() => {
-              setCurrentView('LANDING');
+              setCurrentView('PRIORITY_QUEUE');
               setIsMobileOpen(false);
             }}
-            className="flex items-center gap-3 cursor-pointer group"
+            className="flex items-center gap-2.5 cursor-pointer group select-none"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 via-blue-600/30 to-purple-600/20 border border-cyan-500/40 flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.25)] group-hover:scale-105 transition-transform">
-              <ShieldCheck className="w-5 h-5 text-cyan-400" />
+            <div className="w-10 h-10 bg-[#2E8C42] brut-sm flex items-center justify-center text-white shrink-0 group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform">
+              <CheckSquare className="w-6 h-6 stroke-[2.5]" />
             </div>
             {!isCollapsed && (
               <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="font-extrabold text-base tracking-tight bg-gradient-to-r from-white via-slate-100 to-cyan-400 bg-clip-text text-transparent">
-                    CivicPulse
-                  </span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-950/80 text-cyan-400 border border-cyan-500/40">
-                    BLR
-                  </span>
+                <div className="font-display font-extrabold text-lg leading-tight text-[#121210] tracking-tight">
+                  CIVICPULSE
                 </div>
-                <p className="text-[10px] text-slate-500 tracking-wider uppercase font-mono">
-                  Pothole Intelligence
-                </p>
+                <div className="text-[10px] font-mono tracking-widest text-[#121210]/70 font-bold">
+                  v2.4 · CIVIC OPS
+                </div>
               </div>
             )}
           </div>
 
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="hidden lg:flex p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+            className="hidden lg:flex p-1.5 brut-sm bg-white hover:bg-[#121210] hover:text-white transition-colors cursor-pointer"
             title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
           >
-            {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+            {isCollapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
           </button>
         </div>
 
+        {/* Section Label */}
+        {!isCollapsed && (
+          <div className="text-[10px] font-mono tracking-widest text-[#121210]/60 font-bold pt-4 px-4 pb-1">
+            WORKSPACE · APPROVER
+          </div>
+        )}
+
         {/* Navigation list */}
-        <nav className="flex-1 py-4 px-3 space-y-1.5 overflow-y-auto">
+        <nav className="flex-1 py-2 px-3 space-y-2 overflow-y-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentView === item.id;
@@ -126,87 +128,83 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   setCurrentView(item.id);
                   setIsMobileOpen(false);
                 }}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group relative cursor-pointer
+                className={`w-full flex items-center transition-all cursor-pointer font-display font-bold text-sm
+                  ${isCollapsed ? 'justify-center p-2.5' : 'justify-between px-3.5 py-2.5'}
                   ${isActive
-                    ? 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 shadow-[0_0_15px_rgba(0,240,255,0.15)]'
-                    : 'text-slate-400 hover:text-slate-100 hover:bg-white/5 border border-transparent'
+                    ? 'brut bg-[#E8A030] text-[#121210]'
+                    : 'brut bg-white text-[#121210] hover:bg-[#EAF5ED]'
                   }
-                  ${isCollapsed ? 'justify-center' : 'justify-between'}
                 `}
                 title={isCollapsed ? item.label : undefined}
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  <Icon
-                    className={`w-5 h-5 flex-shrink-0 transition-colors
-                      ${isActive ? 'text-cyan-400' : 'text-slate-400 group-hover:text-slate-200'}
-                    `}
-                  />
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <Icon className="w-4.5 h-4.5 shrink-0 stroke-[2.5]" />
                   {!isCollapsed && (
-                    <span className="truncate tracking-wide">{item.label}</span>
+                    <span className="truncate tracking-normal text-[13px]">{item.label}</span>
                   )}
                 </div>
 
                 {!isCollapsed && item.badge !== undefined && (
                   <span
-                    className={`text-[11px] font-mono px-2 py-0.5 rounded-full font-semibold ${item.badgeColor || 'bg-slate-800 text-slate-300'}`}
+                    className={`font-mono text-[11px] font-bold px-2 py-0.5 border border-[#121210] ${item.badgeStyle || 'bg-[#121210] text-white'}`}
                   >
                     {item.badge}
                   </span>
-                )}
-
-                {isCollapsed && isActive && (
-                  <div className="absolute right-1 w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#00F0FF]" />
                 )}
               </button>
             );
           })}
         </nav>
 
-        {/* Footer info & Auth Status */}
-        <div className="p-3 border-t border-white/10 bg-[#07080D]">
+        {/* Approva Stamped / Dispatched Today Widget */}
+        <div className="p-3 border-t-[3px] border-[#121210] bg-[#CFE8D6]">
           {!isCollapsed ? (
-            <div className="space-y-2">
-              <div className="p-2.5 rounded-lg bg-white/[0.03] border border-white/5">
-                <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1">
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    AI Neural Core
-                  </span>
-                  <span className="font-mono text-cyan-400">v4.2</span>
+            <div className="space-y-3">
+              <div className="brut bg-white p-3">
+                <div className="text-[10px] font-mono tracking-widest text-[#121210]/60 font-bold mb-1">
+                  TODAY · AUDITED / DISPATCHED
                 </div>
-                <p className="text-[10px] text-slate-500 leading-tight">
-                  BBMP Sahaya API Synced • 28ms latency
-                </p>
+                <div className="flex items-end gap-2">
+                  <div className="font-mono font-bold text-2xl text-[#121210]">47</div>
+                  <div className="text-xs font-mono text-[#121210]/70 mb-0.5">of 59 pending</div>
+                </div>
+                <div className="mt-2 h-2.5 border-2 border-[#121210] flex overflow-hidden bg-white">
+                  <div className="bg-[#2E8C42] w-[65%]" title="Approved"></div>
+                  <div className="bg-[#C03A3A] w-[15%]" title="Rejected"></div>
+                  <div className="bg-[#E8A030] w-[15%]" title="Pending Detail"></div>
+                </div>
               </div>
 
-              {/* Auth Status Strip */}
-              <div className="px-2.5 py-1.5 rounded-lg bg-black/40 border border-white/5 flex items-center justify-between text-[10px] font-mono">
-                {isSignedIn ? (
-                  <div className="flex items-center gap-1.5 text-cyan-400 truncate">
-                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-                    <span className="truncate">{user?.firstName || 'Connected'}</span>
-                    {isDemoBypass && <span className="text-[9px] text-amber-400">(Demo)</span>}
+              {/* User Stamp Pill */}
+              <div className="brut bg-white p-2.5 flex items-center justify-between">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-8 h-8 border-2 border-[#121210] bg-[#CFE8D6] flex items-center justify-center font-display font-bold text-xs shrink-0">
+                    {user?.firstName ? user.firstName.charAt(0) : 'IN'}
                   </div>
-                ) : (
-                  <div className="flex items-center justify-between w-full">
-                    <span className="text-slate-500 flex items-center gap-1">
-                      <Lock className="w-3 h-3 text-slate-600" />
-                      Public
-                    </span>
-                    <button
-                      onClick={openSignIn}
-                      className="text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1 cursor-pointer transition-colors"
-                    >
-                      <LogIn className="w-3 h-3" />
-                      <span>Sign In</span>
-                    </button>
+                  <div className="truncate">
+                    <div className="text-xs font-bold font-display truncate leading-tight">
+                      {user?.fullName || user?.firstName || 'Mara Vossberg'}
+                    </div>
+                    <div className="text-[9px] font-mono text-[#121210]/60 truncate font-bold">
+                      {isDemoBypass ? 'CHIEF AUDITOR · DEMO' : 'CHIEF COMMISSIONER'}
+                    </div>
                   </div>
+                </div>
+
+                {!isSignedIn && (
+                  <button
+                    onClick={openSignIn}
+                    className="p-1 brut-sm bg-[#2E8C42] text-white hover:bg-black cursor-pointer"
+                    title="Sign In"
+                  >
+                    <LogIn className="w-3.5 h-3.5" />
+                  </button>
                 )}
               </div>
             </div>
           ) : (
-            <div className="flex justify-center" title={isSignedIn ? 'Authenticated Session' : 'Public Session'}>
-              <div className={`w-2.5 h-2.5 rounded-full ${isSignedIn ? 'bg-cyan-400 shadow-[0_0_8px_#00F0FF]' : 'bg-slate-600'}`} />
+            <div className="flex justify-center p-1">
+              <div className="w-4 h-4 bg-[#2E8C42] border-2 border-[#121210]" title="System Operational" />
             </div>
           )}
         </div>

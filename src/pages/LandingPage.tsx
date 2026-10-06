@@ -1,17 +1,19 @@
 import React from 'react';
 import {
-  ShieldAlert,
   ArrowRight,
   Eye,
   PlusCircle,
   Cpu,
   Building2,
   Radar,
-  Activity,
-  Zap,
   Flame,
   ShieldCheck,
-  RotateCcw
+  RotateCcw,
+  Zap,
+  CheckCircle2,
+  AlertTriangle,
+  Clock,
+  Layers
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { CITY_METRICS } from '../data/mockData';
@@ -21,194 +23,193 @@ export const LandingPage: React.FC = () => {
   const { setCurrentView, incidents, selectIncidentById, loadDemoCase, resetDemo } = useApp();
 
   const stepsStory = [
-    { step: '01', title: 'DETECT', desc: 'Stereoscopic depth & asphalt cracking via citizen photo/video', icon: Cpu, color: 'text-cyan-400' },
-    { step: '02', title: 'PRIORITIZE', desc: 'Traffic volume × hospital corridor × depth algorithmic ranking', icon: Flame, color: 'text-amber-400' },
-    { step: '03', title: 'ASSIGN', desc: 'Clause 45.2 Defect Liability Period zero-cost contractor mandate', icon: Building2, color: 'text-purple-400' },
-    { step: '04', title: 'TRACK', desc: 'Live BBMP Sahaya SLA sync with automated escalation daemon', icon: Activity, color: 'text-blue-400' },
-    { step: '05', title: 'VERIFY', desc: 'Post-repair computer vision audit verifying surface smoothness', icon: ShieldCheck, color: 'text-emerald-400' }
+    { step: '01', title: 'DETECT', desc: 'Stereoscopic depth & asphalt cracking via citizen photo/video', icon: Cpu, badge: 'AI VISION' },
+    { step: '02', title: 'PRIORITIZE', desc: 'Traffic volume × hospital corridor × depth algorithmic ranking', icon: Flame, badge: 'RISK SCORE' },
+    { step: '03', title: 'ASSIGN', desc: 'Clause 45.2 Defect Liability zero-cost contractor mandate', icon: Building2, badge: 'PWD DLP' },
+    { step: '04', title: 'TRACK', desc: 'Live BBMP Sahaya SLA sync with automated escalation daemon', icon: Clock, badge: 'BBMP API' },
+    { step: '05', title: 'VERIFY', desc: 'Post-repair computer vision audit verifying surface smoothness', icon: ShieldCheck, badge: 'AI AUDIT' }
   ];
 
   return (
-    <div className="space-y-12 pb-16 animate-in fade-in duration-300">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-[#0F1322] via-[#090C16] to-[#07090F] p-6 sm:p-10 lg:p-14 shadow-2xl">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f293710_1px,transparent_1px),linear-gradient(to_bottom,#1f293710_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-1/2 left-10 w-72 h-72 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+    <div className="space-y-8 pb-16 text-left">
+      {/* Approva Hero Section */}
+      <section className="brut-lg bg-white p-6 sm:p-10 lg:p-12 relative overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           {/* Left Text & CTA */}
-          <div className="lg:col-span-7 space-y-6 text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-950/60 border border-cyan-500/40 text-xs font-mono text-cyan-300 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-              <span className="font-semibold">CIVICPULSE BENGALURU</span>
-              <span className="text-slate-500">|</span>
-              <span className="text-slate-400">Next-Gen Municipal AI</span>
+          <div className="lg:col-span-7 space-y-6">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="tag bg-[#2E8C42] text-white">
+                <CheckCircle2 className="w-3.5 h-3.5 stroke-[3]" />
+                AUDIT SYSTEM v2.4
+              </span>
+              <span className="tag bg-[#CFE8D6] text-[#121210]">
+                BBMP SAHAYA 2.0 CONNECTED
+              </span>
+              <span className="tag bg-[#E8A030] text-[#121210]">
+                IRC-SP-100 SPEC
+              </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
-              See the problem. <br />
-              <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 bg-clip-text text-transparent">
-                Find who's responsible.
+            <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-[#121210] leading-[1.05] tracking-tight">
+              See the hazard. <br />
+              <span className="bg-[#CFE8D6] px-2 py-0.5 border-2 border-[#121210] inline-block my-1 shadow-[3px_3px_0_#121210]">
+                Hold contractors accountable.
               </span> <br />
-              Fix what matters first.
+              Sanction repairs by risk.
             </h1>
 
-            <p className="text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed">
-              AI-powered pothole intelligence and accountability for Bengaluru. Merging computer vision road scanning, 
-              God's Eye geospatial city intelligence, and algorithmic priority scoring to hold contractors accountable and fix hazardous roads before accidents occur.
+            <p className="font-body text-base sm:text-lg text-[#121210]/80 max-w-2xl leading-relaxed">
+              Bengaluru’s municipal approval and pothole intelligence ledger. Merging computer vision road scanning, 
+              geospatial telemetry, and Defect Liability Period (DLP) warranty enforcement to fix hazardous corridors before accidents happen.
             </p>
 
-            {/* CTAs including 1-Click Judge Demo */}
-            <div className="flex flex-wrap items-center gap-3.5 pt-2">
+            {/* Brutalist CTAs matching Approva */}
+            <div className="flex flex-wrap items-center gap-3 pt-2">
               <button
                 onClick={loadDemoCase}
-                className="flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-extrabold text-sm shadow-[0_0_30px_rgba(0,240,255,0.5)] transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                className="brut bg-[#E8A030] text-[#121210] hover:bg-[#d99020] px-6 py-3 font-display font-extrabold text-sm sm:text-base btn-press cursor-pointer flex items-center gap-2"
               >
-                <Zap className="w-4 h-4 fill-slate-950 text-slate-950" />
-                <span>⚡ 1-Click Judge Demo</span>
+                <Zap className="w-4 h-4 fill-[#121210]" />
+                <span>1-CLICK JUDGE DEMO</span>
+              </button>
+
+              <button
+                onClick={() => setCurrentView('PRIORITY_QUEUE')}
+                className="brut bg-[#121210] text-white hover:bg-zinc-800 px-5 py-3 font-display font-extrabold text-sm sm:text-base btn-press cursor-pointer flex items-center gap-2"
+              >
+                <span>OPEN APPROVER INBOX</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
 
               <button
                 onClick={() => setCurrentView('REPORT')}
-                className="flex items-center gap-2 px-5 py-3.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 hover:border-cyan-500/40 text-white font-semibold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                className="brut bg-[#CFE8D6] text-[#121210] hover:bg-[#bfe0ca] px-4 py-3 font-display font-bold text-sm btn-press cursor-pointer flex items-center gap-2"
               >
-                <PlusCircle className="w-4 h-4 text-cyan-400" />
-                <span>Report Pothole</span>
-              </button>
-
-              <button
-                onClick={() => setCurrentView('GODS_EYE')}
-                className="flex items-center gap-2 px-5 py-3.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-slate-300 hover:text-white font-medium text-sm transition-all cursor-pointer"
-              >
-                <Eye className="w-4 h-4 text-slate-400" />
-                <span>God’s Eye Map</span>
+                <PlusCircle className="w-4 h-4" />
+                <span>REPORT POTHOLE</span>
               </button>
 
               <button
                 onClick={resetDemo}
-                className="flex items-center gap-1.5 px-3.5 py-3.5 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/5 text-slate-400 hover:text-slate-200 text-xs font-mono transition-all cursor-pointer"
+                className="brut-sm bg-white hover:bg-zinc-100 p-3 font-mono text-xs cursor-pointer"
                 title="Reset application to initial clean seed state"
               >
-                <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
-                <span>Reset Demo</span>
+                <RotateCcw className="w-4 h-4 text-[#121210]" />
               </button>
             </div>
 
             {/* Quick Metrics Bar */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-white/10">
-              <div>
-                <div className="text-xl sm:text-2xl font-extrabold text-white font-mono">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t-[3px] border-[#121210]">
+              <div className="brut bg-[#CFE8D6]/40 p-2.5">
+                <div className="text-xl sm:text-2xl font-extrabold text-[#121210] font-mono">
                   {CITY_METRICS.activePotholes.toLocaleString()}
                 </div>
-                <div className="text-[11px] text-slate-400 font-medium">Active BLR Potholes</div>
-              </div>
-              <div>
-                <div className="text-xl sm:text-2xl font-extrabold text-red-400 font-mono flex items-center gap-1">
-                  <span>{CITY_METRICS.criticalIssues}</span>
-                  <span className="text-xs text-red-500 animate-pulse">● Live</span>
+                <div className="text-[10px] font-mono text-[#121210]/70 font-bold uppercase">
+                  ACTIVE POTHOLES
                 </div>
-                <div className="text-[11px] text-slate-400 font-medium">Critical Road Hazards</div>
               </div>
-              <div>
-                <div className="text-xl sm:text-2xl font-extrabold text-emerald-400 font-mono">
+
+              <div className="brut bg-[#C03A3A] text-white p-2.5">
+                <div className="text-xl sm:text-2xl font-extrabold font-mono flex items-center gap-1">
+                  <span>{CITY_METRICS.criticalIssues}</span>
+                  <span className="text-[10px] uppercase font-bold bg-white text-[#C03A3A] px-1">SLA!</span>
+                </div>
+                <div className="text-[10px] font-mono text-white/80 font-bold uppercase">
+                  PAST 24H SLA
+                </div>
+              </div>
+
+              <div className="brut bg-[#2E8C42] text-white p-2.5">
+                <div className="text-xl sm:text-2xl font-extrabold font-mono">
                   {formatINR(CITY_METRICS.taxpayerSavingsINR)}
                 </div>
-                <div className="text-[11px] text-slate-400 font-medium">Contractor Warranties Saved</div>
+                <div className="text-[10px] font-mono text-white/80 font-bold uppercase">
+                  WARRANTY SAVED
+                </div>
               </div>
-              <div>
-                <div className="text-xl sm:text-2xl font-extrabold text-cyan-400 font-mono">
+
+              <div className="brut bg-white p-2.5">
+                <div className="text-xl sm:text-2xl font-extrabold text-[#121210] font-mono">
                   {CITY_METRICS.aiPrecisionRate}%
                 </div>
-                <div className="text-[11px] text-slate-400 font-medium">AI Audit Precision</div>
+                <div className="text-[10px] font-mono text-[#121210]/70 font-bold uppercase">
+                  AUDIT PRECISION
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Right Product Visualization */}
-          <div className="lg:col-span-5 relative">
-            <div className="relative mx-auto w-full max-w-md rounded-2xl bg-[#090C16]/95 border border-cyan-500/30 p-4 shadow-[0_0_40px_rgba(0,240,255,0.15)] overflow-hidden">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,240,255,0.06),transparent_70%)] pointer-events-none" />
-
-              {/* Header */}
-              <div className="flex items-center justify-between pb-3 border-b border-white/10">
+          {/* Right Product Visualization matching Approva brutalist card */}
+          <div className="lg:col-span-5">
+            <div className="brut bg-white p-5 space-y-4">
+              <div className="flex items-center justify-between border-b-2 border-[#121210] pb-3">
                 <div className="flex items-center gap-2">
-                  <Radar className="w-4 h-4 text-cyan-400 animate-spin" style={{ animationDuration: '6s' }} />
-                  <span className="font-mono text-xs font-bold text-slate-200 uppercase tracking-wider">
-                    Bengaluru AI Radar
-                  </span>
+                  <div className="w-7 h-7 bg-[#2E8C42] brut-sm flex items-center justify-center text-white">
+                    <Radar className="w-4 h-4 animate-spin" style={{ animationDuration: '6s' }} />
+                  </div>
+                  <div>
+                    <div className="font-display font-extrabold text-sm text-[#121210]">
+                      BENGALURU AI RADAR
+                    </div>
+                    <div className="font-mono text-[9px] text-[#121210]/60">
+                      LIVE CORRIDOR TELEMETRY
+                    </div>
+                  </div>
                 </div>
-                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30">
-                  REALTIME SCAN
+                <span className="stamp text-[#2E8C42] text-[10px]" style={{ transform: 'rotate(-2deg)' }}>
+                  VERIFIED
                 </span>
               </div>
 
-              {/* Simulated Map / Vision Display */}
-              <div className="relative my-3 rounded-xl bg-[#06080F] border border-white/10 h-64 overflow-hidden flex flex-col justify-between p-3">
-                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:16px_16px]" />
-
-                <div className="relative z-10 flex justify-between items-center text-[10px] font-mono text-slate-400">
-                  <span className="px-1.5 py-0.5 rounded bg-black/60 border border-white/10">
-                    LAT 12.9298° N | LNG 77.6835° E
+              {/* Target Graphic Frame */}
+              <div className="polka border-2 border-[#121210] bg-[#CFE8D6]/30 p-4 space-y-3">
+                <div className="flex justify-between items-center text-[10px] font-mono font-bold">
+                  <span className="bg-white border border-[#121210] px-1.5 py-0.5">
+                    12.9298° N · 77.6835° E
                   </span>
-                  <span className="px-1.5 py-0.5 rounded bg-red-950/80 border border-red-500/40 text-red-400 font-bold">
-                    PRIORITY #1 • 94/100
+                  <span className="bg-[#C03A3A] text-white border border-[#121210] px-1.5 py-0.5">
+                    CRITICAL #1 · SCORE 94/100
                   </span>
                 </div>
 
-                {/* Center Pothole Target Reticle */}
-                <div className="relative z-10 my-auto flex flex-col items-center justify-center">
-                  <div className="relative w-28 h-28 border border-dashed border-red-500/60 rounded-xl flex items-center justify-center bg-red-500/5 backdrop-blur-sm">
-                    <div className="absolute -top-1 -left-1 w-2.5 h-2.5 border-t-2 border-l-2 border-red-500" />
-                    <div className="absolute -top-1 -right-1 w-2.5 h-2.5 border-t-2 border-r-2 border-red-500" />
-                    <div className="absolute -bottom-1 -left-1 w-2.5 h-2.5 border-b-2 border-l-2 border-red-500" />
-                    <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 border-b-2 border-r-2 border-red-500" />
-
-                    <div className="text-center">
-                      <div className="text-[10px] font-mono font-bold text-red-400 bg-red-950/80 px-1 rounded">
-                        DEPTH: 15.4 CM
-                      </div>
-                      <div className="text-[9px] font-mono text-cyan-300 mt-1">
-                        AREA: 1.48 m²
-                      </div>
-                    </div>
+                <div className="brut bg-white p-4 text-center my-2">
+                  <div className="font-mono font-extrabold text-xl text-[#C03A3A]">
+                    DEPTH: 15.4 CM
                   </div>
-                  <div className="mt-2 text-center">
-                    <span className="text-xs font-bold text-white">Outer Ring Road (Bellandur)</span>
-                    <p className="text-[10px] text-slate-400">3 Reports Merged • Ambulance Route</p>
+                  <div className="text-xs font-mono font-bold text-[#121210] mt-0.5">
+                    SURFACE: 1.48 m² · EST. FILL: 38.5 L
+                  </div>
+                  <div className="text-xs font-display font-bold text-[#121210] mt-2">
+                    Outer Ring Road (Bellandur)
+                  </div>
+                  <div className="text-[10px] font-mono text-[#121210]/60">
+                    High-Traffic Ambulance Corridor · Ward 150
                   </div>
                 </div>
 
-                <div className="relative z-10 grid grid-cols-3 gap-1 bg-black/70 backdrop-blur-md p-2 rounded-lg border border-white/10 text-center font-mono text-[10px]">
-                  <div>
-                    <span className="text-slate-500 block">RISK</span>
-                    <span className="text-red-400 font-bold">94/100</span>
+                <div className="grid grid-cols-3 gap-2 font-mono text-center text-[10px]">
+                  <div className="border border-[#121210] bg-white p-1">
+                    <span className="text-[#121210]/60 block">CONTRACTOR</span>
+                    <span className="font-bold">Star Infratech</span>
                   </div>
-                  <div>
-                    <span className="text-slate-500 block">EST. FILL</span>
-                    <span className="text-cyan-400 font-bold">38.5 L</span>
+                  <div className="border border-[#121210] bg-white p-1">
+                    <span className="text-[#121210]/60 block">WARRANTY</span>
+                    <span className="font-bold text-[#2E8C42]">DLP ACTIVE</span>
                   </div>
-                  <div>
-                    <span className="text-slate-500 block">WARRANTY</span>
-                    <span className="text-emerald-400 font-bold">ACTIVE DLP</span>
+                  <div className="border border-[#121210] bg-white p-1">
+                    <span className="text-[#121210]/60 block">EST. BUDGET</span>
+                    <span className="font-bold">₹48,920</span>
                   </div>
                 </div>
               </div>
 
-              {/* Action row */}
-              <div className="flex items-center justify-between pt-1">
-                <div className="flex items-center gap-1.5 text-xs text-slate-400 font-mono">
-                  <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Contractor: Star Infratech</span>
-                </div>
-                <button
-                  onClick={loadDemoCase}
-                  className="flex items-center gap-1 text-xs font-bold text-cyan-400 hover:text-cyan-300 transition-colors cursor-pointer"
-                >
-                  <span>Launch Walkthrough</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
+              <button
+                onClick={() => selectIncidentById(incidents[0].id, 'INCIDENT_DETAIL')}
+                className="w-full brut bg-[#121210] text-white hover:bg-zinc-800 py-2.5 font-display font-extrabold text-xs btn-press cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <span>OPEN INVESTIGATION DOSSIER</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
             </div>
           </div>
         </div>
@@ -216,17 +217,17 @@ export const LandingPage: React.FC = () => {
 
       {/* Visual Story Sequence: DETECT -> PRIORITIZE -> ASSIGN -> TRACK -> VERIFY */}
       <section className="space-y-4 text-left">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between border-b-[3px] border-[#121210] pb-2">
           <div>
-            <div className="text-xs font-mono text-cyan-400 uppercase tracking-widest mb-1">
-              THE END-TO-END PIPELINE
+            <div className="text-[10px] font-mono font-bold text-[#121210]/60 uppercase tracking-widest">
+              END-TO-END CIVIC PIPELINE
             </div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">
-              From Citizen Photo to Guaranteed Repair
+            <h2 className="text-2xl font-display font-extrabold text-[#121210]">
+              From Citizen Photo to Enforced Work Order
             </h2>
           </div>
-          <span className="text-xs font-mono text-slate-500 hidden sm:inline-block">
-            5 Automated Municipal Transitions
+          <span className="tag bg-[#CFE8D6] hidden sm:inline-flex">
+            5 AUDIT STAGES
           </span>
         </div>
 
@@ -236,23 +237,27 @@ export const LandingPage: React.FC = () => {
             return (
               <div
                 key={i}
-                className="p-4 rounded-2xl bg-[#090C16] border border-white/10 hover:border-cyan-500/40 transition-all flex flex-col justify-between group"
+                className="brut-card p-4 flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="font-mono text-xs font-bold text-slate-500">{st.step}</span>
-                    <Icon className={`w-5 h-5 ${st.color}`} />
+                    <span className="font-mono text-xs font-extrabold bg-[#121210] text-white px-2 py-0.5">
+                      {st.step}
+                    </span>
+                    <Icon className="w-5 h-5 text-[#121210] stroke-[2.5]" />
                   </div>
-                  <h3 className="font-mono text-sm font-bold text-white group-hover:text-cyan-300 transition-colors">
+                  <h3 className="font-display text-base font-extrabold text-[#121210]">
                     {st.title}
                   </h3>
-                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                  <p className="text-xs font-body text-[#121210]/80 mt-1 leading-relaxed">
                     {st.desc}
                   </p>
                 </div>
-                <div className="pt-3 text-[10px] font-mono text-slate-500 flex items-center gap-1">
-                  <span>Stage {st.step}</span>
-                  {i < 4 && <ArrowRight className="w-3 h-3 text-slate-600" />}
+                <div className="pt-3 border-t-2 border-[#121210]/15 mt-3 flex items-center justify-between">
+                  <span className="font-mono text-[9px] font-bold text-[#121210]/60">
+                    {st.badge}
+                  </span>
+                  {i < 4 && <ArrowRight className="w-3 h-3 text-[#121210]" />}
                 </div>
               </div>
             );
@@ -261,104 +266,96 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* 3 Core Pillars Section */}
-      <section className="space-y-6 text-left">
-        <div>
-          <div className="text-xs font-mono text-cyan-400 uppercase tracking-widest mb-1">
-            INTELLIGENCE ARCHITECTURE
+      <section className="space-y-4 text-left">
+        <div className="border-b-[3px] border-[#121210] pb-2">
+          <div className="text-[10px] font-mono font-bold text-[#121210]/60 uppercase tracking-widest">
+            ENGINEERING SPECIFICATION
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-            How CivicPulse Powers Bengaluru
+          <h2 className="text-2xl font-display font-extrabold text-[#121210]">
+            CivicPulse Subsystem Modules
           </h2>
-          <p className="text-sm text-slate-400 mt-1 max-w-xl">
-            A unified pipeline transforming citizen reports and dashcam footage into prioritized, contractor-enforced public works.
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card 1: Pothole Detection & Vision */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div
             onClick={() => setCurrentView('REPORT')}
-            className="group relative rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/10 hover:border-cyan-500/40 p-6 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
+            className="brut-card p-6 cursor-pointer flex flex-col justify-between"
           >
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
-                <Cpu className="w-6 h-6" />
+            <div className="space-y-3">
+              <div className="w-12 h-12 bg-[#CFE8D6] border-2 border-[#121210] flex items-center justify-center text-[#121210]">
+                <Cpu className="w-6 h-6 stroke-[2.5]" />
               </div>
-              <h3 className="text-lg font-bold text-white group-hover:text-cyan-300 transition-colors">
-                1. Computer Vision Detection
+              <h3 className="font-display text-xl font-extrabold text-[#121210]">
+                1. Computer Vision Lab
               </h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Citizens upload photos or dashcam videos. CivicPulse’s neural model extracts depth in centimeters, surface square meters, and asphalt edge degradation within 35ms.
+              <p className="text-xs text-[#121210]/80 leading-relaxed font-body">
+                Extracts depth in centimeters, surface square meters, volume in liters, and asphalt edge degradation within 35ms from any mobile photo or video.
               </p>
             </div>
-            <div className="pt-6 flex items-center gap-2 text-xs font-semibold text-cyan-400">
-              <span>Try Citizen Reporter</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <div className="pt-4 flex items-center gap-1 font-display font-bold text-xs text-[#121210] underline">
+              <span>Test Vision Lab →</span>
             </div>
           </div>
 
-          {/* Card 2: God's Eye Geospatial */}
           <div
             onClick={() => setCurrentView('GODS_EYE')}
-            className="group relative rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/10 hover:border-cyan-500/40 p-6 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
+            className="brut-card p-6 cursor-pointer flex flex-col justify-between"
           >
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
-                <Eye className="w-6 h-6" />
+            <div className="space-y-3">
+              <div className="w-12 h-12 bg-[#E8A030] border-2 border-[#121210] flex items-center justify-center text-[#121210]">
+                <Eye className="w-6 h-6 stroke-[2.5]" />
               </div>
-              <h3 className="text-lg font-bold text-white group-hover:text-blue-300 transition-colors">
-                2. God's Eye City Intelligence
+              <h3 className="font-display text-xl font-extrabold text-[#121210]">
+                2. God’s Eye City Radar
               </h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Full geospatial surveillance of 198 BBMP wards. Monitors arterial corridors like Outer Ring Road, Silk Board, and Whitefield with live status feeds and severity heatmaps.
+              <p className="text-xs text-[#121210]/80 leading-relaxed font-body">
+                Full geospatial surveillance across 198 BBMP wards. Monitors arterial corridors like Outer Ring Road, Silk Board, and Whitefield with live status feeds.
               </p>
             </div>
-            <div className="pt-6 flex items-center gap-2 text-xs font-semibold text-blue-400">
-              <span>Launch Command Center</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <div className="pt-4 flex items-center gap-1 font-display font-bold text-xs text-[#121210] underline">
+              <span>Open Geospatial Radar →</span>
             </div>
           </div>
 
-          {/* Card 3: Prioritization & Contractor Accountability */}
           <div
             onClick={() => setCurrentView('PRIORITY_QUEUE')}
-            className="group relative rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/10 hover:border-cyan-500/40 p-6 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
+            className="brut-card p-6 cursor-pointer flex flex-col justify-between"
           >
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.2)]">
-                <Building2 className="w-6 h-6" />
+            <div className="space-y-3">
+              <div className="w-12 h-12 bg-[#2E8C42] border-2 border-[#121210] flex items-center justify-center text-white">
+                <Building2 className="w-6 h-6 stroke-[2.5]" />
               </div>
-              <h3 className="text-lg font-bold text-white group-hover:text-purple-300 transition-colors">
-                3. Priority & Contractor Accountability
+              <h3 className="font-display text-xl font-extrabold text-[#121210]">
+                3. Work Order Dispatcher
               </h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Problems are ranked by traffic volume and hospital proximity. CivicPulse checks Defect Liability clauses to force contractors to repair for free under warranty.
+              <p className="text-xs text-[#121210]/80 leading-relaxed font-body">
+                Algorithmic ranking by ambulance routes and transit volume. Auto-audits Defect Liability clauses to force zero-cost contractor rework under warranty.
               </p>
             </div>
-            <div className="pt-6 flex items-center gap-2 text-xs font-semibold text-purple-400">
-              <span>View Priority Queue</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <div className="pt-4 flex items-center gap-1 font-display font-bold text-xs text-[#121210] underline">
+              <span>View Approver Inbox →</span>
             </div>
           </div>
         </div>
       </section>
 
       {/* Live Priority Spotlight Section */}
-      <section className="rounded-2xl bg-[#0B0E18] border border-white/10 p-6 lg:p-8 text-left">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <section className="brut bg-white p-6 text-left">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-[3px] border-[#121210] pb-3 mb-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-mono text-red-400 mb-1">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-              LIVE CIVIC THREAT LEVEL
+            <div className="text-[10px] font-mono font-bold text-[#C03A3A] uppercase tracking-wider flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 bg-[#C03A3A] border border-[#121210]" />
+              TOP DISPATCH QUEUE · LIVE BBMP HAZARDS
             </div>
-            <h3 className="text-xl font-bold text-white">Top Bengaluru Pothole Priority Queue</h3>
+            <h3 className="text-xl font-display font-extrabold text-[#121210]">
+              Immediate Action Dossiers
+            </h3>
           </div>
           <button
             onClick={() => setCurrentView('PRIORITY_QUEUE')}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-colors cursor-pointer"
+            className="brut-sm bg-white hover:bg-zinc-100 px-3 py-1.5 font-display font-extrabold text-xs text-[#121210] cursor-pointer"
           >
-            <span>View All {incidents.length} Ranked Issues</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            OPEN COMPLETE INBOX ({incidents.length}) →
           </button>
         </div>
 
@@ -367,47 +364,55 @@ export const LandingPage: React.FC = () => {
             <div
               key={incident.id}
               onClick={() => selectIncidentById(incident.id, 'INCIDENT_DETAIL')}
-              className="p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 hover:border-cyan-500/30 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer transition-all group"
+              className="p-4 border-2 border-[#121210] bg-[#CFE8D6]/30 hover:bg-[#CFE8D6] flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer transition-all"
             >
-              <div className="flex items-start sm:items-center gap-4">
-                <div className={`w-9 h-9 rounded-lg flex items-center justify-center font-mono font-bold text-sm flex-shrink-0
-                  ${idx === 0 ? 'bg-red-500/20 text-red-400 border border-red-500/40 shadow-[0_0_12px_rgba(239,68,68,0.25)]' :
-                    idx === 1 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40' :
-                    'bg-yellow-500/20 text-yellow-400 border border-yellow-500/40'}
-                `}>
+              <div className="flex items-center gap-4">
+                <div className={`w-9 h-9 border-2 border-[#121210] flex items-center justify-center font-mono font-extrabold text-sm shrink-0 ${
+                  idx === 0 ? 'bg-[#C03A3A] text-white' :
+                  idx === 1 ? 'bg-[#E8A030] text-[#121210]' :
+                  'bg-white text-[#121210]'
+                }`}>
                   #{idx + 1}
                 </div>
 
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-slate-100">{incident.code}</span>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-semibold ${incident.severity === 'CRITICAL' ? 'bg-red-500/10 text-red-400 border border-red-500/30' : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'}`}>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-mono text-xs font-bold text-[#121210]">
+                      WO-2026-{incident.code.replace('BLR-', '')}
+                    </span>
+                    <span className={`tag ${incident.severity === 'CRITICAL' ? 'bg-[#C03A3A] text-white' : 'bg-[#E8A030] text-[#121210]'}`}>
                       {incident.severity}
                     </span>
                     {incident.isUnderWarranty && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full font-mono bg-emerald-950/60 text-emerald-400 border border-emerald-500/30 hidden sm:inline-block">
-                        Contractor Warranty Active
+                      <span className="tag bg-[#2E8C42] text-white">
+                        DLP WARRANTY
                       </span>
                     )}
                   </div>
-                  <h4 className="text-sm font-semibold text-white group-hover:text-cyan-300 transition-colors mt-0.5">
+                  <h4 className="font-display font-extrabold text-base text-[#121210] mt-1">
                     {incident.roadName}
                   </h4>
-                  <p className="text-xs text-slate-400">{incident.landmark}</p>
+                  <p className="text-xs font-body text-[#121210]/70">
+                    {incident.landmark} · Ward {incident.wardNumber} ({incident.zone})
+                  </p>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-white/5 font-mono text-xs">
+              <div className="flex items-center justify-between md:justify-end gap-6 font-mono text-xs border-t md:border-t-0 pt-2 md:pt-0 border-[#121210]/20">
                 <div className="text-right">
-                  <div className="text-[10px] text-slate-500">AI PRIORITY SCORE</div>
-                  <div className="text-base font-extrabold text-cyan-400">{incident.priorityDetails.overallScore}/100</div>
+                  <span className="text-[10px] text-[#121210]/60 block font-bold">RISK SCORE</span>
+                  <span className="font-extrabold text-base text-[#121210]">
+                    {incident.priorityDetails.overallScore}/100
+                  </span>
                 </div>
                 <div className="text-right">
-                  <div className="text-[10px] text-slate-500">DEPTH / VOL</div>
-                  <div className="font-semibold text-slate-200">{incident.depthCm}cm / {incident.estimatedVolumeLiters}L</div>
+                  <span className="text-[10px] text-[#121210]/60 block font-bold">DIMENSIONS</span>
+                  <span className="font-bold text-[#121210]">
+                    {incident.depthCm}cm · {incident.surfaceAreaSqM}m²
+                  </span>
                 </div>
-                <button className="px-3 py-1.5 rounded-lg bg-cyan-500/10 group-hover:bg-cyan-500 group-hover:text-slate-950 text-cyan-400 border border-cyan-500/30 font-bold transition-all text-xs">
-                  Inspect
+                <button className="brut-sm bg-[#121210] text-white px-3 py-1 font-display font-bold text-xs hover:bg-zinc-800 cursor-pointer">
+                  INSPECT
                 </button>
               </div>
             </div>

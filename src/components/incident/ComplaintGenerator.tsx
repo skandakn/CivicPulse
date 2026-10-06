@@ -82,7 +82,7 @@ export const ComplaintGenerator: React.FC<ComplaintGeneratorProps> = ({ incident
 
   const generateComplaint = async () => {
     setIsGenerating(true);
-    await new Promise(r => setTimeout(r, 1200));
+    await new Promise(r => setTimeout(r, 900));
 
     const complaintId = `CP-${incident.code.split('-').slice(2).join('-')}-${String(Math.floor(Math.random() * 900) + 100)}`;
     const fullText = buildComplaintText(incident, complaintId);
@@ -146,155 +146,146 @@ export const ComplaintGenerator: React.FC<ComplaintGeneratorProps> = ({ incident
     addToast('Marked as Submitted', 'Status updated. Keep your complaint ID for tracking.', 'success');
   };
 
-  const severityColor = {
-    CRITICAL: 'text-red-400 bg-red-500/10 border-red-500/30',
-    HIGH: 'text-amber-400 bg-amber-500/10 border-amber-500/30',
-    MEDIUM: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/30',
-    LOW: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/30',
-  }[incident.severity];
-
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#090C16] overflow-hidden">
+    <div className="bg-white brut overflow-hidden">
       {/* Header */}
-      <div className="p-5 border-b border-white/10 flex items-center justify-between">
+      <div className="p-4 border-b-2 border-[#121210] flex items-center justify-between bg-[#CFE8D6]/30">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
-            <FileText className="w-4 h-4 text-amber-400" />
+          <div className="w-9 h-9 bg-white border-2 border-[#121210] flex items-center justify-center">
+            <FileText className="w-4 h-4 text-[#121210]" />
           </div>
           <div>
-            <h3 className="font-mono text-sm font-bold text-white">Generate Official Complaint</h3>
-            <p className="text-[11px] text-slate-400 mt-0.5">Structured complaint document with all evidence</p>
+            <h3 className="font-display text-sm font-black text-[#121210] uppercase">Generate Official Grievance</h3>
+            <p className="text-[11px] text-[#4A4A46] font-mono">Structured complaint notice with audited evidence</p>
           </div>
         </div>
         {complaint && (
-          <span className={`text-[10px] font-mono font-bold px-2.5 py-1 rounded-full border ${
+          <span className={`stamp text-[10px] font-black ${
             submissionStatus === 'SUBMITTED'
-              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+              ? 'border-[#2E8C42] text-[#2E8C42]'
               : submissionStatus === 'COPIED'
-              ? 'bg-blue-500/10 text-blue-400 border-blue-500/30'
-              : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+              ? 'border-[#121210] text-[#121210]'
+              : 'border-[#E8A030] text-[#E8A030]'
           }`}>
-            {submissionStatus === 'SUBMITTED' ? '✓ SUBMITTED' : submissionStatus === 'COPIED' ? 'COPIED' : 'DRAFT'}
+            {submissionStatus === 'SUBMITTED' ? 'SUBMITTED' : submissionStatus === 'COPIED' ? 'COPIED' : 'DRAFT'}
           </span>
         )}
       </div>
 
-      <div className="p-5 space-y-5">
+      <div className="p-5 space-y-4">
         {!complaint ? (
-          /* Pre-generation preview */
           <div className="space-y-4">
-            {/* What will be included */}
             <div className="grid grid-cols-2 gap-3 text-xs">
               {[
-                { icon: FileText, label: 'Complaint ID', value: 'Auto-generated' },
-                { icon: MapPin, label: 'Location', value: `Ward ${incident.wardNumber}` },
-                { icon: AlertTriangle, label: 'Severity', value: incident.severity },
-                { icon: Cpu, label: 'Priority Score', value: `${incident.priorityDetails.overallScore}/100` },
-                { icon: Building2, label: 'Authority', value: incident.authorityName.split(' ').slice(0, 2).join(' ') },
-                { icon: Calendar, label: 'Evidence Images', value: `${Object.values(incident.images).filter(Boolean).length} attached` },
+                { icon: FileText, label: 'COMPLAINT ID', value: 'Auto-generated' },
+                { icon: MapPin, label: 'LOCATION', value: `Ward ${incident.wardNumber}` },
+                { icon: AlertTriangle, label: 'SEVERITY', value: incident.severity },
+                { icon: Cpu, label: 'PRIORITY SCORE', value: `${incident.priorityDetails.overallScore}/100` },
+                { icon: Building2, label: 'AUTHORITY', value: incident.authorityName.split(' ').slice(0, 2).join(' ') },
+                { icon: Calendar, label: 'EVIDENCE IMAGES', value: `${Object.values(incident.images).filter(Boolean).length} attached` },
               ].map(({ icon: Icon, label, value }) => (
-                <div key={label} className="flex items-center gap-2.5 p-2.5 rounded-xl bg-white/[0.02] border border-white/5">
-                  <Icon className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
+                <div key={label} className="flex items-center gap-2.5 p-2.5 bg-[#CFE8D6]/30 border-2 border-[#121210]">
+                  <Icon className="w-3.5 h-3.5 text-[#121210] flex-shrink-0" />
                   <div>
-                    <div className="text-[10px] text-slate-500 font-mono">{label}</div>
-                    <div className="text-slate-200 font-semibold">{value}</div>
+                    <div className="text-[10px] text-[#4A4A46] font-mono font-bold uppercase">{label}</div>
+                    <div className="text-[#121210] font-black">{value}</div>
                   </div>
                 </div>
               ))}
             </div>
 
             {incident.isUnderWarranty && (
-              <div className="p-3 rounded-xl bg-emerald-950/20 border border-emerald-500/30 flex items-start gap-2.5 text-xs">
-                <ShieldAlert className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+              <div className="p-3 bg-[#CFE8D6]/50 border-2 border-[#121210] flex items-start gap-2.5 text-xs">
+                <ShieldAlert className="w-4 h-4 text-[#2E8C42] flex-shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-bold text-emerald-300">Warranty clause will be cited</div>
-                  <p className="text-slate-400 mt-0.5">
-                    Defect Liability Clause 45.2 will be included — repair must be done at ZERO public cost by {incident.contractorName}.
+                  <div className="font-display font-black text-[#121210]">Warranty Clause 45.2 Active</div>
+                  <p className="font-body text-[#4A4A46] mt-0.5">
+                    Repair must be completed at ZERO public cost by {incident.contractorName} under PWD Defect Liability terms.
                   </p>
                 </div>
               </div>
             )}
 
-            <div className="p-3 rounded-xl bg-amber-950/20 border border-amber-500/30 flex items-start gap-2.5 text-xs">
-              <AlertTriangle className="w-3.5 h-3.5 text-amber-400 flex-shrink-0 mt-0.5" />
-              <span className="text-amber-200/80 italic">AI-generated — review before submission</span>
+            <div className="p-3 bg-[#E8A030]/20 border-2 border-[#121210] flex items-start gap-2.5 text-xs font-mono text-[#121210]">
+              <AlertTriangle className="w-4 h-4 text-[#121210] flex-shrink-0 mt-0.5" />
+              <span>AI-generated draft notice — audit details before submission to BBMP Sahaya.</span>
             </div>
 
             <button
               onClick={generateComplaint}
               disabled={isGenerating}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-sm flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 cursor-pointer"
+              className="w-full py-3 bg-[#121210] text-[#CFE8D6] hover:bg-[#2E8C42] hover:text-white brut font-display font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 btn-press transition-all disabled:opacity-60 cursor-pointer"
             >
               {isGenerating ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Generating Complaint...</span>
+                  <span>Generating Legal Notice...</span>
                 </>
               ) : (
                 <>
                   <FileText className="w-4 h-4" />
-                  <span>Generate Official Complaint</span>
+                  <span>Generate Official Grievance Notice</span>
                 </>
               )}
             </button>
           </div>
         ) : (
-          /* Generated complaint view */
           <div className="space-y-4">
-            {/* Complaint header card */}
-            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10 space-y-3">
+            <div className="p-4 bg-[#CFE8D6]/30 border-2 border-[#121210] space-y-3">
               <div className="flex items-center justify-between">
-                <div className="font-mono text-xs font-extrabold text-white">{complaint.complaintId}</div>
-                <span className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold border ${severityColor}`}>
+                <div className="font-mono text-xs font-black text-[#121210]">{complaint.complaintId}</div>
+                <span className={`tag font-mono text-[10px] font-bold ${
+                  complaint.severity === 'CRITICAL' ? 'bg-[#C03A3A] text-white' : 'bg-[#E8A030] text-[#121210]'
+                }`}>
                   {complaint.severity}
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs font-mono">
                 <div>
-                  <div className="text-[10px] font-mono text-slate-500">LOCATION</div>
-                  <div className="text-slate-200">{complaint.location}</div>
+                  <div className="text-[10px] text-[#4A4A46] uppercase font-bold">LOCATION</div>
+                  <div className="text-[#121210] font-bold">{complaint.location}</div>
                 </div>
                 <div>
-                  <div className="text-[10px] font-mono text-slate-500">PRIORITY SCORE</div>
-                  <div className="text-cyan-400 font-bold">{complaint.priorityScore}/100</div>
+                  <div className="text-[10px] text-[#4A4A46] uppercase font-bold">PRIORITY SCORE</div>
+                  <div className="text-[#2E8C42] font-black">{complaint.priorityScore}/100</div>
                 </div>
                 <div>
-                  <div className="text-[10px] font-mono text-slate-500">AUTHORITY</div>
-                  <div className="text-slate-200">{complaint.responsibleAuthority}</div>
+                  <div className="text-[10px] text-[#4A4A46] uppercase font-bold">AUTHORITY</div>
+                  <div className="text-[#121210] font-bold">{complaint.responsibleAuthority}</div>
                 </div>
                 <div>
-                  <div className="text-[10px] font-mono text-slate-500">SUPPORTING REPORTS</div>
-                  <div className="text-amber-300 font-bold">{complaint.supportingReportsCount} upvotes</div>
+                  <div className="text-[10px] text-[#4A4A46] uppercase font-bold">SUPPORTING REPORTS</div>
+                  <div className="text-[#121210] font-bold">{complaint.supportingReportsCount} upvotes</div>
                 </div>
                 {complaint.contractorName && (
                   <div className="col-span-2">
-                    <div className="text-[10px] font-mono text-slate-500">
+                    <div className="text-[10px] text-[#4A4A46] uppercase font-bold">
                       {complaint.isUnderWarranty ? 'CONTRACTOR (WARRANTY ACTIVE)' : 'PREVIOUS CONTRACTOR'}
                     </div>
-                    <div className="text-slate-200">{complaint.contractorName}</div>
+                    <div className="text-[#121210] font-bold">{complaint.contractorName}</div>
                     {complaint.warrantyClause && (
-                      <div className="text-[10px] text-emerald-400 mt-0.5">{complaint.warrantyClause}</div>
+                      <div className="text-[10px] text-[#2E8C42] font-bold mt-0.5">{complaint.warrantyClause}</div>
                     )}
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Full complaint text */}
-            <div className="rounded-xl border border-white/10 bg-black/30 overflow-hidden">
-              <div className="flex items-center justify-between px-3 py-2 border-b border-white/5 bg-white/[0.02]">
-                <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">Complaint Document</span>
-                <ExternalLink className="w-3 h-3 text-slate-500" />
+            {/* Full complaint text in brutalist document box */}
+            <div className="border-2 border-[#121210] bg-white overflow-hidden">
+              <div className="flex items-center justify-between px-3 py-2 border-b-2 border-[#121210] bg-[#CFE8D6]/40">
+                <span className="text-[10px] font-mono font-bold text-[#121210] uppercase tracking-wider">Complaint Notice Document</span>
+                <ExternalLink className="w-3.5 h-3.5 text-[#121210]" />
               </div>
-              <pre className="p-4 text-[10px] text-slate-300 font-mono leading-relaxed whitespace-pre-wrap overflow-auto max-h-48 scrollbar-thin">
+              <pre className="p-4 text-[11px] text-[#121210] font-mono leading-relaxed whitespace-pre-wrap overflow-auto max-h-48">
                 {complaint.fullText}
               </pre>
             </div>
 
             {/* AI disclaimer */}
-            <div className="p-2.5 rounded-lg bg-amber-950/20 border border-amber-500/20 flex items-center gap-2 text-[10px] text-amber-300 font-mono">
-              <AlertTriangle className="w-3 h-3 flex-shrink-0" />
+            <div className="p-2.5 bg-[#E8A030]/20 border-2 border-[#121210] flex items-center gap-2 text-[10px] text-[#121210] font-mono font-bold">
+              <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
               <span>{complaint.aiDisclaimer}</span>
             </div>
 
@@ -302,28 +293,28 @@ export const ComplaintGenerator: React.FC<ComplaintGeneratorProps> = ({ incident
             <div className="grid grid-cols-3 gap-2">
               <button
                 onClick={handleCopy}
-                className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-semibold text-slate-200 transition-all cursor-pointer"
+                className="flex items-center justify-center gap-1.5 py-2.5 bg-white hover:bg-[#CFE8D6] brut-sm text-xs font-mono font-bold text-[#121210] transition-all cursor-pointer"
               >
-                <Copy className="w-3.5 h-3.5 text-cyan-400" />
+                <Copy className="w-3.5 h-3.5" />
                 <span>Copy</span>
               </button>
               <button
                 onClick={handleDownload}
-                className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-semibold text-slate-200 transition-all cursor-pointer"
+                className="flex items-center justify-center gap-1.5 py-2.5 bg-white hover:bg-[#CFE8D6] brut-sm text-xs font-mono font-bold text-[#121210] transition-all cursor-pointer"
               >
-                <Download className="w-3.5 h-3.5 text-blue-400" />
+                <Download className="w-3.5 h-3.5" />
                 <span>Download</span>
               </button>
               {submissionStatus !== 'SUBMITTED' ? (
                 <button
                   onClick={handleMarkSubmitted}
-                  className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs font-bold text-emerald-400 transition-all cursor-pointer"
+                  className="flex items-center justify-center gap-1.5 py-2.5 bg-[#2E8C42] hover:bg-[#121210] text-white hover:text-[#CFE8D6] brut-sm text-xs font-mono font-bold transition-all cursor-pointer btn-press"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>Submit</span>
                 </button>
               ) : (
-                <div className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-xs font-bold text-emerald-400">
+                <div className="flex items-center justify-center gap-1.5 py-2.5 bg-[#CFE8D6] border-2 border-[#121210] text-xs font-mono font-black text-[#2E8C42]">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   <span>Submitted</span>
                 </div>
@@ -333,9 +324,9 @@ export const ComplaintGenerator: React.FC<ComplaintGeneratorProps> = ({ incident
             {/* Regenerate */}
             <button
               onClick={() => setComplaint(null)}
-              className="w-full text-center text-[11px] text-slate-500 hover:text-slate-300 transition-colors font-mono cursor-pointer"
+              className="w-full text-center text-xs text-[#121210] hover:underline font-mono font-bold cursor-pointer"
             >
-              ← Regenerate complaint
+              ← Regenerate notice
             </button>
           </div>
         )}

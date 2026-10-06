@@ -68,7 +68,7 @@ export const ComplaintTrackingStepper: React.FC<ComplaintTrackingStepperProps> =
     {
       key: 'REPORTED',
       title: 'Reported',
-      subtitle: filedAt ? new Date(filedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'AI Verified Ingestion',
+      subtitle: filedAt ? new Date(filedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'AI Ingestion',
       icon: Clock,
       description: 'Logged via Multimodal Ingestion (Photo/Voice/Text) & Geotagged'
     },
@@ -97,7 +97,7 @@ export const ComplaintTrackingStepper: React.FC<ComplaintTrackingStepperProps> =
 
   if (compact) {
     return (
-      <div className={`p-3 rounded-xl bg-white/[0.02] border border-white/10 ${className}`}>
+      <div className={`p-3 bg-white brut-sm ${className}`}>
         <div className="flex items-center justify-between gap-1">
           {stages.map((st, idx) => {
             const isCompleted = idx < stepIndex;
@@ -107,20 +107,20 @@ export const ComplaintTrackingStepper: React.FC<ComplaintTrackingStepperProps> =
               <React.Fragment key={st.key}>
                 <div className="flex items-center gap-2">
                   <div
-                    className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-mono font-bold transition-all
+                    className={`w-6 h-6 border-2 border-[#121210] flex items-center justify-center text-[10px] font-mono font-black transition-all
                       ${isCompleted
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                        ? 'bg-[#2E8C42] text-white'
                         : isCurrent
-                        ? 'bg-cyan-500 text-slate-950 shadow-[0_0_10px_#00F0FF]'
-                        : 'bg-white/5 text-slate-500 border border-white/10'
+                        ? 'bg-[#E8A030] text-[#121210]'
+                        : 'bg-white text-[#4A4A46]'
                       }
                     `}
                   >
-                    {isCompleted ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : idx + 1}
+                    {isCompleted ? <CheckCircle2 className="w-3.5 h-3.5 text-white" /> : idx + 1}
                   </div>
                   <span
-                    className={`text-xs font-mono font-medium ${
-                      isCurrent ? 'text-cyan-300 font-bold' : isCompleted ? 'text-slate-300' : 'text-slate-500'
+                    className={`text-xs font-mono font-bold ${
+                      isCurrent ? 'text-[#121210] underline' : isCompleted ? 'text-[#121210]' : 'text-[#4A4A46]'
                     }`}
                   >
                     {st.title}
@@ -128,8 +128,8 @@ export const ComplaintTrackingStepper: React.FC<ComplaintTrackingStepperProps> =
                 </div>
                 {idx < stages.length - 1 && (
                   <div
-                    className={`flex-1 h-0.5 mx-2 rounded transition-all ${
-                      idx < stepIndex ? 'bg-emerald-500/50' : 'bg-white/10'
+                    className={`flex-1 h-0.5 mx-2 transition-all ${
+                      idx < stepIndex ? 'bg-[#2E8C42]' : 'bg-[#121210]'
                     }`}
                   />
                 )}
@@ -142,22 +142,22 @@ export const ComplaintTrackingStepper: React.FC<ComplaintTrackingStepperProps> =
   }
 
   return (
-    <div className={`p-5 rounded-2xl bg-[#080B15] border border-white/10 shadow-lg ${className}`}>
+    <div className={`p-5 bg-white brut text-left ${className}`}>
       {/* Header Info */}
-      <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
+      <div className="flex items-center justify-between pb-3 border-b-2 border-[#121210] mb-4">
         <div className="flex items-center gap-2">
-          <div className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse" />
-          <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
-            WebNova 4-Stage Lifecycle Tracking
+          <div className="w-3 h-3 bg-[#2E8C42] border border-[#121210]" />
+          <span className="font-display text-xs font-black uppercase tracking-wider text-[#121210]">
+            Lifecycle Pipeline Tracking
           </span>
         </div>
         {slaBreached ? (
-          <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] font-mono font-bold animate-pulse">
+          <span className="tag bg-[#C03A3A] text-white font-mono text-[10px] font-black flex items-center gap-1">
             <AlertCircle className="w-3 h-3" />
             SLA ESCALATED
           </span>
         ) : (
-          <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-mono font-bold">
+          <span className="tag bg-[#CFE8D6] text-[#121210] font-mono text-[10px] font-black">
             SLA WITHIN COMPLIANCE
           </span>
         )}
@@ -173,46 +173,44 @@ export const ComplaintTrackingStepper: React.FC<ComplaintTrackingStepperProps> =
           return (
             <div
               key={st.key}
-              className={`p-4 rounded-xl border transition-all flex flex-col justify-between relative
+              className={`p-4 border-2 border-[#121210] transition-all flex flex-col justify-between relative
                 ${isCompleted
-                  ? 'bg-emerald-950/20 border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.08)]'
+                  ? 'bg-[#CFE8D6]/40 shadow-[2px_2px_0_#121210]'
                   : isCurrent
-                  ? 'bg-cyan-950/30 border-cyan-500/50 shadow-[0_0_20px_rgba(0,240,255,0.15)] ring-1 ring-cyan-500/40'
-                  : 'bg-white/[0.02] border-white/5 opacity-60'
+                  ? 'bg-white shadow-[4px_4px_0_#121210] ring-2 ring-[#121210]'
+                  : 'bg-[#CFE8D6]/10 opacity-70'
                 }
               `}
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className={`text-[10px] font-mono uppercase font-bold tracking-wider ${
-                    isCurrent ? 'text-cyan-400' : isCompleted ? 'text-emerald-400' : 'text-slate-500'
-                  }`}>
+                  <span className="text-[10px] font-mono uppercase font-black tracking-wider text-[#4A4A46]">
                     Stage 0{idx + 1}
                   </span>
                   <div
-                    className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${
+                    className={`w-7 h-7 border-2 border-[#121210] flex items-center justify-center transition-all ${
                       isCompleted
-                        ? 'bg-emerald-500/20 text-emerald-400'
+                        ? 'bg-[#2E8C42] text-white'
                         : isCurrent
-                        ? 'bg-cyan-500 text-slate-950 font-bold'
-                        : 'bg-white/5 text-slate-500'
+                        ? 'bg-[#E8A030] text-[#121210]'
+                        : 'bg-white text-[#4A4A46]'
                     }`}
                   >
-                    {isCompleted ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Icon className="w-3.5 h-3.5" />}
+                    {isCompleted ? <CheckCircle2 className="w-4 h-4 text-white" /> : <Icon className="w-3.5 h-3.5" />}
                   </div>
                 </div>
 
-                <div className="font-bold text-sm text-white">{st.title}</div>
-                <div className="text-[11px] font-mono text-cyan-300 mt-0.5 truncate">{st.subtitle}</div>
-                <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">
+                <div className="font-display font-black text-sm text-[#121210]">{st.title}</div>
+                <div className="text-[11px] font-mono font-bold text-[#121210] mt-0.5 truncate">{st.subtitle}</div>
+                <p className="font-body text-[11px] text-[#4A4A46] mt-2 leading-relaxed">
                   {st.description}
                 </p>
               </div>
 
               {/* Status pill at bottom */}
-              <div className="mt-3 pt-2.5 border-t border-white/5">
-                <span className={`text-[10px] font-mono font-bold uppercase ${
-                  isCompleted ? 'text-emerald-400' : isCurrent ? 'text-cyan-400' : 'text-slate-600'
+              <div className="mt-3 pt-2.5 border-t border-[#121210]">
+                <span className={`text-[10px] font-mono font-black uppercase ${
+                  isCompleted ? 'text-[#2E8C42]' : isCurrent ? 'text-[#121210] font-black' : 'text-[#4A4A46]'
                 }`}>
                   {isCompleted ? '✓ Completed' : isCurrent ? '● Active Now' : '○ Pending'}
                 </span>
