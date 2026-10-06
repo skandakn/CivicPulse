@@ -22,6 +22,8 @@ import { ComplaintsPage } from './pages/ComplaintsPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { DemoPage } from './pages/DemoPage';
 import { ScrollWorldPage } from './pages/ScrollWorldPage';
+import { CivicPulseVoiceChat } from './components/voice/CivicPulseVoiceChat';
+import { FloatingVoiceChatWidget } from './components/voice/FloatingVoiceChatWidget';
 
 const AppContent: React.FC = () => {
   const { currentView } = useApp();
@@ -90,6 +92,8 @@ const AppContent: React.FC = () => {
         return <DemoPage />;
       case 'SCROLL_WORLD':
         return <ScrollWorldPage />;
+      case 'VOICE_CHAT':
+        return <CivicPulseVoiceChat />;
       default:
         return <LandingPage />;
     }
@@ -127,6 +131,7 @@ const AppContent: React.FC = () => {
       <SearchModal />
       <AuthModal />
       <ToastContainer />
+      <FloatingVoiceChatWidget />
 
       {/* Brutalist Footer */}
       <footer

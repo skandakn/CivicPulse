@@ -12,7 +12,8 @@ import {
   ChevronRight,
   LogIn,
   CheckSquare,
-  Home
+  Home,
+  Mic
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { useAuthSession } from '../../context/AuthContext';
@@ -44,6 +45,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     badgeStyle?: string;
   }[] = [
     { id: 'LANDING', label: 'Overview / Home', icon: Home },
+    { id: 'VOICE_CHAT', label: 'AI Voice Chatbot', icon: Mic, badge: 'SPEAK', badgeStyle: 'bg-[#2E8C42] text-white' },
     { id: 'REPORT', label: 'Report Incident', icon: PlusCircle, badge: 'NEW', badgeStyle: 'bg-[#121210] text-white' },
     { id: 'SCROLL_WORLD', label: '3D Scroll World', icon: Compass, badge: 'FLYTHROUGH', badgeStyle: 'bg-[#E8A030] text-[#121210]' },
     { id: 'GODS_EYE', label: 'Live Map & Heatmap', icon: Eye, badge: incidents.length, badgeStyle: 'bg-[#121210] text-white' },

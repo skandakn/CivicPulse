@@ -489,7 +489,8 @@ export type ViewMode =
   | 'COMPLAINTS' 
   | 'ANALYTICS'
   | 'DEMO'
-  | 'SCROLL_WORLD';
+  | 'SCROLL_WORLD'
+  | 'VOICE_CHAT';
 
 export type UserRole = 'CITIZEN' | 'WARD_ENGINEER' | 'CHIEF_COMMISSIONER' | 'AUDITOR';
 

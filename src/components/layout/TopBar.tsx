@@ -11,7 +11,8 @@ import {
   Zap,
   Plus,
   Compass,
-  LogIn
+  LogIn,
+  Mic
 } from 'lucide-react';
 import { useApp, UserRole } from '../../context/AppContext';
 import { useAuthSession } from '../../context/AuthContext';
@@ -117,7 +118,8 @@ export const TopBar: React.FC<TopBarProps> = ({
     COMPLAINTS: { title: 'Citizen Grievances & SLA', badge1: 'SAHAYA 2.0' },
     ANALYTICS: { title: 'Bengaluru Civic Analytics', badge1: 'AUDIT METRICS' },
     DEMO: { title: 'Hackathon Evaluation Lab', badge1: 'DETERMINISTIC' },
-    SCROLL_WORLD: { title: '3D Scroll-World Flight', badge1: 'INTERACTIVE 3D' }
+    SCROLL_WORLD: { title: '3D Scroll-World Flight', badge1: 'INTERACTIVE 3D' },
+    VOICE_CHAT: { title: 'AI Voice Chatbot & Helpline', badge1: 'VOICE REPLIES', badge2: 'GEMINI 3.8' }
   };
 
   const activeHeader = viewTitles[currentView] || { title: 'CivicPulse Ledger', badge1: 'CIVIC OPS' };
@@ -210,6 +212,16 @@ export const TopBar: React.FC<TopBarProps> = ({
         >
           <Compass className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '10s' }} />
           <span>3D WORLD</span>
+        </button>
+
+        {/* Voice Chatbot Button */}
+        <button
+          onClick={() => setCurrentView('VOICE_CHAT')}
+          className="hidden sm:flex brut bg-[#121210] text-[#CFE8D6] hover:bg-black items-center gap-1.5 px-3 py-1.5 text-xs font-display font-extrabold btn-press cursor-pointer border border-[#CFE8D6]"
+          title="Open AI Voice Chatbot (Voice Replies)"
+        >
+          <Mic className="w-3.5 h-3.5 text-emerald-400" />
+          <span>VOICE AI</span>
         </button>
 
         {/* 1-Click Judge Demo Button */}
