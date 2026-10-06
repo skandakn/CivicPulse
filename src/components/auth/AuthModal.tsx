@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   ShieldCheck,
@@ -86,6 +86,13 @@ export const AuthModal: React.FC = () => {
   const [keyError, setKeyError] = useState<string | null>(null);
   const [keySaved, setKeySaved] = useState(false);
   const [showDemoRoleSelector, setShowDemoRoleSelector] = useState(false);
+
+  useEffect(() => {
+    if (isAuthModalOpen) {
+      setShowDemoRoleSelector(false);
+      setKeyInput(clerkKey || '');
+    }
+  }, [isAuthModalOpen, clerkKey]);
 
   const handleSelectProfile = (profile: typeof DEMO_PROFILES[0]) => {
     signInMock({

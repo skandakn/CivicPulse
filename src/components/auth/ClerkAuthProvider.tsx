@@ -322,6 +322,8 @@ const FallbackAuthProvider: React.FC<{
   );
 };
 
+export const DEFAULT_CLERK_KEY = 'pk_test_cHJvdmVuLWhlbi00MDgyLmNsZXJrLmFjY291bnRzLmRldiQ';
+
 export const ClerkAuthProvider: React.FC<ClerkAuthProviderProps> = ({ children }) => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<'sign-in' | 'sign-up'>('sign-in');
@@ -331,9 +333,24 @@ export const ClerkAuthProvider: React.FC<ClerkAuthProviderProps> = ({ children }
 
   const [clerkKey, setClerkKey] = useState<string>(() => {
     const saved = localStorage.getItem('civicpulse_clerk_publishable_key');
-    if (saved && saved.trim()) return saved.trim();
+    if (
+      saved &&
+      saved.trim() &&
+      !saved.includes('your_clerk_publishable_key') &&
+      (saved.startsWith('pk_test_') || saved.startsWith('pk_live_'))
+    ) {
+      return saved.trim();
+    }
     const envKey = (import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || import.meta.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || '') as string;
-    return envKey.trim();
+    if (
+      envKey &&
+      envKey.trim() &&
+      !envKey.includes('your_clerk_publishable_key') &&
+      (envKey.startsWith('pk_test_') || envKey.startsWith('pk_live_'))
+    ) {
+      return envKey.trim();
+    }
+    return DEFAULT_CLERK_KEY;
   });
 
   const handleSetClerkKey = (key: string) => {

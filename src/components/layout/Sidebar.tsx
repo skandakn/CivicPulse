@@ -31,7 +31,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   setIsMobileOpen
 }) => {
   const { currentView, setCurrentView, incidents } = useApp();
-  const { isSignedIn, isDemoBypass, user, openSignIn } = useAuthSession();
+  const { isSignedIn, isDemoBypass, user, openSignIn, isRealClerkUser } = useAuthSession();
 
   const criticalCount = incidents.filter(i => i.severity === 'CRITICAL' && i.status !== 'AI_VERIFIED').length;
 
@@ -171,28 +171,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
               {/* User Stamp Pill */}
               <div className="brut bg-white p-2.5 flex items-center justify-between">
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="w-8 h-8 border-2 border-[#121210] bg-[#CFE8D6] flex items-center justify-center font-display font-bold text-xs shrink-0">
-                    {user?.firstName ? user.firstName.charAt(0) : 'IN'}
-                  </div>
-                  <div className="truncate">
-                    <div className="text-xs font-bold font-display truncate leading-tight">
-                      {user?.fullName || user?.firstName || 'Mara Vossberg'}
+                {isSignedIn && user ? (
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="w-8 h-8 border-2 border-[#121210] bg-[#CFE8D6] flex items-center justify-center font-display font-bold text-xs shrink-0">
+                      {user.firstName ? user.firstName.charAt(0) : 'U'}
                     </div>
-                    <div className="text-[9px] font-mono text-[#121210]/60 truncate font-bold">
-                      {isDemoBypass ? 'CHIEF AUDITOR · DEMO' : 'CHIEF COMMISSIONER'}
+                    <div className="truncate">
+                      <div className="text-xs font-bold font-display truncate leading-tight">
+                        {user.fullName || user.firstName}
+                      </div>
+                      <div className="text-[9px] font-mono text-[#121210]/60 truncate font-bold">
+                        {isDemoBypass ? 'GUEST JUDGE · DEMO' : isRealClerkUser ? 'CLERK AUTHENTICATED' : 'COMMISSIONER'}
+                      </div>
                     </div>
                   </div>
-                </div>
-
-                {!isSignedIn && (
-                  <button
-                    onClick={openSignIn}
-                    className="p-1 brut-sm bg-[#2E8C42] text-white hover:bg-black cursor-pointer"
-                    title="Sign In"
-                  >
-                    <LogIn className="w-3.5 h-3.5" />
-                  </button>
+                ) : (
+                  <div className="flex items-center justify-between w-full">
+                    <div className="text-[11px] font-mono font-bold text-slate-500">
+                      Guest Session
+                    </div>
+                    <button
+                      onClick={openSignIn}
+                      className="px-2.5 py-1 brut-sm bg-[#2E8C42] text-white hover:bg-[#257336] text-xs font-bold flex items-center gap-1 cursor-pointer"
+                    >
+                      <LogIn className="w-3 h-3" />
+                      <span>SIGN IN</span>
+                    </button>
+                  </div>
                 )}
               </div>
             </div>

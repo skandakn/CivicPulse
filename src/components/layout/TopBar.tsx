@@ -10,7 +10,8 @@ import {
   ChevronDown,
   Zap,
   Plus,
-  Compass
+  Compass,
+  LogIn
 } from 'lucide-react';
 import { useApp, UserRole } from '../../context/AppContext';
 import { useAuthSession } from '../../context/AuthContext';
@@ -265,63 +266,63 @@ export const TopBar: React.FC<TopBarProps> = ({
           )}
         </div>
 
-        {/* User Role / Profile */}
-        <div className="relative">
-          <button
-            onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-            className="flex items-center gap-2 brut-sm bg-white px-2 py-1.5 cursor-pointer hover:bg-zinc-100 transition-colors"
-          >
-            {isClerkAvailable && isRealClerkUser && !isDemoBypass ? (
-              <div onClick={(e) => e.stopPropagation()} className="flex items-center">
-                <UserButton appearance={clerkAppearance} />
+        {/* User Role / Profile or Direct Sign In Button */}
+        {isSignedIn ? (
+          <div className="relative">
+            <button
+              onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
+              className="flex items-center gap-2 brut-sm bg-white px-2 py-1.5 cursor-pointer hover:bg-zinc-100 transition-colors"
+            >
+              {isClerkAvailable && isRealClerkUser && !isDemoBypass ? (
+                <div onClick={(e) => e.stopPropagation()} className="flex items-center">
+                  <UserButton appearance={clerkAppearance} />
+                </div>
+              ) : (
+                <div className="w-6 h-6 border border-[#121210] bg-[#CFE8D6] flex items-center justify-center font-display font-extrabold text-[11px] text-[#121210]">
+                  {user?.firstName ? user.firstName.charAt(0) : 'A'}
+                </div>
+              )}
+              <div className="hidden sm:block text-left">
+                <div className="text-xs font-bold leading-tight font-display text-[#121210]">
+                  {user?.firstName || roleLabels[userRole].badge}
+                </div>
               </div>
-            ) : (
-              <div className="w-6 h-6 border border-[#121210] bg-[#CFE8D6] flex items-center justify-center font-display font-extrabold text-[11px] text-[#121210]">
-                {user?.firstName ? user.firstName.charAt(0) : 'A'}
-              </div>
-            )}
-            <div className="hidden sm:block text-left">
-              <div className="text-xs font-bold leading-tight font-display text-[#121210]">
-                {roleLabels[userRole].badge}
-              </div>
-            </div>
-            <ChevronDown className="w-3 h-3 text-[#121210]" />
-          </button>
+              <ChevronDown className="w-3 h-3 text-[#121210]" />
+            </button>
 
-          {isRoleDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-60 brut bg-white p-3 z-50 space-y-2.5">
-              <div className="text-[10px] font-mono font-bold tracking-widest text-[#121210]/60 uppercase">
-                SWITCH PERSPECTIVE
-              </div>
-              <div className="space-y-1">
-                {(Object.keys(roleLabels) as UserRole[]).map((role) => (
+            {isRoleDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-60 brut bg-white p-3 z-50 space-y-2.5">
+                <div className="text-[10px] font-mono font-bold tracking-widest text-[#121210]/60 uppercase">
+                  SWITCH PERSPECTIVE
+                </div>
+                <div className="space-y-1">
+                  {(Object.keys(roleLabels) as UserRole[]).map((role) => (
+                    <button
+                      key={role}
+                      onClick={() => {
+                        setUserRole(role);
+                        setIsRoleDropdownOpen(false);
+                        addToast(`Switched perspective to ${roleLabels[role].title}`, 'Interface privileges adjusted', 'info');
+                      }}
+                      className={`w-full text-left px-2.5 py-1.5 border-2 border-[#121210] text-xs font-display font-bold flex items-center justify-between cursor-pointer transition-colors ${
+                        userRole === role ? 'bg-[#E8A030] text-[#121210]' : 'bg-white text-[#121210] hover:bg-[#CFE8D6]'
+                      }`}
+                    >
+                      <span>{roleLabels[role].title}</span>
+                      <span className="font-mono text-[9px] bg-[#121210] text-white px-1">
+                        {roleLabels[role].badge}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="pt-2 border-t-2 border-[#121210] flex justify-between gap-2">
                   <button
-                    key={role}
-                    onClick={() => {
-                      setUserRole(role);
-                      setIsRoleDropdownOpen(false);
-                      addToast(`Switched perspective to ${roleLabels[role].title}`, 'Interface privileges adjusted', 'info');
-                    }}
-                    className={`w-full text-left px-2.5 py-1.5 border-2 border-[#121210] text-xs font-display font-bold flex items-center justify-between cursor-pointer transition-colors ${
-                      userRole === role ? 'bg-[#E8A030] text-[#121210]' : 'bg-white text-[#121210] hover:bg-[#CFE8D6]'
-                    }`}
+                    onClick={resetDemo}
+                    className="flex-1 py-1 brut-sm bg-white hover:bg-slate-100 font-mono text-[10px] font-bold text-center cursor-pointer"
                   >
-                    <span>{roleLabels[role].title}</span>
-                    <span className="font-mono text-[9px] bg-[#121210] text-white px-1">
-                      {roleLabels[role].badge}
-                    </span>
+                    RESET SEED
                   </button>
-                ))}
-              </div>
-
-              <div className="pt-2 border-t-2 border-[#121210] flex justify-between gap-2">
-                <button
-                  onClick={resetDemo}
-                  className="flex-1 py-1 brut-sm bg-white hover:bg-slate-100 font-mono text-[10px] font-bold text-center cursor-pointer"
-                >
-                  RESET SEED
-                </button>
-                {isSignedIn ? (
                   <button
                     onClick={async () => {
                       setIsRoleDropdownOpen(false);
@@ -331,21 +332,20 @@ export const TopBar: React.FC<TopBarProps> = ({
                   >
                     SIGN OUT
                   </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      setIsRoleDropdownOpen(false);
-                      openSignIn();
-                    }}
-                    className="flex-1 py-1 brut-sm bg-[#2E8C42] text-white font-mono text-[10px] font-bold text-center cursor-pointer"
-                  >
-                    SIGN IN
-                  </button>
-                )}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        ) : (
+          <button
+            onClick={openSignIn}
+            className="brut bg-[#2E8C42] text-white hover:bg-[#257336] px-3.5 py-1.5 font-display font-extrabold text-xs flex items-center gap-1.5 btn-press cursor-pointer shadow-[2px_2px_0_0_#121210]"
+            title="Authenticate with Clerk"
+          >
+            <LogIn className="w-3.5 h-3.5" />
+            <span>SIGN IN</span>
+          </button>
+        )}
       </div>
     </header>
   );
