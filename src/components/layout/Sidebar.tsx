@@ -11,7 +11,8 @@ import {
   ChevronLeft,
   ChevronRight,
   LogIn,
-  CheckSquare
+  CheckSquare,
+  Home
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { useAuthSession } from '../../context/AuthContext';
@@ -42,6 +43,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     badge?: number | string;
     badgeStyle?: string;
   }[] = [
+    { id: 'LANDING', label: 'Overview / Home', icon: Home },
     { id: 'REPORT', label: 'Report Incident', icon: PlusCircle, badge: 'NEW', badgeStyle: 'bg-[#121210] text-white' },
     { id: 'SCROLL_WORLD', label: '3D Scroll World', icon: Compass, badge: 'FLYTHROUGH', badgeStyle: 'bg-[#E8A030] text-[#121210]' },
     { id: 'GODS_EYE', label: 'Live Map & Heatmap', icon: Eye, badge: incidents.length, badgeStyle: 'bg-[#121210] text-white' },
@@ -73,7 +75,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="h-[74px] flex items-center justify-between px-4 border-b-[3px] border-[#121210] bg-[#CFE8D6]">
           <div
             onClick={() => {
-              setCurrentView('PRIORITY_QUEUE');
+              setCurrentView('LANDING');
               setIsMobileOpen(false);
             }}
             className="flex items-center gap-2.5 cursor-pointer group select-none"

@@ -17,6 +17,7 @@ import {
 import { useApp } from '../context/AppContext';
 import { CITY_METRICS } from '../data/mockData';
 import { formatINR } from '../utils/formatters';
+import { FolderFloat } from '../components/common/FolderFloat';
 
 export const LandingPage: React.FC = () => {
   const { setCurrentView, incidents, selectIncidentById, loadDemoCase, resetDemo } = useApp();
@@ -146,8 +147,8 @@ export const LandingPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Product Visualization matching Approva brutalist card */}
-          <div className="lg:col-span-5">
+          {/* Right Product Visualization: Folder Float AI Evidence Dossier */}
+          <div className="lg:col-span-5 flex flex-col justify-center">
             <div className="brut bg-white p-5 space-y-4">
               <div className="flex items-center justify-between border-b-2 border-[#121210] pb-3">
                 <div className="flex items-center gap-2">
@@ -156,10 +157,10 @@ export const LandingPage: React.FC = () => {
                   </div>
                   <div>
                     <div className="font-display font-extrabold text-sm text-[#121210]">
-                      BENGALURU AI RADAR
+                      AI DEDUPLICATION DOSSIER
                     </div>
                     <div className="font-mono text-[9px] text-[#121210]/60">
-                      LIVE CORRIDOR TELEMETRY
+                      CASE BNG-PTH-1042 · BELLANDUR ORR
                     </div>
                   </div>
                 </div>
@@ -168,51 +169,35 @@ export const LandingPage: React.FC = () => {
                 </span>
               </div>
 
-              {/* Target Graphic Frame */}
-              <div className="polka border-2 border-[#121210] bg-[#CFE8D6]/30 p-4 space-y-3">
-                <div className="flex justify-between items-center text-[10px] font-mono font-bold">
-                  <span className="bg-white border border-[#121210] px-1.5 py-0.5">
-                    12.9298° N · 77.6835° E
-                  </span>
-                  <span className="bg-[#C03A3A] text-white border border-[#121210] px-1.5 py-0.5">
-                    CRITICAL #1 · SCORE 94/100
-                  </span>
-                </div>
+              {/* Folder Float Interactive Component */}
+              <div className="polka border-2 border-[#121210] bg-[#CFE8D6]/30 overflow-hidden relative">
+                <FolderFloat
+                  title="Master Evidence Dossier"
+                  subtitle="Outer Ring Road · 14 Merged Complaints"
+                  badge="AUTO-DEDUPLICATED"
+                  onOpenDossier={() => selectIncidentById(incidents[0].id, 'INCIDENT_DETAIL')}
+                />
+              </div>
 
-                <div className="brut bg-white p-4 text-center my-2">
-                  <div className="font-mono font-extrabold text-xl text-[#C03A3A]">
-                    DEPTH: 15.4 CM
-                  </div>
-                  <div className="text-xs font-mono font-bold text-[#121210] mt-0.5">
-                    SURFACE: 1.48 m² · EST. FILL: 38.5 L
-                  </div>
-                  <div className="text-xs font-display font-bold text-[#121210] mt-2">
-                    Outer Ring Road (Bellandur)
-                  </div>
-                  <div className="text-[10px] font-mono text-[#121210]/60">
-                    High-Traffic Ambulance Corridor · Ward 150
-                  </div>
+              {/* Quick Info Grid */}
+              <div className="grid grid-cols-3 gap-2 font-mono text-center text-[10px]">
+                <div className="border border-[#121210] bg-white p-1.5 shadow-[1px_1px_0_#121210]">
+                  <span className="text-[#121210]/60 block font-bold">CONTRACTOR</span>
+                  <span className="font-extrabold text-[#121210]">Star Infratech</span>
                 </div>
-
-                <div className="grid grid-cols-3 gap-2 font-mono text-center text-[10px]">
-                  <div className="border border-[#121210] bg-white p-1">
-                    <span className="text-[#121210]/60 block">CONTRACTOR</span>
-                    <span className="font-bold">Star Infratech</span>
-                  </div>
-                  <div className="border border-[#121210] bg-white p-1">
-                    <span className="text-[#121210]/60 block">WARRANTY</span>
-                    <span className="font-bold text-[#2E8C42]">DLP ACTIVE</span>
-                  </div>
-                  <div className="border border-[#121210] bg-white p-1">
-                    <span className="text-[#121210]/60 block">EST. BUDGET</span>
-                    <span className="font-bold">₹48,920</span>
-                  </div>
+                <div className="border border-[#121210] bg-[#CFE8D6] p-1.5 shadow-[1px_1px_0_#121210]">
+                  <span className="text-[#121210]/60 block font-bold">WARRANTY</span>
+                  <span className="font-extrabold text-[#2E8C42]">DLP ACTIVE</span>
+                </div>
+                <div className="border border-[#121210] bg-[#E8A030] text-[#121210] p-1.5 shadow-[1px_1px_0_#121210]">
+                  <span className="text-[#121210]/70 block font-bold">RECOVERY</span>
+                  <span className="font-extrabold">₹48,920</span>
                 </div>
               </div>
 
               <button
                 onClick={() => selectIncidentById(incidents[0].id, 'INCIDENT_DETAIL')}
-                className="w-full brut bg-[#121210] text-white hover:bg-zinc-800 py-2.5 font-display font-extrabold text-xs btn-press cursor-pointer flex items-center justify-center gap-1.5"
+                className="w-full brut bg-[#121210] text-white hover:bg-zinc-800 py-3 font-display font-extrabold text-xs btn-press cursor-pointer flex items-center justify-center gap-2"
               >
                 <span>OPEN INVESTIGATION DOSSIER</span>
                 <ArrowRight className="w-3.5 h-3.5" />
