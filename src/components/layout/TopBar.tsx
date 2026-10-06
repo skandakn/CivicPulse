@@ -9,7 +9,8 @@ import {
   FileCheck,
   ChevronDown,
   Zap,
-  Plus
+  Plus,
+  Compass
 } from 'lucide-react';
 import { useApp, UserRole } from '../../context/AppContext';
 import { useAuthSession } from '../../context/AuthContext';
@@ -176,6 +177,16 @@ export const TopBar: React.FC<TopBarProps> = ({
             ⌘K
           </span>
         </div>
+
+        {/* 3D Scroll World Button */}
+        <button
+          onClick={() => setCurrentView('SCROLL_WORLD')}
+          className="hidden sm:flex brut bg-[#2E8C42] text-white hover:bg-[#257336] items-center gap-1.5 px-3 py-1.5 text-xs font-display font-extrabold btn-press cursor-pointer"
+          title="Fly through 3D Bengaluru Road Odyssey (Scroll-World)"
+        >
+          <Compass className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '10s' }} />
+          <span>3D WORLD</span>
+        </button>
 
         {/* 1-Click Judge Demo Button */}
         <button

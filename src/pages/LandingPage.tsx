@@ -11,7 +11,8 @@ import {
   RotateCcw,
   Zap,
   CheckCircle2,
-  Clock
+  Clock,
+  Compass
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { CITY_METRICS } from '../data/mockData';
@@ -63,6 +64,14 @@ export const LandingPage: React.FC = () => {
 
             {/* Brutalist CTAs matching Approva */}
             <div className="flex flex-wrap items-center gap-3 pt-2">
+              <button
+                onClick={() => setCurrentView('SCROLL_WORLD')}
+                className="brut bg-[#2E8C42] text-white hover:bg-[#257336] px-6 py-3 font-display font-extrabold text-sm sm:text-base btn-press cursor-pointer flex items-center gap-2 shadow-[4px_4px_0_0_#121210]"
+              >
+                <Compass className="w-4 h-4 animate-spin" style={{ animationDuration: '10s' }} />
+                <span>⚡ 3D SCROLL WORLD</span>
+              </button>
+
               <button
                 onClick={loadDemoCase}
                 className="brut bg-[#E8A030] text-[#121210] hover:bg-[#d99020] px-6 py-3 font-display font-extrabold text-sm sm:text-base btn-press cursor-pointer flex items-center gap-2"

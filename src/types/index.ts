@@ -463,7 +463,8 @@ export type ViewMode =
   | 'CONTRACTORS' 
   | 'COMPLAINTS' 
   | 'ANALYTICS'
-  | 'DEMO';
+  | 'DEMO'
+  | 'SCROLL_WORLD';
 
 export type UserRole = 'CITIZEN' | 'WARD_ENGINEER' | 'CHIEF_COMMISSIONER' | 'AUDITOR';
 

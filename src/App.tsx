@@ -21,6 +21,7 @@ import { ContractorIntelligencePage } from './pages/ContractorIntelligencePage';
 import { ComplaintsPage } from './pages/ComplaintsPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { DemoPage } from './pages/DemoPage';
+import { ScrollWorldPage } from './pages/ScrollWorldPage';
 
 const AppContent: React.FC = () => {
   const { currentView } = useApp();
@@ -87,6 +88,8 @@ const AppContent: React.FC = () => {
         );
       case 'DEMO':
         return <DemoPage />;
+      case 'SCROLL_WORLD':
+        return <ScrollWorldPage />;
       default:
         return <LandingPage />;
     }

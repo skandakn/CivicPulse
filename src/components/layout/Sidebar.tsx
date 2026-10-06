@@ -7,6 +7,7 @@ import {
   Building2,
   BarChart3,
   MessageSquare,
+  Compass,
   ChevronLeft,
   ChevronRight,
   LogIn,
@@ -42,6 +43,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     badgeStyle?: string;
   }[] = [
     { id: 'REPORT', label: 'Report Incident', icon: PlusCircle, badge: 'NEW', badgeStyle: 'bg-[#121210] text-white' },
+    { id: 'SCROLL_WORLD', label: '3D Scroll World', icon: Compass, badge: 'FLYTHROUGH', badgeStyle: 'bg-[#E8A030] text-[#121210]' },
     { id: 'GODS_EYE', label: 'Live Map & Heatmap', icon: Eye, badge: incidents.length, badgeStyle: 'bg-[#121210] text-white' },
     { id: 'ANALYTICS', label: 'Dashboard', icon: BarChart3 },
     { id: 'COMPLAINTS', label: 'Complaint Tracking', icon: MessageSquare },
