@@ -244,6 +244,7 @@ const WAYPOINTS: SceneWaypoint[] = [
 export const ScrollWorldPage: React.FC = () => {
   const { setCurrentView, selectIncidentById } = useApp();
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const sceneryImagesRef = useRef<HTMLImageElement[]>([]);
 
   // Scroll Progress (0 to 1)
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -403,6 +404,18 @@ export const ScrollWorldPage: React.FC = () => {
       isCyan: i % 7 === 0
     }));
 
+    const scenerySources = [
+      '/sample_data/images/real/bellandur_orr_flyover.jpg',
+      '/sample_data/images/real/indiranagar_100ft_road.jpg',
+      '/sample_data/images/real/silkboard_junction.jpg',
+      '/sample_data/images/real/whitefield_kundalahalli_flyover.jpg'
+    ];
+    sceneryImagesRef.current = scenerySources.map((source) => {
+      const image = new Image();
+      image.src = source;
+      return image;
+    });
+
     // City tech park buildings configuration along Outer Ring Road
     const TECH_BUILDINGS = [
       { x: -38, z: 30, w: 18, d: 18, h: 45, name: 'ECOSPACE WING A', color: '#00f0ff' },
@@ -453,6 +466,38 @@ export const ScrollWorldPage: React.FC = () => {
       skyGrad.addColorStop(1, '#1b402e');
       ctx.fillStyle = skyGrad;
       ctx.fillRect(0, 0, width, horizonY);
+
+      // Real Bengaluru streetscape: photographic horizon crossfades slowly
+      // behind the radar and 3D road overlays.
+      const sceneryImages = sceneryImagesRef.current;
+      if (sceneryImages.length) {
+        const sceneryFrame = (tick / 0.025) / 360;
+        const sceneryIndex = Math.floor(sceneryFrame) % sceneryImages.length;
+        const nextSceneryIndex = (sceneryIndex + 1) % sceneryImages.length;
+        const sceneryProgress = sceneryFrame % 1;
+        const drawScenery = (image: HTMLImageElement, alpha: number, drift: number) => {
+          if (!image.complete || image.naturalWidth === 0) return;
+          const imageRatio = image.naturalWidth / image.naturalHeight;
+          const targetRatio = width / horizonY;
+          let drawWidth = width;
+          let drawHeight = horizonY;
+          if (imageRatio > targetRatio) drawWidth = horizonY * imageRatio;
+          else drawHeight = width / imageRatio;
+          const pan = Math.sin(tick * 0.45) * 18 + drift;
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.filter = 'saturate(0.72) contrast(1.08) brightness(0.62)';
+          ctx.drawImage(image, (width - drawWidth) / 2 + pan, horizonY - drawHeight, drawWidth, drawHeight);
+          ctx.restore();
+        };
+        drawScenery(sceneryImages[sceneryIndex], 0.28 * (1 - sceneryProgress), 0);
+        drawScenery(sceneryImages[nextSceneryIndex], 0.28 * sceneryProgress, -8);
+        ctx.save();
+        ctx.globalAlpha = 0.16;
+        ctx.fillStyle = '#082218';
+        ctx.fillRect(0, 0, width, horizonY);
+        ctx.restore();
+      }
 
       // 2. WARM AMBER & EMERALD HORIZON GLOW BLOOM
       const horizonBloom = ctx.createRadialGradient(width / 2, horizonY, 20, width / 2, horizonY, width * 0.7);
@@ -939,6 +984,10 @@ export const ScrollWorldPage: React.FC = () => {
         <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-black/60 backdrop-blur-md border border-white/20 text-[10px] text-emerald-400 font-bold">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
           <span>GOD'S EYE CCTV RADAR SYNCHRONIZED</span>
+        </div>
+        <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 bg-black/60 backdrop-blur-md border border-amber-300/30 text-[10px] text-amber-200 font-bold">
+          <span className="w-2 h-2 rounded-full bg-amber-300 animate-pulse" />
+          <span>REAL BENGALURU SCENERY · CROSSFADE FEED</span>
         </div>
       </div>
 
