@@ -41,7 +41,9 @@ export const TopBar: React.FC<TopBarProps> = ({
     setCurrentView,
     currentView,
     incidents,
-    addToast
+    addToast,
+    isVoiceChatOpen,
+    setIsVoiceChatOpen
   } = useApp();
 
   const {
@@ -216,9 +218,9 @@ export const TopBar: React.FC<TopBarProps> = ({
 
         {/* Voice Chatbot Button */}
         <button
-          onClick={() => setCurrentView('VOICE_CHAT')}
+          onClick={() => setIsVoiceChatOpen(!isVoiceChatOpen)}
           className="hidden sm:flex brut bg-[#121210] text-[#CFE8D6] hover:bg-black items-center gap-1.5 px-3 py-1.5 text-xs font-display font-extrabold btn-press cursor-pointer border border-[#CFE8D6]"
-          title="Open AI Voice Chatbot (Voice Replies)"
+          title="Open 24/7 AI Voice Assistant (Replies with Voice)"
         >
           <Mic className="w-3.5 h-3.5 text-emerald-400" />
           <span>VOICE AI</span>

@@ -21,7 +21,7 @@ import { formatINR } from '../utils/formatters';
 import { FolderFloat } from '../components/common/FolderFloat';
 
 export const LandingPage: React.FC = () => {
-  const { setCurrentView, incidents, selectIncidentById, loadDemoCase, resetDemo } = useApp();
+  const { setCurrentView, incidents, selectIncidentById, loadDemoCase, resetDemo, setIsVoiceChatOpen } = useApp();
 
   const stepsStory = [
     { step: '01', title: 'DETECT', desc: 'Stereoscopic depth & asphalt cracking via citizen photo/video', icon: Cpu, badge: 'AI VISION' },
@@ -75,7 +75,7 @@ export const LandingPage: React.FC = () => {
               </button>
 
               <button
-                onClick={() => setCurrentView('VOICE_CHAT')}
+                onClick={() => setIsVoiceChatOpen(true)}
                 className="brut bg-[#121210] text-[#CFE8D6] hover:bg-[#1a1c1a] px-5 py-3 font-display font-extrabold text-sm sm:text-base btn-press cursor-pointer flex items-center gap-2 shadow-[4px_4px_0_0_#2E8C42]"
               >
                 <Mic className="w-4 h-4 text-emerald-400" />
