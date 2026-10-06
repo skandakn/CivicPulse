@@ -307,7 +307,7 @@ export const LandingPage: React.FC = () => {
                 <Eye className="w-6 h-6 stroke-[2.5]" />
               </div>
               <h3 className="font-display text-xl font-extrabold text-[#121210]">
-                2. God’s Eye City Radar
+                2. GIS City Radar
               </h3>
               <p className="text-xs text-[#121210]/80 leading-relaxed font-body">
                 Full geospatial surveillance across 198 BBMP wards. Monitors arterial corridors like Outer Ring Road, Silk Board, and Whitefield with live status feeds.

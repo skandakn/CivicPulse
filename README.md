@@ -72,7 +72,7 @@ CivicPulse is styled with a distinct, high-density **Neo-Brutalist Command Cente
   * 💧 **BWSSB:** Pipeline excavations & drainage restoration cuts
   * ⚡ **BESCOM:** Underground HT cable trenches & utility reinstatement
 
-### 🛰️ 2. God's Eye GIS Radar
+### 🛰️ 2. GIS Radar
 * Real-time spatial radar displaying all reported craters mapped across **198 BBMP Ward boundaries**.
 * Layer toggles for arterial road corridors, contractor warranty zones, duplicate clusters, and priority heatmaps.
 * Monocular stereoscopic telemetry rendering coordinates, elevation, and chainage.

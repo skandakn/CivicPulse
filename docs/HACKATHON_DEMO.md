@@ -64,7 +64,7 @@
 
 ---
 
-### **2:05 – 2:25 | God's Eye Geospatial Radar (Stage 6 & Live Map)**
+### **2:05 – 2:25 | GIS Radar (Stage 6 & Live Map)**
 - **What to show:** Click **"Jump to Live Map"** (or view Stage 6).
 - **What to demonstrate:**
   - High-res Leaflet CartoDB Dark Matter map.
@@ -72,7 +72,7 @@
   - Filter by **"Contractor Warranty Only"** to see all active DLP liability zones.
   - Filter by **Severity** (Critical / High / Medium).
 - **What to say:**
-  > *"God's Eye provides municipal commissioners with city-wide spatial intelligence. Selecting an incident in the priority queue instantly flies the map to the coordinates and opens the forensic audit."*
+  > *"GIS Radar provides municipal commissioners with city-wide spatial intelligence. Selecting an incident in the priority queue instantly flies the map to the coordinates and opens the forensic audit."*
 
 ---
 

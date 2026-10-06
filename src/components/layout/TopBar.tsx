@@ -117,7 +117,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     LANDING: { title: 'CivicPulse Overview', badge1: 'SHOWCASE', badge2: 'IRC-SP-100' },
     REPORT: { title: 'Report Road Hazard', badge1: 'MULTIMODAL', badge2: 'SPEECH & CV' },
     PRIORITY_QUEUE: { title: 'Approver Inbox', badge1: `${pendingCount || 12} PENDING`, badge2: `${criticalCount || 3} PAST SLA`, badge2Alert: true },
-    GODS_EYE: { title: "God's Eye GIS Radar", badge1: `${incidents.length} INCIDENTS`, badge2: 'LIVE STREAM' },
+    GODS_EYE: { title: 'GIS Radar', badge1: `${incidents.length} INCIDENTS`, badge2: 'LIVE STREAM' },
     AI_ANALYSIS: { title: 'Vision Lab & Telemetry', badge1: 'STEREO 3D', badge2: 'v4.2 CV' },
     INCIDENT_DETAIL: { title: 'Investigation Dossier', badge1: 'BBMP LEDGER' },
     VERIFICATION: { title: 'AI Repair Verification', badge1: 'FORENSIC AUDIT' },

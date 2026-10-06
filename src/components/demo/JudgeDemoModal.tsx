@@ -33,7 +33,7 @@ export const JudgeDemoModal: React.FC = () => {
     { title: 'Duplicate Clustering', tag: 'STAGE 05-06' },
     { title: 'Responsibility & Clause 45.2', tag: 'STAGE 07' },
     { title: 'Explainable Priority 94/100', tag: 'STAGE 08' },
-    { title: 'God’s Eye Map Placement', tag: 'STAGE 09' },
+    { title: 'GIS Radar Map Placement', tag: 'STAGE 09' },
     { title: 'AI Complaint Generation', tag: 'STAGE 10' },
     { title: 'Post-Repair AI Verification', tag: 'STAGE 11' }
   ];
@@ -396,13 +396,13 @@ export const JudgeDemoModal: React.FC = () => {
             </div>
           )}
 
-          {/* STEP 6: God's Eye Map */}
+          {/* STEP 6: GIS Radar Map */}
           {step === 6 && (
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b-2 border-[#121210] pb-2">
                 <div>
                   <span className="text-xs font-mono font-bold text-[#2E8C42] uppercase">STEP 06 OF 08</span>
-                  <h3 className="font-display text-xl font-black text-[#121210]">God's Eye Command Center Integration</h3>
+                  <h3 className="font-display text-xl font-black text-[#121210]">GIS Radar Command Center Integration</h3>
                 </div>
                 <button
                   onClick={() => {

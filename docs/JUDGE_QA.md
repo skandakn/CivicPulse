@@ -110,6 +110,6 @@ Traditional civic complaint apps (like BBMP Sahaya, FixMyStreet) are passive gri
 
 ### 15. How does authentication and access control work?
 - **Clerk Authentication Engine:** Built-in enterprise authentication via Clerk (`@clerk/clerk-react`) supporting email/password, social OAuth (Google), and multi-factor session security.
-- **Public vs. Protected Surfaces:** Landing page and the **⚡ 1-Click Judge Demo** are publicly accessible without authentication. Internal operational views (God's Eye geospatial map, live reporting, repair audits, contractor records) are protected sessions.
+- **Public vs. Protected Surfaces:** Landing page and the **⚡ 1-Click Judge Demo** are publicly accessible without authentication. Internal operational views (GIS Radar map, live reporting, repair audits, contractor records) are protected sessions.
 - **Presentation & Offline Resilience:** Evaluators can click **"⚡ Enter via Guest Judge Demo Mode"** to bypass account registration instantly. If hackathon venue Wi-Fi drops, our `ClerkAuthProvider` error boundary automatically drops into resilient offline mode, ensuring zero presentation failures.
 - **Role Preparation:** Designed with role perspectives for Citizen Reporters, BBMP Ward Engineers, Chief Commissioners, and Quality Auditors.

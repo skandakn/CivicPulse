@@ -42,7 +42,7 @@ const AppContent: React.FC = () => {
         );
       case 'GODS_EYE':
         return (
-          <ProtectedView title="God's Eye Geospatial Intelligence">
+          <ProtectedView title="GIS Radar">
             <GodsEyePage />
           </ProtectedView>
         );

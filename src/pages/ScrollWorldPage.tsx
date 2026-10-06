@@ -1278,7 +1278,7 @@ export const ScrollWorldPage: React.FC = () => {
         )}
       </div>
 
-      {/* 5. Right Side: LIVE CCTV SURVEILLANCE FEED TERMINAL (God's Eye Ingest) */}
+      {/* 5. Right Side: LIVE CCTV SURVEILLANCE FEED TERMINAL (GIS Radar Ingest) */}
       <div
         className={`absolute right-4 top-16 sm:top-20 z-20 transition-all duration-300 ${
           isCctvExpanded
@@ -1509,7 +1509,7 @@ export const ScrollWorldPage: React.FC = () => {
             onClick={() => setCurrentView('GODS_EYE')}
             className="hidden md:flex items-center gap-1.5 px-3 py-1 bg-[#2E8C42] hover:bg-[#257336] text-white text-[10px] font-extrabold border border-white cursor-pointer shrink-0"
           >
-            <span>GOD'S EYE RADAR</span>
+            <span>GIS RADAR</span>
             <ArrowRight className="w-3 h-3" />
           </button>
         </div>
