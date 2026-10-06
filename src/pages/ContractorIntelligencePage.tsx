@@ -3,7 +3,6 @@ import {
   Building2,
   ShieldAlert,
   AlertTriangle,
-  Search,
   Ban,
   FileText,
   Award
@@ -24,14 +23,9 @@ const QualityBadge: React.FC<{ score: number }> = ({ score }) => {
 
 export const ContractorIntelligencePage: React.FC = () => {
   const { contractors, incidents, addToast } = useApp();
-  const [searchTerm, setSearchTerm] = useState('');
   const [selectedContractor, setSelectedContractor] = useState<Contractor>(contractors[0]);
 
-  const filtered = contractors.filter(
-    c =>
-      c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.registrationNumber.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  const filtered = contractors;
 
   const incidentsByContractor = (contractorId: string) =>
     incidents.filter(i => i.contractorId === contractorId);
@@ -52,7 +46,7 @@ export const ContractorIntelligencePage: React.FC = () => {
     <div className="space-y-6 pb-16 max-w-7xl mx-auto text-left">
       {/* Header matching Approva */}
       <div className="brut-lg bg-white p-6 sm:p-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b-[3px] border-[#121210] pb-4">
+        <div className="border-b-[3px] border-[#121210] pb-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="tag bg-[#2E8C42] text-white">
@@ -66,20 +60,9 @@ export const ContractorIntelligencePage: React.FC = () => {
             <h1 className="text-3xl font-display font-extrabold text-[#121210] tracking-tight">
               Contractor Compliance & Warranty Intelligence
             </h1>
-            <p className="text-sm font-body text-[#121210]/70 mt-1 max-w-2xl">
+            <p className="text-sm font-body text-[#121210]/70 mt-1 max-w-3xl">
               Objective accountability ledger of road contractors associated with BBMP tenders. Reflects public contract records and measured defect rates under Karnataka PWD Defect Liability Period (Clause 45.2).
             </p>
-          </div>
-
-          <div className="brut bg-white flex items-center gap-2 px-3 py-2 w-full md:w-72">
-            <Search className="w-4 h-4 text-[#121210] shrink-0" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              placeholder="Search contractor, reg #…"
-              className="bg-transparent text-xs font-mono font-bold text-[#121210] placeholder-[#121210]/50 outline-none w-full"
-            />
           </div>
         </div>
 
