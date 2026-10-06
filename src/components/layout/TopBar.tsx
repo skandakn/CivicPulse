@@ -8,7 +8,6 @@ import {
   AlertTriangle,
   FileCheck,
   ChevronDown,
-  Zap,
   Plus,
   Compass,
   LogIn,
@@ -36,7 +35,6 @@ export const TopBar: React.FC<TopBarProps> = ({
     setIsSearchOpen,
     userRole,
     setUserRole,
-    loadDemoCase,
     resetDemo,
     setCurrentView,
     currentView,
@@ -233,15 +231,6 @@ export const TopBar: React.FC<TopBarProps> = ({
           <span>VOICE AI</span>
         </button>
 
-        {/* 1-Click Judge Demo Button */}
-        <button
-          onClick={loadDemoCase}
-          className="hidden md:flex brut bg-[#E8A030] text-[#121210] items-center gap-1.5 px-3 py-1.5 text-xs font-display font-extrabold btn-press cursor-pointer"
-          title="Load high-risk demonstration scenario"
-        >
-          <Zap className="w-3.5 h-3.5 fill-[#121210]" />
-          <span>DEMO</span>
-        </button>
 
         {/* Approva NEW REQUEST button without duplicate plus */}
         <button

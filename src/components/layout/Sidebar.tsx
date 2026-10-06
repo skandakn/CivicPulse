@@ -153,25 +153,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
           })}
         </nav>
 
-        {/* Approva Stamped / Dispatched Today Widget */}
+        {/* User Stamp Pill & Session */}
         <div className="p-3 border-t-[3px] border-[#121210] bg-[#CFE8D6]">
           {!isCollapsed ? (
-            <div className="space-y-3">
-              <div className="brut bg-white p-3">
-                <div className="text-[10px] font-mono tracking-widest text-[#121210]/60 font-bold mb-1">
-                  TODAY · AUDITED / DISPATCHED
-                </div>
-                <div className="flex items-end gap-2">
-                  <div className="font-mono font-bold text-2xl text-[#121210]">47</div>
-                  <div className="text-xs font-mono text-[#121210]/70 mb-0.5">of 59 pending</div>
-                </div>
-                <div className="mt-2 h-2.5 border-2 border-[#121210] flex overflow-hidden bg-white">
-                  <div className="bg-[#2E8C42] w-[65%]" title="Approved"></div>
-                  <div className="bg-[#C03A3A] w-[15%]" title="Rejected"></div>
-                  <div className="bg-[#E8A030] w-[15%]" title="Pending Detail"></div>
-                </div>
-              </div>
-
+            <div>
               {/* User Stamp Pill */}
               <div className="brut bg-white p-2.5 flex items-center justify-between">
                 {isSignedIn && user ? (
