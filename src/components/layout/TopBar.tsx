@@ -55,6 +55,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     isClerkAvailable,
     isRealClerkUser
   } = useAuthSession();
+  const canSwitchPerspective = !isRealClerkUser;
 
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
@@ -73,6 +74,12 @@ export const TopBar: React.FC<TopBarProps> = ({
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (isRealClerkUser) {
+      setUserRole(user?.role || 'CITIZEN');
+    }
+  }, [isRealClerkUser, setUserRole, user?.role]);
 
   const criticalCount = incidents.filter(i => i.severity === 'CRITICAL' && i.status !== 'AI_VERIFIED').length;
   const pendingCount = incidents.filter(i => i.status !== 'AI_VERIFIED').length;
@@ -307,7 +314,9 @@ export const TopBar: React.FC<TopBarProps> = ({
         {isSignedIn ? (
           <div className="relative">
             <button
-              onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
+              onClick={() => {
+                if (canSwitchPerspective) setIsRoleDropdownOpen(!isRoleDropdownOpen);
+              }}
               className="flex items-center gap-2 brut-sm bg-white px-2 py-1.5 cursor-pointer hover:bg-zinc-100 transition-colors"
             >
               {isClerkAvailable && isRealClerkUser && !isDemoBypass ? (
@@ -324,14 +333,17 @@ export const TopBar: React.FC<TopBarProps> = ({
                   {user?.firstName || roleLabels[userRole].badge}
                 </div>
               </div>
-              <ChevronDown className="w-3 h-3 text-[#121210]" />
+              {canSwitchPerspective && <ChevronDown className="w-3 h-3 text-[#121210]" />}
             </button>
 
-            {isRoleDropdownOpen && (
+            {isRoleDropdownOpen && canSwitchPerspective && (
               <div className="absolute right-0 mt-2 w-60 brut bg-white p-3 z-50 space-y-2.5">
                 <div className="text-[10px] font-mono font-bold tracking-widest text-[#121210]/60 uppercase">
-                  SWITCH PERSPECTIVE
+                  DEMO PERSPECTIVE
                 </div>
+                <p className="text-[10px] leading-snug text-[#121210]/70">
+                  Live roles are assigned by an administrator.
+                </p>
                 <div className="space-y-1">
                   {(Object.keys(roleLabels) as UserRole[]).map((role) => (
                     <button

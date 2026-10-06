@@ -8,6 +8,17 @@ interface ClerkAuthProviderProps {
   children: ReactNode;
 }
 
+const getClerkRole = (role: unknown): AuthUserProfile['role'] => {
+  switch (role) {
+    case 'WARD_ENGINEER':
+    case 'CHIEF_COMMISSIONER':
+    case 'AUDITOR':
+      return role;
+    default:
+      return 'CITIZEN';
+  }
+};
+
 // Error Boundary to prevent Clerk initialization crashes from breaking the presentation
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -122,7 +133,7 @@ const ClerkAuthBridge: React.FC<{
         firstName: clerkUser.firstName || 'Citizen',
         email: clerkUser.primaryEmailAddress?.emailAddress || null,
         imageUrl: clerkUser.imageUrl || null,
-        role: 'CITIZEN'
+        role: getClerkRole(clerkUser.publicMetadata?.role)
       }
     : mockUser
     ? mockUser

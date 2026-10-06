@@ -154,7 +154,8 @@ export const PriorityQueuePage: React.FC = () => {
     setSelectedIncident,
     roads,
     addToast,
-    updateIncidentStatus
+    updateIncidentStatus,
+    userRole,
   } = useApp();
 
   // Active top tab matching Approva: Inbox | Escalations | History | Workflow Builder
@@ -218,9 +219,18 @@ export const PriorityQueuePage: React.FC = () => {
   const activeSubtotal = Math.round(activeCost * 0.84);
   const lineItem4 = activeSubtotal - (lineItem1 + lineItem2 + lineItem3);
   const activeGst = activeCost - activeSubtotal;
+  const canReviewWorkOrders = userRole === 'WARD_ENGINEER' || userRole === 'CHIEF_COMMISSIONER';
 
   // Handle dropping stamp
   const triggerStamp = useCallback((label: 'APPROVED' | 'REJECTED' | 'NEEDS DETAIL', color: string) => {
+    if (!canReviewWorkOrders) {
+      addToast(
+        'Official role required',
+        'Switch to the BBMP Ward Engineer or Chief Commissioner perspective to review work orders.',
+        'warning'
+      );
+      return;
+    }
     if (!activeItem) return;
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     setCurrentStamp({
@@ -283,7 +293,7 @@ export const PriorityQueuePage: React.FC = () => {
         'warning'
       );
     }
-  }, [activeItem, addToast, updateIncidentStatus]);
+  }, [activeItem, addToast, updateIncidentStatus, canReviewWorkOrders]);
 
   // Action: Take decision on an escalation card
   const handleTakeEscalationDecision = (esc: EscalationItem) => {
@@ -335,6 +345,8 @@ export const PriorityQueuePage: React.FC = () => {
   // Keyboard shortcuts matching Approva spec: Cmd+Enter (Approve), Cmd+Backspace (Reject), Cmd+D (Needs Detail)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (!canReviewWorkOrders) return;
+
       if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
         e.preventDefault();
         triggerStamp('APPROVED', '#2E8C42');
@@ -348,7 +360,7 @@ export const PriorityQueuePage: React.FC = () => {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [triggerStamp]);
+  }, [canReviewWorkOrders, triggerStamp]);
 
   return (
     <div className="space-y-0 text-left -mx-3 sm:-mx-5 lg:-mx-6">
@@ -757,6 +769,7 @@ export const PriorityQueuePage: React.FC = () => {
                 </div>
 
                 {/* Right Action Rail ("DECIDE") */}
+                {canReviewWorkOrders ? (
                 <div className="document-actions w-full xl:w-48 shrink-0 sticky top-4 space-y-4">
                   <div className="font-mono text-[10px] font-bold tracking-widest text-[#121210]/60 uppercase">
                     DECIDE
@@ -824,6 +837,21 @@ export const PriorityQueuePage: React.FC = () => {
                     </div>
                   </div>
                 </div>
+                ) : (
+                  <aside className="document-actions w-full xl:w-64 shrink-0 sticky top-4">
+                    <div className="brut bg-white p-4 space-y-3">
+                      <div className="font-mono text-[10px] font-bold tracking-widest text-[#121210]/60 uppercase">
+                        OFFICIAL ACTION REQUIRED
+                      </div>
+                      <h2 className="font-display font-extrabold text-lg leading-tight">
+                        Decision actions are restricted to BBMP officials.
+                      </h2>
+                      <p className="text-xs leading-relaxed text-[#121210]/75">
+                        Citizen Reporters can submit and track reports. Switch perspective to BBMP Ward Engineer to use the approval demo. For a real account, ask your administrator to assign an official role.
+                      </p>
+                    </div>
+                  </aside>
+                )}
               </div>
             )}
 
