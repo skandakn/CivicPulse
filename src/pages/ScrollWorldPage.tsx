@@ -241,7 +241,6 @@ export const ScrollWorldPage: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sceneryImagesRef = useRef<HTMLImageElement[]>([]);
-  const scrollProgressRef = useRef(0);
 
   // Progressive camera scroll (0 to 1)
   // High-frequency ref decoupled from React rendering loop for smooth 60fps
