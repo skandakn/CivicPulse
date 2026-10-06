@@ -150,7 +150,7 @@ const WAYPOINTS: SceneWaypoint[] = [
       { label: 'TELEMETRY INGEST', value: '78 REPORTS / HR', highlight: true },
       { label: 'SURFACE ANOMALIES', value: '3,412 DETECTED' },
     ],
-    cam: { x: 0, y: 120, z: 280 },
+    cam: { x: 0, y: 130, z: -50 },
     color: '#2E8C42',
     defaultCctvId: 'CAM-BLR-ORR-04'
   },
@@ -167,7 +167,7 @@ const WAYPOINTS: SceneWaypoint[] = [
       { label: 'EMERGENCY PROXIMITY', value: 'SAKRA WORLD HOSP 420M', highlight: true },
       { label: 'FATALITY RISK', value: 'ELEVATED (LEVEL 4)' },
     ],
-    cam: { x: 25, y: 35, z: 110 },
+    cam: { x: 18, y: 42, z: 50 },
     color: '#E8A030',
     defaultCctvId: 'CAM-BLR-ORR-04'
   },
@@ -184,7 +184,7 @@ const WAYPOINTS: SceneWaypoint[] = [
       { label: 'DEDUPLICATION', value: '94% SPATIAL CLUSTER (15M)' },
       { label: 'SEVERITY TIER', value: 'CRITICAL (SCORE 94/100)' },
     ],
-    cam: { x: 0, y: 4, z: 22 },
+    cam: { x: 0, y: 7, z: 125 },
     color: '#C03A3A',
     defaultCctvId: 'CAM-BLR-ORR-04'
   },
@@ -201,7 +201,7 @@ const WAYPOINTS: SceneWaypoint[] = [
       { label: 'DLP WARRANTY', value: 'CLAUSE 45.2 (ACTIVE)', highlight: true },
       { label: 'TAXPAYER LIABILITY', value: '₹0.00 (CONTRACTOR COST)' },
     ],
-    cam: { x: -35, y: 22, z: 75 },
+    cam: { x: -14, y: 22, z: 210 },
     color: '#E8A030',
     defaultCctvId: 'CAM-BLR-IND-12'
   },
@@ -218,7 +218,7 @@ const WAYPOINTS: SceneWaypoint[] = [
       { label: 'ASPHALT UNIFORMITY', value: 'GRADE A (IRC-SP-100)' },
       { label: 'AI CERTIFICATE', value: 'AUDIT HASH: #CP-88421' },
     ],
-    cam: { x: 5, y: 12, z: 38 },
+    cam: { x: 8, y: 14, z: 290 },
     color: '#2E8C42',
     defaultCctvId: 'CAM-BLR-SLK-01'
   },
@@ -235,7 +235,7 @@ const WAYPOINTS: SceneWaypoint[] = [
       { label: 'ORR TRANSIT SPEED', value: '+34% FLOW RESTORATION' },
       { label: 'PLATFORM STATUS', value: 'MUNICIPAL LEDGER READY' },
     ],
-    cam: { x: 0, y: 80, z: 200 },
+    cam: { x: 0, y: 85, z: 370 },
     color: '#2E8C42',
     defaultCctvId: 'CAM-BLR-WTF-02'
   }
@@ -394,22 +394,45 @@ export const ScrollWorldPage: React.FC = () => {
       };
     };
 
+    // Fixed starfield for atmospheric night sky
+    const STARS = Array.from({ length: 85 }, (_, i) => ({
+      x: ((i * 37 + 13) % 100) / 100,
+      y: ((i * 47 + 7) % 55) / 100,
+      size: 0.8 + ((i * 17) % 3) * 0.6,
+      twinkle: 1 + (i % 5) * 0.6,
+      isCyan: i % 7 === 0
+    }));
+
+    // City tech park buildings configuration along Outer Ring Road
+    const TECH_BUILDINGS = [
+      { x: -38, z: 30, w: 18, d: 18, h: 45, name: 'ECOSPACE WING A', color: '#00f0ff' },
+      { x: -48, z: 85, w: 22, d: 20, h: 65, name: 'CISCO BENGALURU', color: '#e8a030' },
+      { x: -36, z: 155, w: 20, d: 18, h: 52, name: 'INTEL SRR3 DESIGN', color: '#00f0ff' },
+      { x: -46, z: 235, w: 24, d: 22, h: 72, name: 'KPPP LEDGER TOWER', color: '#2e8c42' },
+      { x: -38, z: 310, w: 20, d: 18, h: 54, name: 'BBMP CONTROL HQ', color: '#e8a030' },
+      { x: -50, z: 380, w: 26, d: 24, h: 78, name: 'PRESTIGE TECH CLOUD', color: '#00f0ff' },
+      { x: 38, z: 40, w: 16, d: 16, h: 40, name: 'BAGMANE TECH PARK', color: '#e8a030' },
+      { x: 48, z: 95, w: 22, d: 20, h: 58, name: 'EMBASSY TECH VILLAGE', color: '#00f0ff' },
+      { x: 36, z: 160, w: 18, d: 18, h: 46, name: 'SAKRA HOSP TRANSIT', color: '#c03a3a' },
+      { x: 46, z: 225, w: 20, d: 18, h: 64, name: 'INNOVATION LAB 150', color: '#2e8c42' },
+      { x: 38, z: 295, w: 18, d: 18, h: 48, name: 'BBMP WARD 150', color: '#e8a030' },
+      { x: 48, z: 370, w: 24, d: 22, h: 70, name: 'BENGALURU SMART CITY', color: '#00f0ff' }
+    ];
+
     const render = () => {
-      tick += 0.03;
+      tick += 0.025;
       const width = canvas.width;
       const height = canvas.height;
-      const fov = 420;
-
-      ctx.fillStyle = '#0a100d';
-      ctx.fillRect(0, 0, width, height);
+      const fov = 380;
 
       const cam = getCamera(scrollProgress);
 
+      // 3D Perspective Projection with near-plane guard
       const project = (px: number, py: number, pz: number) => {
         const dx = px - cam.x;
         const dy = py - cam.y;
         const dz = pz - cam.z;
-        if (dz <= 2) return null;
+        if (dz <= 1.5) return null;
         const scale = fov / dz;
         return {
           x: width / 2 + dx * scale,
@@ -419,177 +442,463 @@ export const ScrollWorldPage: React.FC = () => {
         };
       };
 
-      // 1. Draw 3D Ground Cyber Grid
+      // Horizon line Y in 2D screen space
+      const horizonY = height * 0.46;
+
+      // 1. ATMOSPHERIC NIGHT SKY GRADIENT (Rich Bengaluru cyber-atmosphere)
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, horizonY);
+      skyGrad.addColorStop(0, '#040b08');
+      skyGrad.addColorStop(0.55, '#0a1a13');
+      skyGrad.addColorStop(0.85, '#132e22');
+      skyGrad.addColorStop(1, '#1b402e');
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, width, horizonY);
+
+      // 2. WARM AMBER & EMERALD HORIZON GLOW BLOOM
+      const horizonBloom = ctx.createRadialGradient(width / 2, horizonY, 20, width / 2, horizonY, width * 0.7);
+      horizonBloom.addColorStop(0, 'rgba(232, 160, 48, 0.28)');
+      horizonBloom.addColorStop(0.4, 'rgba(46, 140, 66, 0.22)');
+      horizonBloom.addColorStop(1, 'rgba(10, 20, 15, 0)');
+      ctx.fillStyle = horizonBloom;
+      ctx.fillRect(0, horizonY - 120, width, 180);
+
+      // 3. PARALLAX STARRY SKY & SATELLITE TELEMETRY
+      STARS.forEach((star) => {
+        const sx = star.x * width;
+        const sy = star.y * horizonY;
+        const twinkleAlpha = star.twinkle * (0.4 + Math.sin(tick * 3 + star.x * 20) * 0.3);
+        ctx.fillStyle = star.isCyan ? `rgba(0, 240, 255, ${twinkleAlpha})` : `rgba(255, 255, 255, ${twinkleAlpha})`;
+        ctx.beginPath();
+        ctx.arc(sx, sy, star.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Orbiting Geospatial Satellite Path
+      const satX = ((tick * 18) % (width + 100)) - 50;
+      const satY = horizonY * 0.25;
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.25)';
+      ctx.setLineDash([4, 6]);
+      ctx.beginPath();
+      ctx.moveTo(0, satY + 15);
+      ctx.lineTo(width, satY - 15);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#00f0ff';
+      ctx.beginPath();
+      ctx.arc(satX, satY, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '8px monospace';
+      ctx.fillText('SAT-ISRO-BLR-09', satX + 6, satY - 4);
+
+      // 4. DISTANT BENGALURU CITY SKYLINE SILHOUETTE (Horizon profile)
+      ctx.fillStyle = '#0a1610';
+      const skylinePoints = [
+        { x: 0, h: 25 }, { x: 0.08, h: 42 }, { x: 0.14, h: 28 }, { x: 0.22, h: 55 },
+        { x: 0.28, h: 35 }, { x: 0.36, h: 48 }, { x: 0.44, h: 62 }, { x: 0.52, h: 38 },
+        { x: 0.60, h: 58 }, { x: 0.68, h: 32 }, { x: 0.76, h: 50 }, { x: 0.84, h: 45 },
+        { x: 0.92, h: 30 }, { x: 1.0, h: 25 }
+      ];
+      ctx.beginPath();
+      ctx.moveTo(0, horizonY);
+      skylinePoints.forEach((pt) => {
+        ctx.lineTo(pt.x * width, horizonY - pt.h * 0.6);
+      });
+      ctx.lineTo(width, horizonY);
+      ctx.closePath();
+      ctx.fill();
+
+      // Blinking red aviation warning beacons on distant towers
+      [0.22, 0.44, 0.60, 0.76].forEach((ratio, idx) => {
+        const beaconX = ratio * width;
+        const beaconY = horizonY - skylinePoints.find((p) => p.x === ratio)!.h * 0.6;
+        const beaconGlow = Math.sin(tick * 5 + idx) > 0 ? 1 : 0.2;
+        ctx.fillStyle = `rgba(239, 68, 68, ${beaconGlow})`;
+        ctx.beginPath();
+        ctx.arc(beaconX, beaconY, 2, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // 5. GROUND BASE PLANE
+      const groundGrad = ctx.createLinearGradient(0, horizonY, 0, height);
+      groundGrad.addColorStop(0, '#0c1712');
+      groundGrad.addColorStop(0.4, '#101e17');
+      groundGrad.addColorStop(1, '#0e1813');
+      ctx.fillStyle = groundGrad;
+      ctx.fillRect(0, horizonY, width, height - horizonY);
+
+      // 6. INFINITE 3D CYBERNETIC GROUND GRID
       ctx.lineWidth = 1;
-      const gridSpacing = 16;
-      const gridRange = 160;
+      const minGridZ = Math.max(0, Math.floor(cam.z / 20) * 20);
+      const maxGridZ = cam.z + 320;
 
-      for (let gx = -gridRange; gx <= gridRange; gx += gridSpacing) {
-        const p1 = project(gx, 0, -gridRange);
-        const p2 = project(gx, 0, gridRange);
-        if (p1 && p2) {
-          const alpha = Math.max(0, 1 - (p1.z + p2.z) / (gridRange * 3));
-          ctx.strokeStyle = `rgba(46, 140, 66, ${alpha * 0.45})`;
+      // Transverse Grid Lines (facing camera with smooth distance fade)
+      for (let gz = minGridZ; gz <= maxGridZ; gz += 20) {
+        const pLeft = project(-180, 0, gz);
+        const pRight = project(180, 0, gz);
+        if (pLeft && pRight) {
+          const dist = gz - cam.z;
+          const alpha = Math.max(0, Math.min(0.45, (1 - dist / 320) * 0.5));
+          ctx.strokeStyle = `rgba(46, 140, 66, ${alpha})`;
           ctx.beginPath();
-          ctx.moveTo(p1.x, p1.y);
-          ctx.lineTo(p2.x, p2.y);
+          ctx.moveTo(pLeft.x, pLeft.y);
+          ctx.lineTo(pRight.x, pRight.y);
           ctx.stroke();
         }
       }
 
-      for (let gz = -gridRange; gz <= gridRange; gz += gridSpacing) {
-        const p1 = project(-gridRange, 0, gz);
-        const p2 = project(gridRange, 0, gz);
-        if (p1 && p2) {
-          const alpha = Math.max(0, 1 - (p1.z + p2.z) / (gridRange * 3));
-          ctx.strokeStyle = `rgba(46, 140, 66, ${alpha * 0.45})`;
+      // Longitudinal Grid Lines
+      for (let gx = -160; gx <= 160; gx += 20) {
+        if (Math.abs(gx) < 14) continue; // Leave road corridor clear
+        const pNear = project(gx, 0, Math.max(cam.z + 5, 0));
+        const pFar = project(gx, 0, cam.z + 280);
+        if (pNear && pFar) {
+          ctx.strokeStyle = 'rgba(46, 140, 66, 0.22)';
           ctx.beginPath();
-          ctx.moveTo(p1.x, p1.y);
-          ctx.lineTo(p2.x, p2.y);
+          ctx.moveTo(pNear.x, pNear.y);
+          ctx.lineTo(pFar.x, pFar.y);
           ctx.stroke();
         }
       }
 
-      // 2. Draw 3D Outer Ring Road Corridor
-      const roadW = 14;
-      for (let zSeg = -120; zSeg <= 120; zSeg += 15) {
-        const left = project(-roadW / 2 + 5, 0.2, zSeg);
-        const right = project(roadW / 2 + 5, 0.2, zSeg);
-        const nextLeft = project(-roadW / 2 + 5, 0.2, zSeg + 15);
-        const nextRight = project(roadW / 2 + 5, 0.2, zSeg + 15);
+      // 7. 6-LANE OUTER RING ROAD HIGHWAY (The Arterial Transit Corridor)
+      const roadW = 22;
+      const roadZStart = Math.max(0, Math.floor(cam.z / 15) * 15);
+      const roadZEnd = cam.z + 280;
 
-        if (left && right && nextLeft && nextRight) {
-          ctx.fillStyle = '#141816';
+      for (let rz = roadZStart; rz <= roadZEnd; rz += 15) {
+        const p0 = project(-roadW / 2, 0.15, rz);
+        const p1 = project(roadW / 2, 0.15, rz);
+        const p2 = project(roadW / 2, 0.15, rz + 15);
+        const p3 = project(-roadW / 2, 0.15, rz + 15);
+
+        if (p0 && p1 && p2 && p3) {
+          // Asphalt road slab
+          ctx.fillStyle = '#141a16';
           ctx.beginPath();
-          ctx.moveTo(left.x, left.y);
-          ctx.lineTo(right.x, right.y);
-          ctx.lineTo(nextRight.x, nextRight.y);
-          ctx.lineTo(nextLeft.x, nextLeft.y);
+          ctx.moveTo(p0.x, p0.y);
+          ctx.lineTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.lineTo(p3.x, p3.y);
           ctx.closePath();
           ctx.fill();
 
-          ctx.strokeStyle = 'rgba(232, 160, 48, 0.4)';
+          // Glowing road edge crash barriers (Amber)
+          ctx.strokeStyle = 'rgba(232, 160, 48, 0.65)';
+          ctx.lineWidth = Math.max(1, p0.scale * 0.1);
+          ctx.beginPath();
+          ctx.moveTo(p0.x, p0.y);
+          ctx.lineTo(p3.x, p3.y);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
           ctx.stroke();
 
-          // Animated center line
-          const c1 = project(5, 0.3, zSeg + ((tick * 15) % 15));
-          const c2 = project(5, 0.3, zSeg + 6 + ((tick * 15) % 15));
-          if (c1 && c2) {
-            ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = Math.max(1, c1.scale * 0.2);
+          // Concrete median divider with green shrubbery
+          const medLeft = project(-0.6, 0.3, rz);
+          const medRight = project(0.6, 0.3, rz);
+          const medNextLeft = project(-0.6, 0.3, rz + 15);
+          const medNextRight = project(0.6, 0.3, rz + 15);
+          if (medLeft && medRight && medNextLeft && medNextRight) {
+            ctx.fillStyle = '#223828';
             ctx.beginPath();
-            ctx.moveTo(c1.x, c1.y);
-            ctx.lineTo(c2.x, c2.y);
-            ctx.stroke();
+            ctx.moveTo(medLeft.x, medLeft.y);
+            ctx.lineTo(medRight.x, medRight.y);
+            ctx.lineTo(medNextRight.x, medNextRight.y);
+            ctx.lineTo(medNextLeft.x, medNextLeft.y);
+            ctx.closePath();
+            ctx.fill();
+          }
+
+          // Animated white dashed lane markers
+          [-4.5, 4.5].forEach((laneX) => {
+            const dashZ0 = rz + ((tick * 20) % 15);
+            const dashZ1 = dashZ0 + 6;
+            const d0 = project(laneX, 0.25, dashZ0);
+            const d1 = project(laneX, 0.25, dashZ1);
+            if (d0 && d1) {
+              ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+              ctx.lineWidth = Math.max(1, d0.scale * 0.08);
+              ctx.beginPath();
+              ctx.moveTo(d0.x, d0.y);
+              ctx.lineTo(d1.x, d1.y);
+              ctx.stroke();
+            }
+          });
+        }
+      }
+
+      // 8. ACTIVE MOVING HIGHWAY VEHICLES (Dynamic traffic simulation)
+      for (let v = 0; v < 12; v++) {
+        const isSouthbound = v % 2 === 0;
+        const laneX = isSouthbound ? -4.5 + (v % 3 === 0 ? -2.5 : 1.5) : 4.5 + (v % 3 === 0 ? 2.5 : -1.5);
+        const speed = isSouthbound ? 14 + (v % 4) * 3 : -(16 + (v % 3) * 4);
+        const vZ = ((cam.z + v * 32 + tick * speed) % 360 + 360) % 360;
+
+        const vPos = project(laneX, 0.5, vZ);
+        if (vPos && vPos.z > 3 && vPos.z < 260) {
+          const vw = 2.4 * vPos.scale;
+          const vh = 1.4 * vPos.scale;
+
+          // Vehicle body
+          ctx.fillStyle = isSouthbound ? '#1a2920' : '#232b26';
+          ctx.fillRect(vPos.x - vw / 2, vPos.y - vh, vw, vh);
+
+          // Headlights or Taillights
+          if (isSouthbound) {
+            // Taillights (Red)
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(vPos.x - vw * 0.35, vPos.y - vh * 0.35, Math.max(1, vPos.scale * 0.15), 0, Math.PI * 2);
+            ctx.arc(vPos.x + vw * 0.35, vPos.y - vh * 0.35, Math.max(1, vPos.scale * 0.15), 0, Math.PI * 2);
+            ctx.fill();
+          } else {
+            // Headlights (White/Yellow Beam)
+            ctx.fillStyle = '#fef08a';
+            ctx.beginPath();
+            ctx.arc(vPos.x - vw * 0.35, vPos.y - vh * 0.35, Math.max(1, vPos.scale * 0.18), 0, Math.PI * 2);
+            ctx.arc(vPos.x + vw * 0.35, vPos.y - vh * 0.35, Math.max(1, vPos.scale * 0.18), 0, Math.PI * 2);
+            ctx.fill();
           }
         }
       }
 
-      // 3. Draw 3D Tech Park Buildings / Cityscape Skyline
-      const buildings = [
-        { x: -30, z: 20, w: 14, d: 14, h: 45 },
-        { x: -45, z: 60, w: 16, d: 16, h: 60 },
-        { x: -35, z: 110, w: 20, d: 18, h: 50 },
-        { x: 38, z: 15, w: 16, d: 16, h: 55 },
-        { x: 48, z: 75, w: 22, d: 20, h: 70 },
-        { x: 42, z: 130, w: 18, d: 18, h: 48 },
-        { x: -25, z: -50, w: 16, d: 14, h: 38 },
-        { x: 32, z: -40, w: 14, d: 14, h: 42 },
-      ];
+      // 9. ELEVATED NAMMA METRO VIADUCT & GLIDING TRAIN
+      const metroX = -24;
+      const metroY = 8.5;
+      for (let mz = Math.max(0, Math.floor(cam.z / 35) * 35); mz <= cam.z + 260; mz += 35) {
+        const pillarBase = project(metroX, 0, mz);
+        const pillarTop = project(metroX, metroY, mz);
+        if (pillarBase && pillarTop) {
+          // Concrete support column
+          const colW = 3.2 * pillarBase.scale;
+          ctx.fillStyle = '#1c2822';
+          ctx.strokeStyle = '#2e8c42';
+          ctx.lineWidth = 1;
+          ctx.fillRect(pillarBase.x - colW / 2, pillarTop.y, colW, pillarBase.y - pillarTop.y);
+          ctx.strokeRect(pillarBase.x - colW / 2, pillarTop.y, colW, pillarBase.y - pillarTop.y);
+        }
+      }
 
-      buildings.forEach((b) => {
+      // Metro Elevated Track Bed
+      const trackNear = project(metroX, metroY, Math.max(cam.z + 2, 0));
+      const trackFar = project(metroX, metroY, cam.z + 280);
+      if (trackNear && trackFar) {
+        ctx.strokeStyle = '#00f0ff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(trackNear.x, trackNear.y);
+        ctx.lineTo(trackFar.x, trackFar.y);
+        ctx.stroke();
+      }
+
+      // Gliding Metro Train with glowing windows
+      const trainZ = ((cam.z + tick * 32) % 320);
+      const trainHead = project(metroX, metroY + 1.2, trainZ);
+      const trainTail = project(metroX, metroY + 1.2, trainZ + 36);
+      if (trainHead && trainTail && trainHead.z > 4) {
+        const tw = 4 * trainHead.scale;
+        const th = 2.8 * trainHead.scale;
+        ctx.fillStyle = '#122e23';
+        ctx.strokeStyle = '#00f0ff';
+        ctx.lineWidth = 1.5;
+        ctx.fillRect(trainHead.x - tw / 2, trainHead.y - th, tw, th);
+        ctx.strokeRect(trainHead.x - tw / 2, trainHead.y - th, tw, th);
+
+        // Train glowing window strip
+        ctx.fillStyle = '#00f0ff';
+        ctx.fillRect(trainHead.x - tw * 0.4, trainHead.y - th * 0.7, tw * 0.8, th * 0.35);
+      }
+
+      // 10. 3D TECH PARK SKYSCRAPERS WITH ILLUMINATED WINDOWS & SIGNAGE
+      TECH_BUILDINGS.forEach((b) => {
         const base = project(b.x, 0, b.z);
         const top = project(b.x, b.h, b.z);
-        if (base && top) {
-          const bw = b.w * base.scale;
-          ctx.strokeStyle = 'rgba(0, 240, 255, 0.3)';
-          ctx.fillStyle = 'rgba(18, 30, 24, 0.85)';
-          ctx.beginPath();
-          ctx.rect(base.x - bw / 2, top.y, bw, base.y - top.y);
-          ctx.fill();
-          ctx.stroke();
 
-          ctx.fillStyle = '#00f0ff';
-          ctx.beginPath();
-          ctx.arc(top.x, top.y, Math.max(2, top.scale * 0.4), 0, Math.PI * 2);
-          ctx.fill();
+        if (base && top && base.z > 3 && base.z < 340) {
+          const bw = b.w * base.scale;
+          const bh = base.y - top.y;
+          const bx = base.x - bw / 2;
+
+          // Building front facade
+          const facadeGrad = ctx.createLinearGradient(bx, top.y, bx + bw, base.y);
+          facadeGrad.addColorStop(0, '#10241a');
+          facadeGrad.addColorStop(1, '#0b1711');
+          ctx.fillStyle = facadeGrad;
+          ctx.strokeStyle = b.color;
+          ctx.lineWidth = 1.5;
+          ctx.fillRect(bx, top.y, bw, bh);
+          ctx.strokeRect(bx, top.y, bw, bh);
+
+          // Grid of lit office windows
+          const cols = Math.min(8, Math.max(3, Math.floor(bw / 8)));
+          const rows = Math.min(14, Math.max(4, Math.floor(bh / 10)));
+          const winW = bw / (cols * 1.8);
+          const winH = bh / (rows * 2.2);
+
+          for (let r = 1; r < rows; r++) {
+            for (let c = 1; c < cols; c++) {
+              // Deterministic light on/off state
+              const isLit = (c * 17 + r * 31 + Math.floor(b.z)) % 3 !== 0;
+              if (isLit) {
+                const wx = bx + c * (bw / cols);
+                const wy = top.y + r * (bh / rows);
+                ctx.fillStyle = (c + r) % 4 === 0 ? 'rgba(0, 240, 255, 0.8)' : 'rgba(232, 160, 48, 0.75)';
+                ctx.fillRect(wx, wy, Math.max(1.5, winW), Math.max(1.5, winH));
+              }
+            }
+          }
+
+          // Rooftop beacon antenna with flashing red light
+          const beaconPos = project(b.x, b.h + 4, b.z);
+          if (beaconPos) {
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(top.x, top.y);
+            ctx.lineTo(beaconPos.x, beaconPos.y);
+            ctx.stroke();
+
+            const beaconFlash = Math.sin(tick * 4 + b.x) > 0 ? 1 : 0.2;
+            ctx.fillStyle = `rgba(239, 68, 68, ${beaconFlash})`;
+            ctx.beginPath();
+            ctx.arc(beaconPos.x, beaconPos.y, Math.max(2, beaconPos.scale * 0.35), 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          // Rooftop Tech Park Signage
+          if (base.scale > 1.2) {
+            ctx.fillStyle = b.color;
+            ctx.font = `bold ${Math.max(8, Math.min(11, base.scale * 0.7))}px monospace`;
+            ctx.fillText(b.name, bx, top.y - 6);
+          }
         }
       });
 
-      // 4. Focus: The BNG-PTH-1042 Crater & Laser Depth Scanner (x=5, z=20)
-      const craterCenter = project(5, 0, 20);
-      if (craterCenter) {
-        const craterR = 3.5 * craterCenter.scale;
-        ctx.fillStyle = '#050706';
+      // 11. WAYPOINT 3 FOCUS: THE BNG-PTH-1042 CRATER & CV LASER DEPTH SCANNER
+      const craterCenter = project(0, 0, 150);
+      if (craterCenter && craterCenter.z > 2 && craterCenter.z < 200) {
+        const craterScale = craterCenter.scale;
+        const outerR = 6.5 * craterScale;
+
+        // Outer fractured road fissure lips
+        ctx.fillStyle = '#060a08';
         ctx.strokeStyle = '#c03a3a';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2.5;
         ctx.beginPath();
-        ctx.arc(craterCenter.x, craterCenter.y, craterR, 0, Math.PI * 2);
+        ctx.ellipse(craterCenter.x, craterCenter.y, outerR * 1.3, outerR * 0.75, 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
 
-        const laserR = craterR * (1.2 + Math.sin(tick * 4) * 0.15);
+        // Mid fracture basin (-8.0cm depression)
+        ctx.fillStyle = '#0a0d0b';
+        ctx.strokeStyle = '#e8a030';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.ellipse(craterCenter.x, craterCenter.y + outerR * 0.1, outerR * 0.85, outerR * 0.45, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Deep cavity core (-18.0cm void)
+        ctx.fillStyle = '#000000';
+        ctx.beginPath();
+        ctx.ellipse(craterCenter.x, craterCenter.y + outerR * 0.2, outerR * 0.45, outerR * 0.25, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Animated oscillating cyan laser scanner
+        const laserAngle = tick * 3;
+        const scanWidth = outerR * 1.4;
+        const scanYOffset = Math.sin(laserAngle) * (outerR * 0.55);
+
+        ctx.strokeStyle = '#00f0ff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(craterCenter.x - scanWidth, craterCenter.y + scanYOffset);
+        ctx.lineTo(craterCenter.x + scanWidth, craterCenter.y + scanYOffset);
+        ctx.stroke();
+
+        // Pulsing Sonar Warning Waves
+        for (let ring = 1; ring <= 3; ring++) {
+          const ringProgress = (tick * 0.7 + ring * 0.33) % 1;
+          const currentR = outerR * (1.1 + ringProgress * 3.2);
+          ctx.strokeStyle = `rgba(239, 68, 68, ${1 - ringProgress})`;
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.ellipse(craterCenter.x, craterCenter.y, currentR * 1.3, currentR * 0.7, 0, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        // 3D Holographic HUD Callout Box
+        const calloutX = craterCenter.x + outerR * 1.6;
+        const calloutY = craterCenter.y - outerR * 0.8;
+        const boxW = Math.max(160, craterScale * 18);
+        const boxH = Math.max(70, craterScale * 8);
+
+        ctx.fillStyle = 'rgba(18, 18, 16, 0.9)';
+        ctx.strokeStyle = '#c03a3a';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(calloutX, calloutY, boxW, boxH);
+        ctx.fillRect(calloutX, calloutY, boxW, boxH);
+
+        // Leader line connecting crater to HUD
         ctx.strokeStyle = '#00f0ff';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.arc(craterCenter.x, craterCenter.y, laserR, 0, Math.PI * 2);
+        ctx.moveTo(craterCenter.x, craterCenter.y);
+        ctx.lineTo(calloutX, calloutY + boxH / 2);
         ctx.stroke();
 
-        const angle = tick * 2;
-        ctx.beginPath();
-        ctx.moveTo(craterCenter.x + Math.cos(angle) * (laserR + 8), craterCenter.y + Math.sin(angle) * (laserR + 8));
-        ctx.lineTo(craterCenter.x - Math.cos(angle) * (laserR + 8), craterCenter.y - Math.sin(angle) * (laserR + 8));
-        ctx.stroke();
-
-        for (let ring = 1; ring <= 3; ring++) {
-          const ringProgress = (tick * 0.6 + ring * 0.33) % 1;
-          const currentR = craterR * (1.5 + ringProgress * 4.5);
-          ctx.strokeStyle = `rgba(232, 160, 48, ${1 - ringProgress})`;
-          ctx.lineWidth = 1.5;
-          ctx.beginPath();
-          ctx.arc(craterCenter.x, craterCenter.y, currentR, 0, Math.PI * 2);
-          ctx.stroke();
-        }
-
-        ctx.font = 'bold 11px monospace';
         ctx.fillStyle = '#c03a3a';
-        ctx.fillText('▼ BNG-PTH-1042 (-18.0cm)', craterCenter.x + laserR + 10, craterCenter.y - 12);
+        ctx.font = 'bold 11px monospace';
+        ctx.fillText('▼ BNG-PTH-1042 (-18.0cm)', calloutX + 8, calloutY + 18);
+
         ctx.fillStyle = '#ffffff';
         ctx.font = '9px monospace';
-        ctx.fillText('CCTV DETECT: CAM-BLR-ORR-04 • SCORE 94', craterCenter.x + laserR + 10, craterCenter.y + 4);
+        ctx.fillText('CCTV DETECT: CAM-BLR-ORR-04', calloutX + 8, calloutY + 34);
+        ctx.fillStyle = '#e8a030';
+        ctx.fillText('SEVERITY: CRITICAL (SCORE 94)', calloutX + 8, calloutY + 48);
+        ctx.fillStyle = '#2e8c42';
+        ctx.fillText('DEDUP: 12 CITIZEN REPORTS', calloutX + 8, calloutY + 62);
       }
 
-      // 5. Floating KPPP Tender Data Plane
-      if (scrollProgress >= 0.45 && scrollProgress <= 0.75) {
-        const docPos = project(-15, 14, 55);
-        if (docPos) {
-          const dw = 140 * (docPos.scale * 0.08);
-          const dh = 85 * (docPos.scale * 0.08);
-          ctx.fillStyle = 'rgba(18, 18, 16, 0.85)';
-          ctx.strokeStyle = '#e8a030';
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.rect(docPos.x - dw / 2, docPos.y - dh / 2, dw, dh);
-          ctx.fill();
-          ctx.stroke();
+      // 12. WAYPOINT 4 FOCUS: FLOATING KPPP MUNICIPAL CONTRACT PLAQUE
+      const docPos = project(-16, 14, 240);
+      if (docPos && docPos.z > 3 && docPos.z < 180) {
+        const dw = Math.max(150, docPos.scale * 16);
+        const dh = Math.max(85, docPos.scale * 9);
 
-          ctx.fillStyle = '#e8a030';
-          ctx.font = 'bold 9px monospace';
-          ctx.fillText('★ KPPP CONTRACT IND6298', docPos.x - dw / 2 + 8, docPos.y - dh / 2 + 18);
-          ctx.fillStyle = '#2e8c42';
-          ctx.fillText('CLAUSE 45.2 DLP ENFORCED', docPos.x - dw / 2 + 8, docPos.y - dh / 2 + 34);
-          ctx.fillStyle = '#ffffff';
-          ctx.fillText('KMV INFRASTRUCTURES LTD', docPos.x - dw / 2 + 8, docPos.y - dh / 2 + 50);
-          ctx.fillText('TAXPAYER LIABILITY: ₹0', docPos.x - dw / 2 + 8, docPos.y - dh / 2 + 66);
-        }
+        ctx.fillStyle = 'rgba(18, 18, 16, 0.92)';
+        ctx.strokeStyle = '#e8a030';
+        ctx.lineWidth = 2;
+        ctx.fillRect(docPos.x - dw / 2, docPos.y - dh / 2, dw, dh);
+        ctx.strokeRect(docPos.x - dw / 2, docPos.y - dh / 2, dw, dh);
+
+        ctx.fillStyle = '#e8a030';
+        ctx.font = 'bold 10px monospace';
+        ctx.fillText('★ KPPP CONTRACT IND6298', docPos.x - dw / 2 + 8, docPos.y - dh / 2 + 18);
+        ctx.fillStyle = '#2e8c42';
+        ctx.fillText('CLAUSE 45.2 DLP ENFORCED', docPos.x - dw / 2 + 8, docPos.y - dh / 2 + 34);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText('KMV INFRASTRUCTURES LTD', docPos.x - dw / 2 + 8, docPos.y - dh / 2 + 50);
+        ctx.fillStyle = '#00f0ff';
+        ctx.fillText('TAXPAYER LIABILITY: ₹0', docPos.x - dw / 2 + 8, docPos.y - dh / 2 + 66);
       }
 
-      // 6. Horizon Glow & Atmospheric Gradient
-      const grad = ctx.createLinearGradient(0, 0, 0, height / 2);
-      grad.addColorStop(0, 'rgba(14, 20, 16, 0.9)');
-      grad.addColorStop(1, 'rgba(14, 20, 16, 0)');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, width, height / 2);
+      // 13. WAYPOINT 5 FOCUS: AI REPAIR VERIFICATION SCANNER
+      const auditPos = project(0, 0.2, 320);
+      if (auditPos && auditPos.z > 2 && auditPos.z < 160) {
+        const auditR = 7 * auditPos.scale;
+        ctx.strokeStyle = '#2e8c42';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.ellipse(auditPos.x, auditPos.y, auditR * 1.4, auditR * 0.7, 0, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = '#2e8c42';
+        ctx.font = 'bold 10px monospace';
+        ctx.fillText('✓ AI REPAIR AUDIT: 98.4% COMPACTION PROVEN', auditPos.x - 110, auditPos.y - auditR * 0.8);
+      }
 
       animId = requestAnimationFrame(render);
     };
