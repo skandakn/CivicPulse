@@ -133,7 +133,7 @@ export const RepairVerificationPanel: React.FC<RepairVerificationPanelProps> = (
         {isDemo && result && (
           <span className="tag bg-[#E8A030] text-[#121210] font-mono text-[9px] font-bold flex items-center gap-1">
             <FlaskConical className="w-2.5 h-2.5" />
-            DEMO MODE
+            BENCHMARK
           </span>
         )}
       </div>

@@ -184,7 +184,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         {user.fullName || user.firstName}
                       </div>
                       <div className="text-[9px] font-mono text-[#121210]/60 truncate font-bold">
-                        {isDemoBypass ? 'GUEST JUDGE · DEMO' : isRealClerkUser ? 'CLERK AUTHENTICATED' : 'COMMISSIONER'}
+                        {isDemoBypass ? 'GUEST JUDGE' : isRealClerkUser ? 'CLERK AUTHENTICATED' : 'COMMISSIONER'}
                       </div>
                     </div>
                   </div>

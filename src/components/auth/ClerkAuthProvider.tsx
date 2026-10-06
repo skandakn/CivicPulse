@@ -224,7 +224,7 @@ const FallbackAuthProvider: React.FC<{
     if (sessionStorage.getItem('civicpulse_demo_bypass') === 'true') {
       return {
         id: 'guest-judge-session',
-        fullName: 'Guest Judge (Demo Mode)',
+        fullName: 'Guest Judge',
         firstName: 'Judge',
         email: 'judge@civicpulse.blr',
         imageUrl: null,
@@ -263,7 +263,7 @@ const FallbackAuthProvider: React.FC<{
     : isDemoBypass
     ? {
         id: 'guest-judge-session',
-        fullName: 'Guest Judge (Demo Mode)',
+        fullName: 'Guest Judge',
         firstName: 'Judge',
         email: 'judge@civicpulse.blr',
         imageUrl: null,
@@ -292,7 +292,7 @@ const FallbackAuthProvider: React.FC<{
     enableDemoBypass: () => {
       const judgeProfile: AuthUserProfile = {
         id: 'guest-judge-session',
-        fullName: 'Guest Judge (Demo Mode)',
+        fullName: 'Guest Judge',
         firstName: 'Judge',
         email: 'judge@civicpulse.blr',
         imageUrl: null,

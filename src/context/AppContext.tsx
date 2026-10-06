@@ -63,6 +63,7 @@ interface AppContextType {
   setIsVoiceChatOpen: (open: boolean) => void;
   loadDemoCase: () => void;
   resetDemo: () => void;
+  updateIncidentStatus: (id: string, status: PotholeIncident['status']) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -260,6 +261,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     );
   };
 
+  const updateIncidentStatus = (id: string, status: PotholeIncident['status']) => {
+    setIncidents(prev =>
+      prev.map(inc => {
+        if (inc.id === id) {
+          const updated = { ...inc, status, lastUpdatedAt: new Date().toISOString() };
+          return updated;
+        }
+        return inc;
+      })
+    );
+    setSelectedIncident(prev => (prev && prev.id === id ? { ...prev, status, lastUpdatedAt: new Date().toISOString() } : prev));
+  };
+
   const addPotholeReport = (newReport: Partial<PotholeIncident>): PotholeIncident => {
     const lat = newReport.coordinates?.lat ?? newReport.latitude;
     const lng = newReport.coordinates?.lng ?? newReport.longitude;
@@ -413,7 +427,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         isVoiceChatOpen,
         setIsVoiceChatOpen,
         loadDemoCase,
-        resetDemo
+        resetDemo,
+        updateIncidentStatus
       }}
     >
       {children}

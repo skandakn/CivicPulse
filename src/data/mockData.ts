@@ -338,6 +338,62 @@ export const INITIAL_ROADS: Road[] = [
     criticalFacilitiesNearby: ['KC General Hospital', 'Malleshwaram Metro Station'],
     lastPavedDate: '2023-11-20',
     activePotholesCount: 2
+  },
+  {
+    id: 'road-07',
+    name: 'Bannerghatta Road (Meenakshi)',
+    code: 'BLR-ARR-020',
+    category: 'ARTERIAL',
+    lengthKm: 5.8,
+    wardId: 'ward-176',
+    zone: 'Bommanahalli',
+    surfaceType: 'ASPHALT',
+    trafficDensityIndex: 95,
+    criticalFacilitiesNearby: ['Fortis Hospital', 'Meenakshi Temple', 'IIM Bangalore'],
+    lastPavedDate: '2024-03-10',
+    activePotholesCount: 7
+  },
+  {
+    id: 'road-08',
+    name: 'Old Madras Road (Swami Vivekananda)',
+    code: 'BLR-ARR-022',
+    category: 'ARTERIAL',
+    lengthKm: 6.2,
+    wardId: 'ward-80',
+    zone: 'East',
+    surfaceType: 'ASPHALT',
+    trafficDensityIndex: 97,
+    criticalFacilitiesNearby: ['Swami Vivekananda Road Metro', 'Chinmaya Mission Hospital'],
+    lastPavedDate: '2024-01-18',
+    activePotholesCount: 9
+  },
+  {
+    id: 'road-09',
+    name: 'Mysore Road Flyover Ramp',
+    code: 'BLR-ARR-025',
+    category: 'ARTERIAL',
+    lengthKm: 3.9,
+    wardId: 'ward-153',
+    zone: 'South',
+    surfaceType: 'ASPHALT',
+    trafficDensityIndex: 98,
+    criticalFacilitiesNearby: ['KIMS Hospital', 'City Railway Station'],
+    lastPavedDate: '2023-10-05',
+    activePotholesCount: 5
+  },
+  {
+    id: 'road-10',
+    name: 'Sarjapur Main Road',
+    code: 'BLR-ARR-028',
+    category: 'ARTERIAL',
+    lengthKm: 4.8,
+    wardId: 'ward-150',
+    zone: 'Mahadevapura',
+    surfaceType: 'ASPHALT',
+    trafficDensityIndex: 93,
+    criticalFacilitiesNearby: ['Motherhood Hospital', 'Kaikondrahalli Lake'],
+    lastPavedDate: '2024-12-01',
+    activePotholesCount: 6
   }
 ];
 
@@ -717,7 +773,7 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     latitude: 12.9719,
     longitude: 77.6412,
     roadId: 'road-02',
-    roadName: '100 Feet Road, Indiranagar (Near 12th Main Junction)',
+    roadName: '100ft Road Indiranagar',
     wardId: 'ward-80',
     wardName: 'Indiranagar',
     wardNumber: 80,
@@ -1049,6 +1105,318 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     trafficExposure: '32,000 PCU/hr • BMTC Bus Hub',
     nearbySensitivePlaces: ['Madiwala Market (0.05 km)', 'St. John\'s Medical College (0.7 km)'],
     dataSource: 'DEMO_DATA'
+  },
+  {
+    id: 'inc-09',
+    code: 'BNG-PTH-1044',
+    reportId: 'rep-0844',
+    latitude: 12.8785,
+    longitude: 77.5954,
+    roadId: 'road-07',
+    roadName: 'Bannerghatta Road (Meenakshi)',
+    wardId: 'ward-176',
+    wardName: 'BTM Layout & Silk Board',
+    wardNumber: 193,
+    zone: 'Bommanahalli',
+    coordinates: { lat: 12.8785, lng: 77.5954 },
+    landmark: 'Opposite Meenakshi Mall / Royal Meenakshi temple stretch',
+    severity: 'CRITICAL',
+    severityScore: 92,
+    depthCm: 14.5,
+    surfaceAreaSqM: 1.25,
+    estimatedVolumeLiters: 31.2,
+    riskScore: 92,
+    confidence: 0.965,
+    status: 'TRIAGED',
+    priorityRank: 3,
+    priorityDetails: {
+      overallScore: 92,
+      breakdown: {
+        depthRisk: 93,
+        trafficVolumeImpact: 94,
+        schoolHospitalProximity: 90,
+        monsoonFloodingVulnerability: 88,
+        twoWheelerAccidentHistory: 92,
+        citizenUpvotesWeight: 88
+      },
+      scoreItems: [
+        { factor: 'Critical depth (14.5cm defect)', points: 30, maxPoints: 35, description: '14.5cm depth causes severe shock to two-wheelers.' },
+        { factor: 'Traffic corridor (Bannerghatta Arterial)', points: 22, maxPoints: 25, description: 'Heavy arterial load connecting South Bengaluru.' }
+      ],
+      confidence: 0.965,
+      shortExplanation: 'Severe 14.5cm pothole near Meenakshi Mall with heavy arterial commuter traffic.',
+      explanation: [
+        'Deep cavity causing sudden two-wheeler swerving.',
+        'Heavy arterial traffic with 26,000 PCU/hr.'
+      ],
+      calculatedAt: '2026-10-05T08:00:00Z'
+    },
+    reportedAt: '2026-10-04T14:30:00Z',
+    lastUpdatedAt: '2026-10-05T09:00:00Z',
+    contractorId: 'cont-01',
+    contractorName: 'Star Infratech Pvt Ltd',
+    isUnderWarranty: false,
+    authorityId: 'auth-bbmp',
+    authorityName: 'BBMP South Zone',
+    complaintsCount: 19,
+    upvotes: 88,
+    sahayaTicketNo: 'BBMP-SHY-2026-90412',
+    images: {
+      original: '/sample_data/images/real/bangalore_traffic_road.jpg',
+      repaired: '/sample_data/images/repaired_audit_inspection.jpg'
+    },
+    aiMetrics: {
+      depthCm: 14.5,
+      surfaceAreaSqM: 1.25,
+      estimatedVolumeLiters: 31.2,
+      asphaltDeteriorationIndex: 82,
+      moistureWaterloggingRisk: 78,
+      vehicleDamageHazard: 89,
+      modelConfidence: 0.965,
+      processingTimeMs: 28,
+      inferenceMode: 'DEMO_INFERENCE_MODE'
+    },
+    detectedObjects: [
+      { label: 'Deep Arterial Crater', confidence: 0.96, bbox: [20, 20, 45, 40], notes: 'Surface fatigue' }
+    ],
+    supportingReports: [],
+    roadHealth: 'Pavement Condition Index: 31/100 (Severe Base Failure)',
+    trafficExposure: '26,000 PCU/hr • Transit Corridor',
+    nearbySensitivePlaces: ['Fortis Hospital (1.1 km)', 'Meenakshi Mall (0.1 km)'],
+    dataSource: 'VERIFIED_OFFICIAL'
+  },
+  {
+    id: 'inc-10',
+    code: 'BNG-PTH-1045',
+    reportId: 'rep-0845',
+    latitude: 12.9832,
+    longitude: 77.6438,
+    roadId: 'road-08',
+    roadName: 'Old Madras Road (Swami Vivekananda)',
+    wardId: 'ward-80',
+    wardName: 'Indiranagar',
+    wardNumber: 82,
+    zone: 'East',
+    coordinates: { lat: 12.9832, lng: 77.6438 },
+    landmark: 'Near Swami Vivekananda Road Metro Station, East exit',
+    severity: 'CRITICAL',
+    severityScore: 95,
+    depthCm: 19.5,
+    surfaceAreaSqM: 1.95,
+    estimatedVolumeLiters: 48.0,
+    riskScore: 95,
+    confidence: 0.978,
+    status: 'TRIAGED',
+    priorityRank: 2,
+    priorityDetails: {
+      overallScore: 95,
+      breakdown: {
+        depthRisk: 96,
+        trafficVolumeImpact: 97,
+        schoolHospitalProximity: 94,
+        monsoonFloodingVulnerability: 95,
+        twoWheelerAccidentHistory: 96,
+        citizenUpvotesWeight: 92
+      },
+      scoreItems: [
+        { factor: 'Extreme depth (19.5cm crater)', points: 34, maxPoints: 35, description: 'Catastrophic rim and suspension hazard at 50km/h.' },
+        { factor: 'Metro transit node exposure', points: 24, maxPoints: 25, description: '34,000 PCU/hr arterial bottleneck.' }
+      ],
+      confidence: 0.978,
+      shortExplanation: 'Major 19.5cm defect at Metro station exit with extreme two-wheeler risk.',
+      explanation: [
+        'Extreme crater directly on bus & commuter trajectory.',
+        'High casualty potential during wet conditions.'
+      ],
+      calculatedAt: '2026-10-05T07:30:00Z'
+    },
+    reportedAt: '2026-10-03T16:00:00Z',
+    lastUpdatedAt: '2026-10-05T08:00:00Z',
+    contractorId: 'cont-04',
+    contractorName: 'Apex Infra Works',
+    isUnderWarranty: false,
+    authorityId: 'auth-bbmp',
+    authorityName: 'BBMP East Zone',
+    complaintsCount: 34,
+    upvotes: 142,
+    sahayaTicketNo: 'BBMP-SHY-2026-90488',
+    images: {
+      original: '/sample_data/images/real/pothole_crater_severe.jpg',
+      repaired: '/sample_data/images/repaired_audit_inspection.jpg'
+    },
+    aiMetrics: {
+      depthCm: 19.5,
+      surfaceAreaSqM: 1.95,
+      estimatedVolumeLiters: 48.0,
+      asphaltDeteriorationIndex: 94,
+      moistureWaterloggingRisk: 91,
+      vehicleDamageHazard: 96,
+      modelConfidence: 0.978,
+      processingTimeMs: 31,
+      inferenceMode: 'DEMO_INFERENCE_MODE'
+    },
+    detectedObjects: [
+      { label: 'High-Impact Pavement Crater', confidence: 0.97, bbox: [15, 15, 60, 50], notes: 'Severe rim damage potential' }
+    ],
+    supportingReports: [],
+    roadHealth: 'Pavement Condition Index: 25/100 (Sub-base Disruption)',
+    trafficExposure: '34,000 PCU/hr • Metro Feeder Arterial',
+    nearbySensitivePlaces: ['Swami Vivekananda Metro (0.05 km)', 'Chinmaya Mission (0.8 km)'],
+    dataSource: 'VERIFIED_OFFICIAL'
+  },
+  {
+    id: 'inc-11',
+    code: 'BNG-PTH-1046',
+    reportId: 'rep-0846',
+    latitude: 12.9568,
+    longitude: 77.5452,
+    roadId: 'road-09',
+    roadName: 'Mysore Road Flyover Ramp',
+    wardId: 'ward-153',
+    wardName: 'Jayanagar',
+    wardNumber: 137,
+    zone: 'South',
+    coordinates: { lat: 12.9568, lng: 77.5452 },
+    landmark: 'Sirsi Circle Flyover entry ramp, right tire track',
+    severity: 'CRITICAL',
+    severityScore: 96,
+    depthCm: 16.0,
+    surfaceAreaSqM: 2.10,
+    estimatedVolumeLiters: 52.0,
+    riskScore: 96,
+    confidence: 0.98,
+    status: 'TRIAGED',
+    priorityRank: 4,
+    priorityDetails: {
+      overallScore: 96,
+      breakdown: {
+        depthRisk: 95,
+        trafficVolumeImpact: 98,
+        schoolHospitalProximity: 88,
+        monsoonFloodingVulnerability: 92,
+        twoWheelerAccidentHistory: 97,
+        citizenUpvotesWeight: 94
+      },
+      scoreItems: [
+        { factor: 'High speed flyover ramp crater', points: 33, maxPoints: 35, description: 'High centrifugal force on flyover ramp increases skid risk.' }
+      ],
+      confidence: 0.98,
+      shortExplanation: 'Severe pothole on elevated flyover ramp with high collision risk.',
+      explanation: [
+        'Flyover ascending ramp defect causing abrupt braking at 60 km/h.'
+      ],
+      calculatedAt: '2026-10-05T06:00:00Z'
+    },
+    reportedAt: '2026-10-04T11:00:00Z',
+    lastUpdatedAt: '2026-10-05T17:04:00Z',
+    contractorId: 'cont-05',
+    contractorName: 'Cauvery Bitumen Specialists',
+    isUnderWarranty: false,
+    authorityId: 'auth-bbmp',
+    authorityName: 'BBMP South Zone',
+    complaintsCount: 41,
+    upvotes: 189,
+    sahayaTicketNo: 'BBMP-SHY-2026-90312',
+    images: {
+      original: '/sample_data/images/real/monsoon_pothole_water.jpg',
+      repaired: '/sample_data/images/repaired_audit_inspection.jpg'
+    },
+    aiMetrics: {
+      depthCm: 16.0,
+      surfaceAreaSqM: 2.10,
+      estimatedVolumeLiters: 52.0,
+      asphaltDeteriorationIndex: 91,
+      moistureWaterloggingRisk: 86,
+      vehicleDamageHazard: 95,
+      modelConfidence: 0.98,
+      processingTimeMs: 29,
+      inferenceMode: 'DEMO_INFERENCE_MODE'
+    },
+    detectedObjects: [
+      { label: 'Flyover Deck Pothole', confidence: 0.98, bbox: [20, 20, 50, 45], notes: 'High vibration erosion' }
+    ],
+    supportingReports: [],
+    roadHealth: 'Pavement Condition Index: 22/100 (Expansion Joint Failure)',
+    trafficExposure: '41,000 PCU/hr • High Speed Flyover',
+    nearbySensitivePlaces: ['KIMS Hospital (1.3 km)', 'City Railway Station (2.5 km)'],
+    dataSource: 'VERIFIED_OFFICIAL'
+  },
+  {
+    id: 'inc-12',
+    code: 'BNG-PTH-1047',
+    reportId: 'rep-0847',
+    latitude: 12.9128,
+    longitude: 77.6742,
+    roadId: 'road-10',
+    roadName: 'Sarjapur Main Road',
+    wardId: 'ward-150',
+    wardName: 'Bellandur',
+    wardNumber: 150,
+    zone: 'Mahadevapura',
+    coordinates: { lat: 12.9128, lng: 77.6742 },
+    landmark: 'Opposite Kaikondrahalli Lake / Carmelaram junction signal',
+    severity: 'HIGH',
+    severityScore: 84,
+    depthCm: 9.8,
+    surfaceAreaSqM: 1.10,
+    estimatedVolumeLiters: 22.0,
+    riskScore: 84,
+    confidence: 0.95,
+    status: 'TRIAGED',
+    priorityRank: 6,
+    priorityDetails: {
+      overallScore: 84,
+      breakdown: {
+        depthRisk: 80,
+        trafficVolumeImpact: 88,
+        schoolHospitalProximity: 86,
+        monsoonFloodingVulnerability: 87,
+        twoWheelerAccidentHistory: 82,
+        citizenUpvotesWeight: 79
+      },
+      scoreItems: [
+        { factor: 'Pavement weathering & stripping', points: 28, maxPoints: 35, description: 'Lake overflow runoff causing base softening.' }
+      ],
+      confidence: 0.95,
+      shortExplanation: 'Waterlogging erosion near Kaikondrahalli Lake signal junction.',
+      explanation: [
+        'Drainage overflow during monsoon leading to edge breakdown.'
+      ],
+      calculatedAt: '2026-10-05T08:45:00Z'
+    },
+    reportedAt: '2026-10-04T15:20:00Z',
+    lastUpdatedAt: '2026-10-05T14:48:00Z',
+    contractorId: 'cont-01',
+    contractorName: 'Star Infratech Pvt Ltd',
+    isUnderWarranty: true,
+    authorityId: 'auth-bbmp',
+    authorityName: 'BBMP Mahadevapura Zone',
+    complaintsCount: 15,
+    upvotes: 62,
+    sahayaTicketNo: 'BBMP-SHY-2026-90299',
+    images: {
+      original: '/sample_data/images/real/bangalore_traffic_road.jpg',
+      repaired: '/sample_data/images/repaired_audit_inspection.jpg'
+    },
+    aiMetrics: {
+      depthCm: 9.8,
+      surfaceAreaSqM: 1.10,
+      estimatedVolumeLiters: 22.0,
+      asphaltDeteriorationIndex: 79,
+      moistureWaterloggingRisk: 88,
+      vehicleDamageHazard: 81,
+      modelConfidence: 0.95,
+      processingTimeMs: 27,
+      inferenceMode: 'DEMO_INFERENCE_MODE'
+    },
+    detectedObjects: [
+      { label: 'Surface Water Erosion', confidence: 0.94, bbox: [25, 25, 40, 35], notes: 'Edge deterioration' }
+    ],
+    supportingReports: [],
+    roadHealth: 'Pavement Condition Index: 42/100 (Drainage Overflow Abrasion)',
+    trafficExposure: '21,000 PCU/hr • Tech Park Arterial',
+    nearbySensitivePlaces: ['Motherhood Hospital (0.5 km)', 'Kaikondrahalli Lake (0.1 km)'],
+    dataSource: 'VERIFIED_OFFICIAL'
   }
 ];
 

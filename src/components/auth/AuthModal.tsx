@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   X,
   ShieldCheck,
-  Zap,
   LogIn,
   UserPlus,
   KeyRound,
@@ -67,7 +66,6 @@ export const AuthModal: React.FC = () => {
     authModalTab,
     openSignIn,
     openSignUp,
-    enableDemoBypass,
     isClerkAvailable,
     signInMock,
     clerkKey,
@@ -426,32 +424,6 @@ export const AuthModal: React.FC = () => {
             </div>
           )}
 
-          {/* Hackathon Judge / Presentation Bypass Card */}
-          <div className="p-3.5 bg-[#E8A030]/20 border-2 border-[#121210] space-y-2.5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Zap className="w-4 h-4 text-[#121210]" />
-                <span className="text-xs font-mono font-black text-[#121210] uppercase tracking-wider">
-                  Hackathon Judge Bypass
-                </span>
-              </div>
-              <span className="tag bg-[#E8A030] text-[#121210] font-mono text-[9px] font-bold">
-                ZERO FRICTION
-              </span>
-            </div>
-
-            <p className="text-[11px] text-[#121210] leading-relaxed font-body">
-              Evaluating CivicPulse for live hackathon judging? Skip authentication to inspect God’s Eye geospatial intelligence, Pothole Vision, and contractor liability records instantly.
-            </p>
-
-            <button
-              onClick={enableDemoBypass}
-              className="w-full py-2.5 px-4 bg-[#121210] text-[#E8A030] hover:bg-[#2E8C42] hover:text-white font-mono font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 border-2 border-[#121210] btn-press transition-all cursor-pointer"
-            >
-              <Zap className="w-3.5 h-3.5" />
-              <span>⚡ Enter as Guest Judge (Explore All Features)</span>
-            </button>
-          </div>
 
           {/* Collapsible: Connect Live Clerk Key */}
           <div className="border-2 border-[#121210] bg-white overflow-hidden transition-all">
