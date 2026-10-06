@@ -158,6 +158,7 @@ export const ReportPage: React.FC = () => {
 
   // Voice Complaint Subsystem State
   const [isRecording, setIsRecording] = useState(false);
+  const isRecordingRef = useRef(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [_audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -165,6 +166,7 @@ export const ReportPage: React.FC = () => {
   const [transcriptionResult, setTranscriptionResult] = useState<TranscriptionResult | null>(null);
   const [voiceText, setVoiceText] = useState('');
   const [liveTranscript, setLiveTranscript] = useState('');
+  const liveTranscriptRef = useRef('');
   const [interpretedComplaint, setInterpretedComplaint] = useState<InterpretedComplaint>(
     transcriptionService.interpretComplaint('')
   );
@@ -198,7 +200,7 @@ export const ReportPage: React.FC = () => {
     resolved: false
   });
 
-  const selectLocation = async (coords: { lat: number; lng: number }) => {
+  const selectLocation = async (coords: { lat: number; lng: number }, updateInterpretation: boolean = true) => {
     if (isBenchmarkCase) {
       setSelectedImage('');
       setSelectedFile(null);
@@ -214,6 +216,14 @@ export const ReportPage: React.FC = () => {
     setStoredIncidentId(null);
     setAnalysisResult(null);
 
+    // Immediately update interpretedComplaint coordinates
+    if (updateInterpretation) {
+      setInterpretedComplaint(prev => ({
+        ...prev,
+        coordinates: coords
+      }));
+    }
+
     try {
       const response = await fetch('/api/location/resolve', {
         method: 'POST',
@@ -224,7 +234,21 @@ export const ReportPage: React.FC = () => {
       if (!response.ok) throw new Error(`Location lookup failed (${response.status})`);
       const details = await response.json() as ResolvedLocation;
       if (requestId !== currentLocationRequestRef.current) return;
-      setLocationDetails({ ...unresolvedLocation(coords), ...details, lat: coords.lat, lng: coords.lng });
+      const mergedDetails = { ...unresolvedLocation(coords), ...details, lat: coords.lat, lng: coords.lng };
+      setLocationDetails(mergedDetails);
+
+      // Update interpreted complaint's road name, ward, coordinates without altering user's spoken words!
+      if (updateInterpretation) {
+        setInterpretedComplaint(prev => ({
+          ...prev,
+          roadName: details.roadName || details.locality || prev.roadName,
+          wardName: details.ward || prev.wardName,
+          coordinates: coords,
+          landmark: details.address || details.locality || prev.landmark,
+          summary: `Hazard located at ${details.roadName || details.locality || 'selected place'} (${details.ward || 'Bengaluru'}). Routed to ${prev.department.acronym}.`
+        }));
+      }
+
       if (details.isWithinBengaluru === false) {
         setLocationStatus('outside');
         addToast('Outside Bengaluru', 'Please select a location within Bengaluru.', 'error');
@@ -268,9 +292,9 @@ export const ReportPage: React.FC = () => {
       audioChunksRef.current = [];
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
+      isRecordingRef.current = true;
 
-      // Show browser speech recognition live when available. The recorded blob
-      // remains the source for the configured Gemini/Groq transcription step.
+      // Show browser speech recognition live when available. Accumulate complete speech.
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       if (SpeechRecognition) {
         const recognition = new SpeechRecognition();
@@ -278,15 +302,21 @@ export const ReportPage: React.FC = () => {
         recognition.interimResults = true;
         recognition.lang = 'en-IN';
         recognition.onresult = (event: any) => {
-          let transcript = '';
-          for (let index = event.resultIndex; index < event.results.length; index += 1) {
-            transcript += event.results[index][0].transcript;
+          let accumulated = '';
+          for (let index = 0; index < event.results.length; index += 1) {
+            accumulated += event.results[index][0].transcript;
           }
-          setLiveTranscript(transcript.trim());
+          const text = accumulated.trim();
+          liveTranscriptRef.current = text;
+          setLiveTranscript(text);
+          setVoiceText(text); // Synchronously reflect user's real spoken words
+          applyInterpretedData(text);
         };
-        recognition.onerror = () => setLiveTranscript(prev => prev);
+        recognition.onerror = (e: any) => {
+          console.warn('Speech recognition warning:', e);
+        };
         recognition.onend = () => {
-          if (isRecording) {
+          if (isRecordingRef.current) {
             try { recognition.start(); } catch { /* browser already stopped */ }
           }
         };
@@ -301,57 +331,84 @@ export const ReportPage: React.FC = () => {
       };
 
       mediaRecorder.onstop = async () => {
+        isRecordingRef.current = false;
         const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         setAudioBlob(blob);
         const url = URL.createObjectURL(blob);
         setAudioUrl(url);
         stream.getTracks().forEach(track => track.stop());
-        speechRecognitionRef.current?.stop();
+        try {
+          speechRecognitionRef.current?.stop();
+        } catch {}
         speechRecognitionRef.current = null;
 
-        await handleTranscribe(blob, recordingDuration);
+        await handleTranscribe(blob, recordingDuration, liveTranscriptRef.current);
       };
 
       mediaRecorder.start();
       setIsRecording(true);
       setRecordingDuration(0);
       setLiveTranscript('');
+      liveTranscriptRef.current = '';
       setVoiceText('');
       timerIntervalRef.current = setInterval(() => {
         setRecordingDuration(prev => prev + 1);
       }, 1000);
       addToast('Voice Recording', 'Microphone active — describe the road condition & location', 'info');
     } catch (err: any) {
+      isRecordingRef.current = false;
       console.warn('Microphone access restricted:', err);
       addToast('Mic Access Restricted', 'Switched to 1-Click Demo Voice Mode', 'info');
     }
   };
 
   const stopVoiceRecording = () => {
+    isRecordingRef.current = false;
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
-      speechRecognitionRef.current?.stop();
+      try {
+        speechRecognitionRef.current?.stop();
+      } catch {}
       setIsRecording(false);
       if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
       addToast('Recording Captured', 'Processing audio stream...', 'info');
     }
   };
 
-  const handleTranscribe = async (blob: Blob, duration: number) => {
+  const handleTranscribe = async (blob: Blob, duration: number, liveSpokenText?: string) => {
     setIsTranscribing(true);
-    addToast('Transcribing Speech', 'Running neural speech-to-text...', 'info');
+    addToast('Transcribing Speech', 'Processing spoken grievance...', 'info');
     try {
-      const result = await transcriptionService.transcribeAudio(blob, duration);
+      const userSpokenSoFar = (liveSpokenText || liveTranscriptRef.current || liveTranscript || voiceText).trim();
+      const result = await transcriptionService.transcribeAudio(blob, duration, 'gemini', userSpokenSoFar);
+      
+      // If user spoke aloud, NEVER overwrite what they said with demo benchmark text
+      let resolvedText = result.text;
+      if (userSpokenSoFar && (result.isDemoFallback || !result.text.trim() || result.provider === 'demo')) {
+        resolvedText = userSpokenSoFar;
+        result.text = userSpokenSoFar;
+        result.isDemoFallback = false;
+        result.providerLabel = 'Browser Speech Recognition (Live Voice)';
+      }
+
       setTranscriptionResult(result);
-      setVoiceText(result.text);
-      applyInterpretedData(result.text);
-      addToast('Transcript Ready', `Confidence: ${(result.confidence * 100).toFixed(0)}%`, 'success');
+      if (resolvedText) {
+        setVoiceText(resolvedText);
+        applyInterpretedData(resolvedText);
+        addToast('Transcript Ready', 'Spoken grievance captured successfully', 'success');
+      } else {
+        addToast('No Speech Detected', 'Microphone captured silence. You can type or record again.', 'warning');
+      }
     } catch (err: unknown) {
       console.warn('[Report] Audio transcription failed:', err);
-      const fallback = liveTranscript.trim() || 'Audio was recorded, but a transcript could not be resolved.';
-      setVoiceText(fallback);
-      applyInterpretedData(fallback);
-      addToast('Transcript unavailable', liveTranscript ? 'Using the live browser transcript.' : 'The recording is saved; please type the complaint below.', 'warning');
+      const fallback = (liveSpokenText || liveTranscriptRef.current || liveTranscript || voiceText).trim();
+      if (fallback) {
+        setVoiceText(fallback);
+        applyInterpretedData(fallback);
+        addToast('Transcript Ready', 'Using live spoken transcript.', 'info');
+      } else {
+        addToast('No Speech Detected', 'Microphone captured silence. Please enter your complaint below.', 'warning');
+      }
     } finally {
       setIsTranscribing(false);
     }
@@ -359,11 +416,28 @@ export const ReportPage: React.FC = () => {
 
   const applyInterpretedData = (text: string) => {
     const parsed = transcriptionService.interpretComplaint(text);
+    // If user has already chosen a place on the map, maintain the user-chosen coordinates and road
+    if (selectedCoords && locationDetails?.roadName) {
+      parsed.coordinates = selectedCoords;
+      parsed.roadName = locationDetails.roadName;
+      if (locationDetails.ward && locationDetails.ward !== 'Not available') {
+        parsed.wardName = locationDetails.ward;
+      }
+      if (locationDetails.address && locationDetails.address !== 'Not available') {
+        parsed.landmark = locationDetails.address;
+      }
+    } else if (text.trim() && parsed.coordinates && parsed.roadName !== 'Awaiting location selection') {
+      // Auto-pin location on map if speech identified a specific Bengaluru corridor
+      setSelectedCoords(parsed.coordinates);
+      void selectLocation(parsed.coordinates, false);
+    }
     setInterpretedComplaint(parsed);
   };
 
   const handleSelectDemoVoice = (sample: DemoVoiceSample) => {
     setVoiceText(sample.transcript);
+    setLiveTranscript(sample.transcript);
+    liveTranscriptRef.current = sample.transcript;
     applyInterpretedData(sample.transcript);
     setAudioUrl(null);
     setTranscriptionResult({
@@ -372,8 +446,13 @@ export const ReportPage: React.FC = () => {
       confidence: 0.96,
       durationSeconds: 8,
       isDemoFallback: true,
-      providerLabel: 'Gemini 3.8 Flash Neural Speech'
+      providerLabel: 'Benchmark Demo Voice Clip'
     });
+    // Set coordinates for this demo sample
+    let sampleCoords = { lat: 12.9279, lng: 77.6833 };
+    if (sample.id === 'voice-indiranagar') sampleCoords = { lat: 12.9784, lng: 77.6408 };
+    if (sample.id === 'voice-whitefield') sampleCoords = { lat: 12.9866, lng: 77.7381 };
+    void selectLocation(sampleCoords);
     addToast('Demo Voice Loaded', `${sample.title} (${sample.location})`, 'info');
   };
 
@@ -1204,7 +1283,7 @@ export const ReportPage: React.FC = () => {
               <div className="lg:col-span-6 space-y-4">
                 <DepartmentRoutingBadge
                   department={interpretedComplaint?.department.acronym || 'BBMP'}
-                  roadName={interpretedComplaint?.roadName || roadName}
+                  roadName={locationDetails?.roadName || (interpretedComplaint?.roadName !== 'Awaiting location selection' ? interpretedComplaint?.roadName : null) || roadName}
                   nodalOfficer={interpretedComplaint?.department.nodalOfficer}
                   routingReason={interpretedComplaint?.department.routingReason}
                 />
@@ -1214,12 +1293,28 @@ export const ReportPage: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-[#2E8C42]" />
                       <span className="font-display text-xs font-black text-[#121210] uppercase tracking-wider">
-                        AI Resolved Location
+                        Pinpoint Location for Spoken Grievance
                       </span>
                     </div>
                     <span className="tag bg-[#CFE8D6] font-mono text-[10px] font-bold">
                       CLICK TO ADJUST
                     </span>
+                  </div>
+
+                  {/* ACTIVE SPOKEN GRIEVANCE CALLOUT: Displays user's actual speech right above the map */}
+                  <div className="bg-[#CFE8D6]/40 border-2 border-[#121210] p-3 text-xs">
+                    <div className="flex items-center justify-between text-[10px] font-mono font-black uppercase text-[#121210] mb-1">
+                      <span className="flex items-center gap-1.5">
+                        <Mic className="w-3.5 h-3.5 text-[#2E8C42]" />
+                        Your Spoken Grievance
+                      </span>
+                      <span className="tag bg-white text-[9px] font-bold">
+                        {voiceText || liveTranscript ? 'SPOKEN WORDS PRESERVED' : 'AWAITING RECORDING'}
+                      </span>
+                    </div>
+                    <div className="text-xs text-[#121210] font-medium italic">
+                      "{voiceText || liveTranscript || 'Speak via microphone on the left to dictate grievance context'}"
+                    </div>
                   </div>
 
                   <div className="h-56 border-2 border-[#121210] overflow-hidden relative">
@@ -1234,7 +1329,9 @@ export const ReportPage: React.FC = () => {
                   <div className="grid grid-cols-2 gap-3 text-xs bg-[#CFE8D6]/30 p-3 border-2 border-[#121210] font-mono">
                     <div>
                       <span className="text-[#4A4A46] block text-[10px] uppercase font-bold">CORRIDOR RESOLVED</span>
-                      <span className="text-[#121210] font-bold truncate block">{interpretedComplaint?.roadName || roadName}</span>
+                      <span className="text-[#121210] font-bold truncate block">
+                        {locationDetails?.roadName || (interpretedComplaint?.roadName !== 'Awaiting location selection' ? interpretedComplaint?.roadName : null) || roadName}
+                      </span>
                     </div>
                     <div>
                       <span className="text-[#4A4A46] block text-[10px] uppercase font-bold">SEVERITY TRIAGE</span>
@@ -1356,7 +1453,7 @@ export const ReportPage: React.FC = () => {
               <div className="lg:col-span-6 space-y-4">
                 <DepartmentRoutingBadge
                   department={interpretedComplaint?.department.acronym || 'BBMP'}
-                  roadName={interpretedComplaint?.roadName || roadName}
+                  roadName={locationDetails?.roadName || (interpretedComplaint?.roadName !== 'Awaiting location selection' ? interpretedComplaint?.roadName : null) || roadName}
                   nodalOfficer={interpretedComplaint?.department.nodalOfficer}
                   routingReason={interpretedComplaint?.department.routingReason}
                 />
@@ -1386,7 +1483,9 @@ export const ReportPage: React.FC = () => {
                   <div className="grid grid-cols-2 gap-3 text-xs bg-[#CFE8D6]/30 p-3 border-2 border-[#121210] font-mono">
                     <div>
                       <span className="text-[#4A4A46] block text-[10px] uppercase font-bold">ROAD CORRIDOR</span>
-                      <span className="text-[#121210] font-bold truncate block">{interpretedComplaint?.roadName || roadName}</span>
+                      <span className="text-[#121210] font-bold truncate block">
+                        {locationDetails?.roadName || (interpretedComplaint?.roadName !== 'Awaiting location selection' ? interpretedComplaint?.roadName : null) || roadName}
+                      </span>
                     </div>
                     <div>
                       <span className="text-[#4A4A46] block text-[10px] uppercase font-bold">SEVERITY TRIAGE</span>

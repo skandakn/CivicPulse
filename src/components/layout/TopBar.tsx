@@ -17,6 +17,7 @@ import { useApp, UserRole } from '../../context/AppContext';
 import { useAuthSession } from '../../context/AuthContext';
 import { UserButton } from '@clerk/clerk-react';
 import { clerkAppearance } from '../auth/clerkAppearance';
+import { ViewMode } from '../../types';
 
 interface TopBarProps {
   isSidebarCollapsed: boolean;
@@ -37,6 +38,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     loadDemoCase,
     resetDemo,
     setCurrentView,
+    currentView,
     incidents,
     addToast
   } = useApp();
@@ -103,13 +105,30 @@ export const TopBar: React.FC<TopBarProps> = ({
     AUDITOR: { title: 'Quality Auditor (CAG/IRC)', badge: 'AUDITOR' }
   };
 
+  const viewTitles: Record<ViewMode, { title: string; badge1?: string; badge2?: string; badge2Alert?: boolean }> = {
+    LANDING: { title: 'CivicPulse Overview', badge1: 'SHOWCASE', badge2: 'IRC-SP-100' },
+    REPORT: { title: 'Report Road Hazard', badge1: 'MULTIMODAL', badge2: 'SPEECH & CV' },
+    PRIORITY_QUEUE: { title: 'Approver Inbox', badge1: `${pendingCount || 12} PENDING`, badge2: `${criticalCount || 3} PAST SLA`, badge2Alert: true },
+    GODS_EYE: { title: "God's Eye GIS Radar", badge1: `${incidents.length} INCIDENTS`, badge2: 'LIVE STREAM' },
+    AI_ANALYSIS: { title: 'Vision Lab & Telemetry', badge1: 'STEREO 3D', badge2: 'v4.2 CV' },
+    INCIDENT_DETAIL: { title: 'Investigation Dossier', badge1: 'BBMP LEDGER' },
+    VERIFICATION: { title: 'AI Repair Verification', badge1: 'FORENSIC AUDIT' },
+    CONTRACTORS: { title: 'Contractor DLP Ledger', badge1: 'CLAUSE 45.2' },
+    COMPLAINTS: { title: 'Citizen Grievances & SLA', badge1: 'SAHAYA 2.0' },
+    ANALYTICS: { title: 'Bengaluru Civic Analytics', badge1: 'AUDIT METRICS' },
+    DEMO: { title: 'Hackathon Evaluation Lab', badge1: 'DETERMINISTIC' },
+    SCROLL_WORLD: { title: '3D Scroll-World Flight', badge1: 'INTERACTIVE 3D' }
+  };
+
+  const activeHeader = viewTitles[currentView] || { title: 'CivicPulse Ledger', badge1: 'CIVIC OPS' };
+
   return (
     <header
       className={`fixed top-0 right-0 z-30 h-[74px] bg-[#CFE8D6] border-b-[3px] border-[#121210] transition-all duration-200 flex items-center justify-between px-4 lg:px-6
         ${isSidebarCollapsed ? 'left-0 lg:left-20' : 'left-0 lg:left-64'}
       `}
     >
-      {/* Left side: Hamburger + Approva Header Title & Badges */}
+      {/* Left side: Hamburger + Dynamic Header Title & Badges */}
       <div className="flex items-center gap-3">
         <button
           onClick={onOpenMobileSidebar}
@@ -122,14 +141,18 @@ export const TopBar: React.FC<TopBarProps> = ({
         <div className="flex flex-col justify-center">
           <div className="flex items-center gap-2 sm:gap-2.5">
             <h1 className="font-display font-black text-xl sm:text-2xl text-[#121210] tracking-tight leading-none whitespace-nowrap">
-              Approver Inbox
+              {activeHeader.title}
             </h1>
-            <span className="tag bg-[#FFFFFF] text-[#121210] text-[10px] sm:text-[11px] font-bold px-2 py-0.5 whitespace-nowrap">
-              {pendingCount || 12} PENDING
-            </span>
-            <span className="tag bg-[#C03A3A] text-[#FFFFFF] border-[#121210] text-[10px] sm:text-[11px] font-bold px-2 py-0.5 whitespace-nowrap">
-              {criticalCount || 3} PAST SLA
-            </span>
+            {activeHeader.badge1 && (
+              <span className="tag bg-[#FFFFFF] text-[#121210] text-[10px] sm:text-[11px] font-bold px-2 py-0.5 whitespace-nowrap">
+                {activeHeader.badge1}
+              </span>
+            )}
+            {activeHeader.badge2 && (
+              <span className={`tag ${activeHeader.badge2Alert ? 'bg-[#C03A3A] text-white' : 'bg-[#E8A030] text-[#121210]'} border-[#121210] text-[10px] sm:text-[11px] font-bold px-2 py-0.5 whitespace-nowrap`}>
+                {activeHeader.badge2}
+              </span>
+            )}
           </div>
           <div className="text-[10px] font-mono text-[#121210]/60 mt-1 font-bold tracking-wider hidden sm:block leading-none">
             {currentTimeStr || 'TUE · 06 OCT 2026 · 09:03:04 IST'}
