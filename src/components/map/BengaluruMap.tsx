@@ -233,15 +233,12 @@ export const BengaluruMap: React.FC<BengaluruMapProps> = ({
       attributionControl: false
     });
 
-    // Dark Matter CartoDB Basemap for high-contrast dark cyberpunk aesthetic
-    const cartoApiKey = import.meta.env.VITE_CARTO_API_KEY || '';
-    const tileUrl = cartoApiKey 
-      ? `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?api_key=${cartoApiKey}`
-      : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+    // Google Maps Standard style
+    const tileUrl = 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}';
       
     L.tileLayer(tileUrl, {
-      subdomains: 'abcd',
-      maxZoom: 19
+      maxZoom: 20,
+      attribution: 'Map data &copy; Google'
     }).addTo(map);
 
     // Zoom controls at bottom-right

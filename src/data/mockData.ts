@@ -174,7 +174,7 @@ export const INITIAL_AUTHORITIES: Authority[] = [
 export const INITIAL_CONTRACTORS: Contractor[] = [
   {
     id: 'cont-01',
-    name: 'Infrastructure Partner Alpha',
+    name: 'BBMP Zone Works',
     registrationNumber: 'PWD/KP/CL1/2021/412',
     classRating: 'CLASS_1',
     activeContractsCount: 6,
@@ -190,7 +190,7 @@ export const INITIAL_CONTRACTORS: Contractor[] = [
   },
   {
     id: 'cont-02',
-    name: 'Infrastructure Partner Beta',
+    name: 'BBMP Zone Works',
     registrationNumber: 'PWD/KP/CL1/2019/189',
     classRating: 'CLASS_1',
     activeContractsCount: 4,
@@ -206,7 +206,7 @@ export const INITIAL_CONTRACTORS: Contractor[] = [
   },
   {
     id: 'cont-03',
-    name: 'Infrastructure Partner Gamma',
+    name: 'BBMP Zone Works',
     registrationNumber: 'PWD/KP/CL1/2020/078',
     classRating: 'CLASS_1',
     activeContractsCount: 8,
@@ -222,7 +222,7 @@ export const INITIAL_CONTRACTORS: Contractor[] = [
   },
   {
     id: 'cont-04',
-    name: 'Infrastructure Partner Delta',
+    name: 'BBMP Zone Works',
     registrationNumber: 'PWD/KP/CL2/2022/901',
     classRating: 'CLASS_2',
     activeContractsCount: 3,
@@ -347,7 +347,7 @@ export const INITIAL_CONTRACTS: Contract[] = [
     contractNumber: 'BBMP/EE/RI/MAH/WO-88/2024-25',
     roadId: 'road-01',
     contractorId: 'cont-01',
-    contractorName: 'Infrastructure Partner Alpha',
+    contractorName: 'BBMP Zone Works',
     authorityId: 'auth-bbmp',
     awardDate: '2024-04-10',
     completionDate: '2024-11-15',
@@ -356,14 +356,14 @@ export const INITIAL_CONTRACTS: Contract[] = [
     isUnderWarranty: true,
     totalCostINR: 148000000,
     status: 'UNDER_WARRANTY',
-    responsibilityClause: 'Clause 45.2 (Defect Liability Period): Contractor shall rectify all bituminous pavement failures within 48h of notification at zero additional cost.'
+    responsibilityClause: 'Standard Maintenance (Defect Liability Period): Contractor shall rectify all bituminous pavement failures within 48h of notification at zero additional cost.'
   },
   {
     id: 'cntr-2024-12',
     contractNumber: 'BBMP/EE/RI/BOM/WO-12/2024-25',
     roadId: 'road-04',
     contractorId: 'cont-03',
-    contractorName: 'Infrastructure Partner Gamma',
+    contractorName: 'BBMP Zone Works',
     authorityId: 'auth-bbmp',
     awardDate: '2023-12-01',
     completionDate: '2024-05-12',
@@ -420,18 +420,18 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
         { factor: 'Sensitive location (Ambulance)', points: 5, maxPoints: 5, description: 'Within 0.4km of Sakra World Hospital emergency corridor.' }
       ],
       confidence: 0.968,
-      shortExplanation: 'Severe 18cm defect on high-volume corridor (24.5k PCU/hr) with 3 merged reports and active Clause 45.2 warranty.',
+      shortExplanation: 'Severe 18cm defect on high-volume corridor (24.5k PCU/hr) with 3 merged reports and active Standard Maintenance warranty.',
       explanation: [
         'Critical depth (18.0cm) causing sudden braking and two-wheeler instability.',
         'High-speed corridor carrying 24,000+ passenger car units per hour.',
-        'Road project associated with recorded tender under 36-month Contractor Warranty (Infrastructure Partner Alpha) — Zero public tender cost.'
+        'Road project associated with recorded tender under 36-month Contractor Warranty (BBMP Zone Works) — Zero public tender cost.'
       ],
       calculatedAt: '2026-10-05T08:15:00Z'
     },
     reportedAt: '2026-10-04T18:22:00Z',
     lastUpdatedAt: '2026-10-05T09:30:00Z',
     contractorId: 'cont-01',
-    contractorName: 'Infrastructure Partner Alpha',
+    contractorName: 'BBMP Zone Works',
     contractId: 'cntr-2024-88',
     isUnderWarranty: true,
     authorityId: 'auth-bbmp',
@@ -522,7 +522,7 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     reportedAt: '2026-10-03T11:10:00Z',
     lastUpdatedAt: '2026-10-05T10:15:00Z',
     contractorId: 'cont-03',
-    contractorName: 'Infrastructure Partner Gamma',
+    contractorName: 'BBMP Zone Works',
     contractId: 'cntr-2024-12',
     isUnderWarranty: false,
     authorityId: 'auth-bbmp',
@@ -601,7 +601,7 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     reportedAt: '2026-10-04T09:20:00Z',
     lastUpdatedAt: '2026-10-05T08:00:00Z',
     contractorId: 'cont-02',
-    contractorName: 'Infrastructure Partner Beta',
+    contractorName: 'BBMP Zone Works',
     isUnderWarranty: true,
     authorityId: 'auth-bbmp',
     authorityName: 'BBMP South Zone',
@@ -676,7 +676,7 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     reportedAt: '2026-10-03T16:40:00Z',
     lastUpdatedAt: '2026-10-04T14:10:00Z',
     contractorId: 'cont-01',
-    contractorName: 'Infrastructure Partner Alpha',
+    contractorName: 'BBMP Zone Works',
     isUnderWarranty: true,
     authorityId: 'auth-bmrcl',
     authorityName: 'BMRCL Metro Joint Alignment Division',
@@ -751,7 +751,7 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     reportedAt: '2026-09-29T14:00:00Z',
     lastUpdatedAt: '2026-10-05T09:12:00Z',
     contractorId: 'cont-02',
-    contractorName: 'Infrastructure Partner Beta',
+    contractorName: 'BBMP Zone Works',
     isUnderWarranty: true,
     authorityId: 'auth-bbmp',
     authorityName: 'BBMP East Zone',
@@ -841,7 +841,7 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     reportedAt: '2026-10-05T09:40:00Z',
     lastUpdatedAt: '2026-10-05T10:00:00Z',
     contractorId: 'cont-04',
-    contractorName: 'Infrastructure Partner Delta',
+    contractorName: 'BBMP Zone Works',
     isUnderWarranty: true,
     authorityId: 'auth-bbmp',
     authorityName: 'BBMP West Zone',
@@ -923,7 +923,7 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     reportedAt: '2026-10-05T07:15:00Z',
     lastUpdatedAt: '2026-10-05T11:30:00Z',
     contractorId: 'cont-01',
-    contractorName: 'Infrastructure Partner Alpha',
+    contractorName: 'BBMP Zone Works',
     contractId: 'cntr-2024-88',
     isUnderWarranty: true,
     authorityId: 'auth-bbmp',
@@ -998,7 +998,7 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     reportedAt: '2026-10-04T12:00:00Z',
     lastUpdatedAt: '2026-10-05T08:30:00Z',
     contractorId: 'cont-03',
-    contractorName: 'Infrastructure Partner Gamma',
+    contractorName: 'BBMP Zone Works',
     isUnderWarranty: false,
     authorityId: 'auth-bbmp',
     authorityName: 'BBMP South Zone',
@@ -1045,7 +1045,7 @@ export const INITIAL_COMPLAINTS: Complaint[] = [
     history: [
       { timestamp: '2026-10-05T07:15:00Z', action: 'Complaint Logged via CivicPulse Mobile App', actor: 'Citizen (Dr. Vivek)' },
       { timestamp: '2026-10-05T07:16:00Z', action: 'AI Vision Engine auto-triaged: Severity CRITICAL (Score 98/100)', actor: 'CivicPulse Neural Engine' },
-      { timestamp: '2026-10-05T08:30:00Z', action: 'Defect Liability Notice issued under Clause 45.2 to Infrastructure Partner Alpha', actor: 'BBMP Chief Engineer (Roads)' },
+      { timestamp: '2026-10-05T08:30:00Z', action: 'Defect Liability Notice issued under Standard Maintenance to BBMP Zone Works', actor: 'BBMP Chief Engineer (Roads)' },
       { timestamp: '2026-10-05T11:00:00Z', action: 'Escalated to Zonal Joint Commissioner due to 300+ community upvotes', actor: 'Automated SLA Escalation Daemon' }
     ],
     draftDetails: {
@@ -1077,7 +1077,7 @@ export const INITIAL_COMPLAINTS: Complaint[] = [
       draftId: 'DFT-BBMP-2026-90412',
       status: 'SIMULATED_SYNC',
       generatedAt: '2026-10-04T18:25:00Z',
-      recommendedAction: 'Notice to Infrastructure Partner Alpha under Defect Liability Clause 45.2; Zero cost to public exchequer.',
+      recommendedAction: 'Notice to BBMP Zone Works under Defect Liability Standard Maintenance; Zero cost to public exchequer.',
       slaDeadline: '2026-10-06T18:22:00Z',
       watermark: 'AI-generated — review before submission.'
     }

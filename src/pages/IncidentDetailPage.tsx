@@ -18,6 +18,7 @@ import { PriorityExplainer } from '../components/incident/PriorityExplainer';
 import { ComplaintGenerator } from '../components/incident/ComplaintGenerator';
 import { ComplaintTrackingStepper } from '../components/common/ComplaintTrackingStepper';
 import { DepartmentRoutingBadge } from '../components/common/DepartmentRoutingBadge';
+import { matchProcurementRecord } from '../data/procurement/karnataka/tenders';
 
 export const IncidentDetailPage: React.FC = () => {
   const {
@@ -47,7 +48,6 @@ export const IncidentDetailPage: React.FC = () => {
   }
 
   const matchingComplaint = complaints.find(c => c.incidentId === selectedIncident.id || c.sahayaTicketNo === selectedIncident.sahayaTicketNo);
-  const matchingContractor = contractors.find(c => c.name === selectedIncident.contractorName || c.id === selectedIncident.contractorId);
   const matchingWard = wards.find(w => w.number === selectedIncident.wardNumber);
 
   const sevColor = getSeverityColor(selectedIncident.severity);
@@ -297,43 +297,78 @@ export const IncidentDetailPage: React.FC = () => {
             overallScore={selectedIncident.priorityDetails.overallScore}
           />
 
-          {/* Contractor & Engineering Record */}
-          <div className="rounded-2xl border border-white/10 bg-[#090C16] p-5 space-y-4">
-            <h3 className="font-mono text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-cyan-400" />
-              <span>Contractor & BBMP Administration</span>
+          {/* Procurement Intelligence (KPPP) */}
+          <div className="rounded-2xl border border-blue-500/30 bg-[#090C16] p-5 space-y-4">
+            <h3 className="font-mono text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-blue-400" />
+                <span>Associated Road Project</span>
+              </div>
+              <div className="px-2 py-0.5 rounded text-[9px] bg-blue-950/40 text-blue-400 border border-blue-500/30">
+                PROCUREMENT INTELLIGENCE
+              </div>
             </h3>
 
             <div className="space-y-3 text-xs">
-              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between">
-                <div>
-                  <div className="text-[10px] font-mono text-slate-500">ASSOCIATED ROAD CONTRACTOR</div>
-                  <div className="font-bold text-white mt-0.5">{selectedIncident.contractorName}</div>
-                  <div className="text-[11px] text-slate-400 font-mono">
-                    Reg: {matchingContractor?.registrationNumber || 'PWD/KP/2021'} • Quality Score: {matchingContractor?.qualityScore || 68}/100
-                  </div>
-                </div>
-                <button
-                  onClick={() => setCurrentView('CONTRACTORS')}
-                  className="px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-cyan-400 text-[11px] font-mono border border-white/10"
-                >
-                  Scorecard
-                </button>
-              </div>
+              {(() => {
+                const procurementMatch = matchProcurementRecord(selectedIncident.roadName, selectedIncident.wardName);
+                
+                if (procurementMatch.confidence === 'NO VERIFIED MATCH' || !procurementMatch.record) {
+                  return (
+                    <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5 flex flex-col items-center justify-center text-center gap-2 text-slate-400 font-mono text-xs">
+                      <AlertTriangle className="w-5 h-5 opacity-50" />
+                      <p>No verified contractor identified for this location.</p>
+                      <p className="text-[10px] text-slate-500">Source: Karnataka Public Procurement Portal (KPPP)</p>
+                    </div>
+                  );
+                }
 
-              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 space-y-2">
-                <div className="text-[10px] font-mono text-slate-500">BBMP WARD ENGINEERING DESK</div>
-                <div className="grid grid-cols-2 gap-2 text-slate-300">
-                  <div>
-                    <span className="text-slate-500 block text-[10px]">CHIEF ENGINEER</span>
-                    <span className="font-semibold text-white">{matchingWard?.chiefEngineer || 'Er. R. Manjunath'}</span>
+                const record = procurementMatch.record;
+                return (
+                  <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5 space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="text-[10px] font-mono text-slate-500">TENDER NO: {record.tenderNumber}</div>
+                        <div className="font-bold text-white mt-1">{record.workDescription}</div>
+                      </div>
+                      <span className={`px-2 py-1 rounded text-[9px] font-mono font-bold border whitespace-nowrap ml-3 ${
+                        procurementMatch.confidence === 'VERIFIED' ? 'bg-emerald-950/40 text-emerald-400 border-emerald-500/40' :
+                        procurementMatch.confidence === 'STRONG MATCH' ? 'bg-blue-950/40 text-blue-400 border-blue-500/40' :
+                        'bg-amber-950/40 text-amber-400 border-amber-500/40'
+                      }`}>
+                        {procurementMatch.confidence}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 text-[11px] font-mono border-t border-white/5 pt-3">
+                      <div>
+                        <span className="text-slate-500 block text-[9px]">AWARDED CONTRACTOR</span>
+                        <span className={record.contractorName ? 'text-white' : 'text-slate-400'}>
+                          {record.contractorName || 'Not available in verified source'}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 block text-[9px]">AUTHORITY</span>
+                        <span className="text-white">{record.department}</span>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 mt-2 border-t border-white/5 text-[10px] font-mono text-slate-400 flex items-center justify-between">
+                      <span>Source: {record.sourceType}</span>
+                      <button
+                        onClick={() => setCurrentView('CONTRACTORS')}
+                        className="text-blue-400 hover:text-blue-300 transition-colors underline"
+                      >
+                        View Intelligence
+                      </button>
+                    </div>
+                    
+                    <div className="mt-2 p-2 rounded bg-white/5 text-[10px] text-slate-400 font-sans border border-white/10">
+                      <strong>Important:</strong> This is an associated procurement record, not proof of contractor liability. DLP status unavailable from public record.
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-slate-500 block text-[10px]">AEE IN-CHARGE</span>
-                    <span className="font-semibold text-white">{matchingWard?.assistantExecutiveEngineer || 'Er. K. Ramesh'}</span>
-                  </div>
-                </div>
-              </div>
+                );
+              })()}
             </div>
           </div>
 
@@ -342,7 +377,7 @@ export const IncidentDetailPage: React.FC = () => {
             department={selectedIncident.authorityId?.includes('BMRCL') ? 'BMRCL' : selectedIncident.authorityId?.includes('BWSSB') ? 'BWSSB' : selectedIncident.authorityId?.includes('BESCOM') ? 'BESCOM' : 'BBMP'}
             roadName={selectedIncident.roadName}
             nodalOfficer={matchingWard?.chiefEngineer || 'Sri B. S. Prahlad, Chief Engineer (Roads)'}
-            routingReason={selectedIncident.isUnderWarranty ? 'Corridor under active road contractor Defect Liability Period (Clause 45.2). Routed to BBMP Major Roads Division for warranty enforcement.' : 'Arterial roadway under BBMP PWD jurisdiction. Routed to Zonal Rapid Patching Unit.'}
+            routingReason={'Arterial roadway matched to ' + (selectedIncident.authorityId?.includes('BMRCL') ? 'BMRCL' : selectedIncident.authorityId?.includes('BWSSB') ? 'BWSSB' : selectedIncident.authorityId?.includes('BESCOM') ? 'BESCOM' : 'BBMP') + ' jurisdiction. Routed to appropriate Zonal Unit.'}
           />
 
           {/* Citizen Community Grievance & Sahaya Sync */}

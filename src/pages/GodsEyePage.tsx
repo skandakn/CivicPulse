@@ -253,7 +253,7 @@ export const GodsEyePage: React.FC = () => {
             {/* Subtle Map Overlay Watermark */}
             <div className="absolute top-4 left-4 z-10 pointer-events-none p-2 rounded-lg bg-[#070912]/80 backdrop-blur-md border border-white/10 text-[10px] font-mono text-slate-400 space-y-0.5">
               <div>BBMP GIS GRID: 12.9716° N / 77.5946° E</div>
-              <div className="text-cyan-400">CARTOGRAPHY: DARK MATTER HYPER-RES</div>
+              <div className="text-cyan-400">CARTOGRAPHY: STANDARD SATELLITE / VECTOR</div>
             </div>
           </div>
         </div>

@@ -346,7 +346,7 @@ export const ReportPage: React.FC = () => {
         reportsMerged: 17,
         road: interpreted.roadName,
         authority: interpreted.department.name,
-        contractor: 'Infrastructure Partner Gamma (Contract #KA-BBMP-2025-912)',
+        contractor: 'Unverified / KPPP Search Required',
         status: 'Verified',
         lastReportedAt: sessionTimestamp
       },
@@ -525,7 +525,7 @@ export const ReportPage: React.FC = () => {
             reportsMerged: 17,
             road: 'Outer Ring Road (State Highway 35 Connector)',
             authority: 'BBMP Mahadevapura Division (Major Roads Dept)',
-            contractor: 'Infrastructure Partner Gamma (Contract #KA-BBMP-2025-912)',
+            contractor: 'Unverified / KPPP Search Required',
             status: 'Verified',
             lastReportedAt: new Date().toISOString()
           },
