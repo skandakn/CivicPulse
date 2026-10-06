@@ -164,10 +164,12 @@ export const ReportPage: React.FC = () => {
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [transcriptionResult, setTranscriptionResult] = useState<TranscriptionResult | null>(null);
   const [voiceText, setVoiceText] = useState('');
+  const [liveTranscript, setLiveTranscript] = useState('');
   const [interpretedComplaint, setInterpretedComplaint] = useState<InterpretedComplaint>(
     transcriptionService.interpretComplaint('')
   );
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const speechRecognitionRef = useRef<{ start: () => void; stop: () => void; abort: () => void; continuous: boolean; interimResults: boolean; lang: string; onresult: ((event: any) => void) | null; onerror: ((event: any) => void) | null; onend: (() => void) | null } | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const timerIntervalRef = useRef<any>(null);
 
@@ -267,6 +269,31 @@ export const ReportPage: React.FC = () => {
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
 
+      // Show browser speech recognition live when available. The recorded blob
+      // remains the source for the configured Gemini/Groq transcription step.
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-IN';
+        recognition.onresult = (event: any) => {
+          let transcript = '';
+          for (let index = event.resultIndex; index < event.results.length; index += 1) {
+            transcript += event.results[index][0].transcript;
+          }
+          setLiveTranscript(transcript.trim());
+        };
+        recognition.onerror = () => setLiveTranscript(prev => prev);
+        recognition.onend = () => {
+          if (isRecording) {
+            try { recognition.start(); } catch { /* browser already stopped */ }
+          }
+        };
+        speechRecognitionRef.current = recognition;
+        try { recognition.start(); } catch { /* recognition may already be active */ }
+      }
+
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           audioChunksRef.current.push(event.data);
@@ -279,6 +306,8 @@ export const ReportPage: React.FC = () => {
         const url = URL.createObjectURL(blob);
         setAudioUrl(url);
         stream.getTracks().forEach(track => track.stop());
+        speechRecognitionRef.current?.stop();
+        speechRecognitionRef.current = null;
 
         await handleTranscribe(blob, recordingDuration);
       };
@@ -286,6 +315,8 @@ export const ReportPage: React.FC = () => {
       mediaRecorder.start();
       setIsRecording(true);
       setRecordingDuration(0);
+      setLiveTranscript('');
+      setVoiceText('');
       timerIntervalRef.current = setInterval(() => {
         setRecordingDuration(prev => prev + 1);
       }, 1000);
@@ -299,6 +330,7 @@ export const ReportPage: React.FC = () => {
   const stopVoiceRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
+      speechRecognitionRef.current?.stop();
       setIsRecording(false);
       if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
       addToast('Recording Captured', 'Processing audio stream...', 'info');
@@ -315,11 +347,11 @@ export const ReportPage: React.FC = () => {
       applyInterpretedData(result.text);
       addToast('Transcript Ready', `Confidence: ${(result.confidence * 100).toFixed(0)}%`, 'success');
     } catch (err: unknown) {
-      console.warn('[Report] Audio transcription failed, using verified sample:', err);
-      const fallback = DEMO_VOICE_SAMPLES[0].transcript;
+      console.warn('[Report] Audio transcription failed:', err);
+      const fallback = liveTranscript.trim() || 'Audio was recorded, but a transcript could not be resolved.';
       setVoiceText(fallback);
       applyInterpretedData(fallback);
-      addToast('Demo Fallback Used', 'Applied verified audio transcription', 'info');
+      addToast('Transcript unavailable', liveTranscript ? 'Using the live browser transcript.' : 'The recording is saved; please type the complaint below.', 'warning');
     } finally {
       setIsTranscribing(false);
     }
@@ -1070,6 +1102,15 @@ export const ReportPage: React.FC = () => {
                         <audio controls src={audioUrl} className="w-full h-8" />
                       </div>
                     )}
+
+                    <div className="max-w-sm mx-auto text-left bg-white border-2 border-[#121210] p-3 min-h-16" aria-live="polite">
+                      <div className="text-[10px] font-mono font-black uppercase text-[#4A4A46] mb-1">
+                        {isRecording ? 'Live speech transcript' : 'Speech transcript'}
+                      </div>
+                      <div className="text-xs text-[#121210] leading-relaxed">
+                        {liveTranscript || voiceText || (isRecording ? 'Start speaking…' : 'Your spoken complaint will appear here after recording.')}
+                      </div>
+                    </div>
                   </div>
 
                   {/* 1-Click Benchmark Voice Clips */}
