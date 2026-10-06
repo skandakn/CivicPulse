@@ -12,7 +12,14 @@ import {
   Cpu,
   Layers,
   MapPin,
-  ChevronDown
+  ChevronDown,
+  Video,
+  Camera,
+  Radio,
+  Maximize2,
+  Minimize2,
+  AlertTriangle,
+  Eye
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
@@ -30,7 +37,77 @@ interface SceneWaypoint {
   }[];
   cam: { x: number; y: number; z: number };
   color: string;
+  defaultCctvId?: string;
 }
+
+interface CCTVCameraFeed {
+  id: string;
+  name: string;
+  location: string;
+  ward: string;
+  coordinates: string;
+  imageUrl: string;
+  hazardId: string;
+  hazardDepth: string;
+  severity: 'CRITICAL' | 'HIGH' | 'MEDIUM';
+  fps: number;
+  zoom: string;
+}
+
+const CCTV_FEEDS: CCTVCameraFeed[] = [
+  {
+    id: 'CAM-BLR-ORR-04',
+    name: 'ORR EcoSpace Flyover Descent',
+    location: 'Outer Ring Road, Bellandur',
+    ward: 'Ward 150 (Mahadevapura)',
+    coordinates: '12.9279° N, 77.6828° E',
+    imageUrl: '/sample_data/images/bellandur_outer_ring_road_severe.jpg',
+    hazardId: 'BNG-PTH-1042',
+    hazardDepth: '18.0 cm Cavity',
+    severity: 'CRITICAL',
+    fps: 30,
+    zoom: '2.4x OPTICAL'
+  },
+  {
+    id: 'CAM-BLR-IND-12',
+    name: '100ft Road Corridor Signal',
+    location: '100ft Road, Indiranagar',
+    ward: 'Ward 82 (East)',
+    coordinates: '12.9719° N, 77.6412° E',
+    imageUrl: '/sample_data/images/indiranagar_100ft_road_cluster.jpg',
+    hazardId: 'BNG-PTH-1088',
+    hazardDepth: '14.2 cm Cluster',
+    severity: 'HIGH',
+    fps: 30,
+    zoom: '1.8x OPTICAL'
+  },
+  {
+    id: 'CAM-BLR-KOR-08',
+    name: 'Sony World Signal Junction',
+    location: '80ft Road, Koramangala 4th Block',
+    ward: 'Ward 151 (South)',
+    coordinates: '12.9352° N, 77.6245° E',
+    imageUrl: '/sample_data/images/koramangala_80ft_road_moderate.jpg',
+    hazardId: 'BNG-PTH-1031',
+    hazardDepth: '9.5 cm Depression',
+    severity: 'MEDIUM',
+    fps: 25,
+    zoom: '3.1x OPTICAL'
+  },
+  {
+    id: 'CAM-BLR-WTF-02',
+    name: 'ITPL Main Road Metro Pier #42',
+    location: 'Near Hope Farm, Whitefield',
+    ward: 'Ward 84 (Mahadevapura)',
+    coordinates: '12.9854° N, 77.7312° E',
+    imageUrl: '/sample_data/images/whitefield_itpl_critical.jpg',
+    hazardId: 'BNG-PTH-1099',
+    hazardDepth: '16.5 cm Crater',
+    severity: 'CRITICAL',
+    fps: 30,
+    zoom: '2.0x OPTICAL'
+  }
+];
 
 const WAYPOINTS: SceneWaypoint[] = [
   {
@@ -47,7 +124,8 @@ const WAYPOINTS: SceneWaypoint[] = [
       { label: 'SURFACE ANOMALIES', value: '3,412 DETECTED' },
     ],
     cam: { x: 0, y: 120, z: 280 },
-    color: '#2E8C42'
+    color: '#2E8C42',
+    defaultCctvId: 'CAM-BLR-ORR-04'
   },
   {
     id: 'descent',
@@ -63,7 +141,8 @@ const WAYPOINTS: SceneWaypoint[] = [
       { label: 'FATALITY RISK', value: 'ELEVATED (LEVEL 4)' },
     ],
     cam: { x: 25, y: 35, z: 110 },
-    color: '#E8A030'
+    color: '#E8A030',
+    defaultCctvId: 'CAM-BLR-ORR-04'
   },
   {
     id: 'fracture',
@@ -79,7 +158,8 @@ const WAYPOINTS: SceneWaypoint[] = [
       { label: 'SEVERITY TIER', value: 'CRITICAL (SCORE 94/100)' },
     ],
     cam: { x: 0, y: 4, z: 22 },
-    color: '#C03A3A'
+    color: '#C03A3A',
+    defaultCctvId: 'CAM-BLR-ORR-04'
   },
   {
     id: 'procurement',
@@ -95,7 +175,8 @@ const WAYPOINTS: SceneWaypoint[] = [
       { label: 'TAXPAYER LIABILITY', value: '₹0.00 (CONTRACTOR COST)' },
     ],
     cam: { x: -35, y: 22, z: 75 },
-    color: '#E8A030'
+    color: '#E8A030',
+    defaultCctvId: 'CAM-BLR-IND-12'
   },
   {
     id: 'verification',
@@ -111,7 +192,8 @@ const WAYPOINTS: SceneWaypoint[] = [
       { label: 'AI CERTIFICATE', value: 'AUDIT HASH: #CP-88421' },
     ],
     cam: { x: 5, y: 12, z: 38 },
-    color: '#2E8C42'
+    color: '#2E8C42',
+    defaultCctvId: 'CAM-BLR-KOR-08'
   },
   {
     id: 'victory',
@@ -127,7 +209,8 @@ const WAYPOINTS: SceneWaypoint[] = [
       { label: 'PLATFORM STATUS', value: 'MUNICIPAL LEDGER READY' },
     ],
     cam: { x: 0, y: 80, z: 200 },
-    color: '#2E8C42'
+    color: '#2E8C42',
+    defaultCctvId: 'CAM-BLR-WTF-02'
   }
 ];
 
@@ -141,8 +224,17 @@ export const ScrollWorldPage: React.FC = () => {
   const [isAudioMuted, setIsAudioMuted] = useState(true);
   const [activeWaypointIndex, setActiveWaypointIndex] = useState(0);
 
+  // CCTV Surveillance Feed State
+  const [activeCctvId, setActiveCctvId] = useState<string>('CAM-BLR-ORR-04');
+  const [isCctvExpanded, setIsCctvExpanded] = useState<boolean>(false);
+  const [timeStr, setTimeStr] = useState<string>('');
+
   // Web Audio Context for spatial drone hum
   const audioContextRef = useRef<AudioContext | null>(null);
+
+  const activeCctvFeed = useMemo(() => {
+    return CCTV_FEEDS.find((c) => c.id === activeCctvId) || CCTV_FEEDS[0];
+  }, [activeCctvId]);
 
   // Active Waypoint calculation
   const currentWaypoint = useMemo(() => {
@@ -155,7 +247,24 @@ export const ScrollWorldPage: React.FC = () => {
     const rawIndex = scrollProgress * (WAYPOINTS.length - 1);
     const index = Math.min(Math.floor(rawIndex), WAYPOINTS.length - 1);
     setActiveWaypointIndex(index);
+    if (WAYPOINTS[index]?.defaultCctvId) {
+      setActiveCctvId(WAYPOINTS[index].defaultCctvId);
+    }
   }, [scrollProgress]);
+
+  // Live CCTV Timestamp clock with running milliseconds
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const pad = (n: number, z = 2) => String(n).padStart(z, '0');
+      const d = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+      const t = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}.${pad(now.getMilliseconds(), 3)}`;
+      setTimeStr(`${d} ${t} IST`);
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 45);
+    return () => clearInterval(interval);
+  }, []);
 
   // Audio Synth Toggle
   const toggleAudio = () => {
@@ -238,14 +347,13 @@ export const ScrollWorldPage: React.FC = () => {
     let animId: number;
     let tick = 0;
 
-    // Camera Interpolation helper
     const getCamera = (progress: number) => {
       const total = WAYPOINTS.length - 1;
       const raw = progress * total;
       const i0 = Math.min(Math.floor(raw), total - 1);
       const i1 = Math.min(i0 + 1, total);
       const t = raw - i0;
-      const s = t * t * (3 - 2 * t); // smoothstep
+      const s = t * t * (3 - 2 * t);
 
       const c0 = WAYPOINTS[i0].cam;
       const c1 = WAYPOINTS[i1].cam;
@@ -263,18 +371,16 @@ export const ScrollWorldPage: React.FC = () => {
       const height = canvas.height;
       const fov = 420;
 
-      // Clear with deep futuristic cyber-black
       ctx.fillStyle = '#0a100d';
       ctx.fillRect(0, 0, width, height);
 
       const cam = getCamera(scrollProgress);
 
-      // 3D Point Projection Helper
       const project = (px: number, py: number, pz: number) => {
         const dx = px - cam.x;
         const dy = py - cam.y;
         const dz = pz - cam.z;
-        if (dz <= 2) return null; // Behind near clipping plane
+        if (dz <= 2) return null;
         const scale = fov / dz;
         return {
           x: width / 2 + dx * scale,
@@ -284,7 +390,7 @@ export const ScrollWorldPage: React.FC = () => {
         };
       };
 
-      // 1. Draw 3D Ground Cyber Grid (Bengaluru Road Network)
+      // 1. Draw 3D Ground Cyber Grid
       ctx.lineWidth = 1;
       const gridSpacing = 16;
       const gridRange = 160;
@@ -315,7 +421,7 @@ export const ScrollWorldPage: React.FC = () => {
         }
       }
 
-      // 2. Draw 3D Outer Ring Road Corridor (Asphalt Highway Ribbon)
+      // 2. Draw 3D Outer Ring Road Corridor
       const roadW = 14;
       for (let zSeg = -120; zSeg <= 120; zSeg += 15) {
         const left = project(-roadW / 2 + 5, 0.2, zSeg);
@@ -336,7 +442,7 @@ export const ScrollWorldPage: React.FC = () => {
           ctx.strokeStyle = 'rgba(232, 160, 48, 0.4)';
           ctx.stroke();
 
-          // Animated white dashed center line
+          // Animated center line
           const c1 = project(5, 0.3, zSeg + ((tick * 15) % 15));
           const c2 = project(5, 0.3, zSeg + 6 + ((tick * 15) % 15));
           if (c1 && c2) {
@@ -374,7 +480,6 @@ export const ScrollWorldPage: React.FC = () => {
           ctx.fill();
           ctx.stroke();
 
-          // Neon roof antenna/light
           ctx.fillStyle = '#00f0ff';
           ctx.beginPath();
           ctx.arc(top.x, top.y, Math.max(2, top.scale * 0.4), 0, Math.PI * 2);
@@ -385,7 +490,6 @@ export const ScrollWorldPage: React.FC = () => {
       // 4. Focus: The BNG-PTH-1042 Crater & Laser Depth Scanner (x=5, z=20)
       const craterCenter = project(5, 0, 20);
       if (craterCenter) {
-        // Deep crater cavity
         const craterR = 3.5 * craterCenter.scale;
         ctx.fillStyle = '#050706';
         ctx.strokeStyle = '#c03a3a';
@@ -395,7 +499,6 @@ export const ScrollWorldPage: React.FC = () => {
         ctx.fill();
         ctx.stroke();
 
-        // Rotating Cyan Laser Scanner Ring
         const laserR = craterR * (1.2 + Math.sin(tick * 4) * 0.15);
         ctx.strokeStyle = '#00f0ff';
         ctx.lineWidth = 1.5;
@@ -403,14 +506,12 @@ export const ScrollWorldPage: React.FC = () => {
         ctx.arc(craterCenter.x, craterCenter.y, laserR, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Laser crosshair ticks
         const angle = tick * 2;
         ctx.beginPath();
         ctx.moveTo(craterCenter.x + Math.cos(angle) * (laserR + 8), craterCenter.y + Math.sin(angle) * (laserR + 8));
         ctx.lineTo(craterCenter.x - Math.cos(angle) * (laserR + 8), craterCenter.y - Math.sin(angle) * (laserR + 8));
         ctx.stroke();
 
-        // 15m Duplicate Clustering Pulse Rings (Amber Waves)
         for (let ring = 1; ring <= 3; ring++) {
           const ringProgress = (tick * 0.6 + ring * 0.33) % 1;
           const currentR = craterR * (1.5 + ringProgress * 4.5);
@@ -421,16 +522,15 @@ export const ScrollWorldPage: React.FC = () => {
           ctx.stroke();
         }
 
-        // Floating Micro-Scan Depth Callout Label
         ctx.font = 'bold 11px monospace';
         ctx.fillStyle = '#c03a3a';
         ctx.fillText('▼ BNG-PTH-1042 (-18.0cm)', craterCenter.x + laserR + 10, craterCenter.y - 12);
         ctx.fillStyle = '#ffffff';
         ctx.font = '9px monospace';
-        ctx.fillText('CRATER VOL: 1.45m² • RISK: 94/100', craterCenter.x + laserR + 10, craterCenter.y + 4);
+        ctx.fillText('CCTV DETECT: CAM-BLR-ORR-04 • SCORE 94', craterCenter.x + laserR + 10, craterCenter.y + 4);
       }
 
-      // 5. Waypoint 4: Floating KPPP Tender Hologram Data Plane
+      // 5. Floating KPPP Tender Data Plane
       if (scrollProgress >= 0.45 && scrollProgress <= 0.75) {
         const docPos = project(-15, 14, 55);
         if (docPos) {
@@ -467,7 +567,6 @@ export const ScrollWorldPage: React.FC = () => {
 
     render();
 
-    // Auto resize canvas
     const handleResize = () => {
       if (!canvas || !canvas.parentElement) return;
       canvas.width = canvas.parentElement.clientWidth;
@@ -501,11 +600,11 @@ export const ScrollWorldPage: React.FC = () => {
         </div>
         <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-black/60 backdrop-blur-md border border-white/20 text-[10px] text-emerald-400 font-bold">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-          <span>REALTIME 3D FLYTHROUGH ENGINE</span>
+          <span>GOD'S EYE CCTV RADAR SYNCHRONIZED</span>
         </div>
       </div>
 
-      {/* 3. Top Right Controls */}
+      {/* 3. Top Right Global Flight Controls */}
       <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
         <button
           onClick={toggleAudio}
@@ -540,9 +639,8 @@ export const ScrollWorldPage: React.FC = () => {
       </div>
 
       {/* 4. Left Side: Active Scene Story Dossier (Neo-Brutalist HUD Card) */}
-      <div className="absolute left-4 top-20 bottom-24 z-10 w-[340px] sm:w-[410px] flex flex-col justify-center pointer-events-none">
-        <div className="pointer-events-auto brut bg-[#121210]/90 backdrop-blur-md border-[3px] border-[#CFE8D6] p-5 text-left text-white shadow-[6px_6px_0_0_#2E8C42] space-y-4 animate-in fade-in slide-in-from-left duration-300">
-          {/* Header pill */}
+      <div className="absolute left-4 top-20 bottom-24 z-10 w-[330px] sm:w-[390px] flex flex-col justify-center pointer-events-none">
+        <div className="pointer-events-auto brut bg-[#121210]/92 backdrop-blur-md border-[3px] border-[#CFE8D6] p-4 sm:p-5 text-left text-white shadow-[6px_6px_0_0_#2E8C42] space-y-3.5 animate-in fade-in slide-in-from-left duration-300">
           <div className="flex items-center justify-between border-b border-white/20 pb-2">
             <span className="text-xs font-black tracking-widest text-[#E8A030]">
               {currentWaypoint.chapter}
@@ -552,9 +650,8 @@ export const ScrollWorldPage: React.FC = () => {
             </span>
           </div>
 
-          {/* Title */}
           <div>
-            <h2 className="text-lg sm:text-xl font-display font-extrabold text-white leading-tight tracking-tight">
+            <h2 className="text-base sm:text-lg font-display font-extrabold text-white leading-tight tracking-tight">
               {currentWaypoint.title}
             </h2>
             <div className="text-[10px] font-bold text-[#CFE8D6] mt-0.5">
@@ -562,12 +659,10 @@ export const ScrollWorldPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Narrative copy */}
           <p className="text-xs text-slate-300 leading-relaxed font-body">
             {currentWaypoint.copy}
           </p>
 
-          {/* Real-time Telemetry Grid */}
           <div className="grid grid-cols-2 gap-2 pt-1 border-t border-white/10">
             {currentWaypoint.telemetry.map((t, idx) => (
               <div
@@ -586,48 +681,143 @@ export const ScrollWorldPage: React.FC = () => {
             ))}
           </div>
 
-          {/* Context Action Button */}
           <div className="pt-2 flex items-center gap-2">
             <button
               onClick={() => {
-                selectIncidentById('BNG-PTH-1042');
+                selectIncidentById(activeCctvFeed.hazardId);
                 setCurrentView('INCIDENT_DETAIL');
               }}
               className="flex-1 py-2 px-3 brut-sm bg-[#2E8C42] hover:bg-[#257336] text-white text-xs font-extrabold flex items-center justify-center gap-2 cursor-pointer transition-colors"
             >
-              <span>INSPECT INCIDENT</span>
+              <span>INSPECT DOSSIER</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
 
             <button
-              onClick={() => setCurrentView('PRIORITY_QUEUE')}
+              onClick={() => setCurrentView('GODS_EYE')}
               className="py-2 px-3 brut-sm bg-white hover:bg-slate-200 text-[#121210] text-xs font-bold cursor-pointer"
             >
-              OPS QUEUE
+              RADAR MAP
             </button>
           </div>
         </div>
       </div>
 
-      {/* 5. Right Side: Interactive HUD Crosshairs */}
-      <div className="hidden lg:flex absolute right-6 top-24 bottom-28 w-60 z-10 flex-col justify-between pointer-events-none text-right">
-        <div className="p-3 bg-black/60 border border-white/15 text-[10px] text-slate-400 space-y-1 backdrop-blur-sm">
-          <div className="text-emerald-400 font-bold flex items-center justify-end gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            <span>GEO-RADAR SYNCHRONIZED</span>
-          </div>
-          <div>BEARING: 042° NNE</div>
-          <div>INSPECTION SPEED: 1.4 MACH</div>
-          <div>ENGINE: PURE CANVAS 3D</div>
-        </div>
+      {/* 5. Right Side: LIVE CCTV SURVEILLANCE FEED TERMINAL (God's Eye Ingest) */}
+      <div
+        className={`absolute right-4 top-20 z-20 transition-all duration-300 ${
+          isCctvExpanded
+            ? 'w-[420px] sm:w-[500px] max-w-[calc(100vw-32px)]'
+            : 'w-[290px] sm:w-[340px]'
+        }`}
+      >
+        <div className="brut bg-[#121210]/95 backdrop-blur-md border-[2.5px] border-[#E8A030] text-left text-white shadow-[4px_4px_0_0_#121210] overflow-hidden">
+          {/* CCTV Monitor Topbar */}
+          <div className="bg-[#1a1c1a] border-b border-white/20 p-2.5 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping" />
+              <div className="flex items-center gap-1.5 font-bold text-[11px] text-red-400">
+                <Video className="w-3.5 h-3.5" />
+                <span>REC // LIVE CCTV STREAM</span>
+              </div>
+            </div>
 
-        <div className="space-y-1.5 p-3 bg-[#E8A030]/10 border border-[#E8A030]/40 text-[#E8A030] text-[11px] font-bold">
-          <div className="flex items-center justify-end gap-1.5">
-            <ChevronDown className="w-4 h-4 animate-bounce" />
-            <span>SCROLL OR SCRUB TIMELINE</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[9px] font-mono text-[#E8A030] px-1.5 py-0.5 bg-black border border-[#E8A030]/40">
+                {activeCctvFeed.fps} FPS
+              </span>
+              <button
+                onClick={() => setIsCctvExpanded(!isCctvExpanded)}
+                className="p-1 text-slate-300 hover:text-white cursor-pointer"
+                title={isCctvExpanded ? 'Minimize CCTV' : 'Expand CCTV'}
+              >
+                {isCctvExpanded ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+              </button>
+            </div>
           </div>
-          <div className="text-[9px] text-slate-400 font-normal">
-            Turn wheel to fly freely across Bengaluru coordinates
+
+          {/* Actual CCTV Video Stream Frame */}
+          <div className="relative aspect-video bg-black overflow-hidden border-b border-white/10 group">
+            <img
+              src={activeCctvFeed.imageUrl}
+              alt={activeCctvFeed.name}
+              className="w-full h-full object-cover filter contrast-110 brightness-95"
+              onError={(e) => {
+                // Fallback to high-contrast canvas pattern if local file proxy delayed
+                (e.target as HTMLElement).style.display = 'none';
+              }}
+            />
+
+            {/* Scanlines Effect Overlay */}
+            <div
+              className="absolute inset-0 pointer-events-none opacity-20"
+              style={{
+                backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, #000 3px, #000 4px)',
+                backgroundSize: '100% 4px'
+              }}
+            />
+
+            {/* CCTV Timestamp & Telemetry HUD Overlay */}
+            <div className="absolute top-2 left-2 text-[10px] font-mono text-emerald-400 drop-shadow-md flex flex-col gap-0.5 pointer-events-none bg-black/60 px-1.5 py-1 border border-white/20">
+              <div className="font-bold flex items-center gap-1">
+                <Camera className="w-3 h-3 text-red-500" />
+                <span>{activeCctvFeed.id}</span>
+              </div>
+              <div className="text-[9px] text-white/80">{timeStr}</div>
+              <div className="text-[8px] text-slate-300">{activeCctvFeed.coordinates}</div>
+            </div>
+
+            {/* Optical Zoom & Signal HUD */}
+            <div className="absolute top-2 right-2 text-right pointer-events-none">
+              <div className="bg-black/60 px-1.5 py-0.5 border border-white/20 text-[9px] text-[#E8A030] font-bold">
+                {activeCctvFeed.zoom}
+              </div>
+            </div>
+
+            {/* AI Real-time Bounding Box Crosshair on Pothole */}
+            <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+              <div className="relative w-32 h-20 border-2 border-red-500 shadow-[0_0_12px_rgba(239,68,68,0.6)] animate-pulse">
+                <div className="absolute -top-4 left-0 bg-red-600 text-white text-[8px] font-bold px-1 py-0.2">
+                  HAZARD: {activeCctvFeed.hazardId}
+                </div>
+                <div className="absolute -bottom-4 right-0 bg-black/80 text-yellow-300 text-[8px] font-bold px-1 border border-yellow-500/50">
+                  DEPTH: {activeCctvFeed.hazardDepth}
+                </div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-2 h-2 rounded-full bg-red-500" />
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Feed Label */}
+            <div className="absolute bottom-1 left-2 right-2 flex items-center justify-between text-[9px] font-mono bg-black/70 px-2 py-1 text-slate-200 pointer-events-none">
+              <span className="truncate">{activeCctvFeed.name}</span>
+              <span className="text-[#E8A030] font-bold shrink-0">{activeCctvFeed.ward}</span>
+            </div>
+          </div>
+
+          {/* CCTV Camera Channel Switcher Buttons */}
+          <div className="p-2 bg-[#121210] flex items-center justify-between gap-1.5 overflow-x-auto">
+            <span className="text-[9px] text-slate-400 font-bold shrink-0">CHANNEL:</span>
+            <div className="flex items-center gap-1 w-full">
+              {CCTV_FEEDS.map((feed, idx) => {
+                const isSelected = activeCctvId === feed.id;
+                return (
+                  <button
+                    key={feed.id}
+                    onClick={() => setActiveCctvId(feed.id)}
+                    className={`flex-1 py-1 px-1.5 text-[9px] font-bold border transition-colors cursor-pointer text-center truncate ${
+                      isSelected
+                        ? 'bg-[#E8A030] text-[#121210] border-[#121210]'
+                        : 'bg-white/10 hover:bg-white/20 text-slate-300 border-white/20'
+                    }`}
+                    title={`${feed.id} — ${feed.name}`}
+                  >
+                    CAM {idx + 1}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
@@ -677,7 +867,7 @@ export const ScrollWorldPage: React.FC = () => {
             onClick={() => setCurrentView('GODS_EYE')}
             className="hidden md:flex items-center gap-1.5 px-3 py-1 bg-[#2E8C42] hover:bg-[#257336] text-white text-[10px] font-extrabold border border-white cursor-pointer"
           >
-            <span>GOD'S EYE 2D MAP</span>
+            <span>GOD'S EYE RADAR</span>
             <ArrowRight className="w-3 h-3" />
           </button>
         </div>
