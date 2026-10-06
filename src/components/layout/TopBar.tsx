@@ -107,7 +107,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   return (
     <header
-      className={`fixed top-0 right-0 z-30 h-18 bg-[#CFE8D6] border-b-[3px] border-[#121210] transition-all duration-200 flex items-center justify-between px-4 lg:px-6
+      className={`fixed top-0 right-0 z-30 h-[74px] bg-[#CFE8D6] border-b-[3px] border-[#121210] transition-all duration-200 flex items-center justify-between px-4 lg:px-6
         ${isSidebarCollapsed ? 'left-0 lg:left-20' : 'left-0 lg:left-64'}
       `}
     >
@@ -121,20 +121,20 @@ export const TopBar: React.FC<TopBarProps> = ({
           <Menu className="w-5 h-5" />
         </button>
 
-        <div>
-          <div className="flex items-center gap-2.5 flex-wrap">
-            <h1 className="font-display font-extrabold text-xl sm:text-2xl lg:text-3xl text-[#121210] tracking-tight leading-none">
+        <div className="flex flex-col justify-center">
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            <h1 className="font-display font-black text-xl sm:text-2xl text-[#121210] tracking-tight leading-none whitespace-nowrap">
               Approver Inbox
             </h1>
-            <span className="tag bg-[#FFFFFF] text-[#121210]">
+            <span className="tag bg-[#FFFFFF] text-[#121210] text-[10px] sm:text-[11px] font-bold px-2 py-0.5 whitespace-nowrap">
               {pendingCount || 12} PENDING
             </span>
-            <span className="tag bg-[#C03A3A] text-[#FFFFFF] border-[#121210]">
+            <span className="tag bg-[#C03A3A] text-[#FFFFFF] border-[#121210] text-[10px] sm:text-[11px] font-bold px-2 py-0.5 whitespace-nowrap">
               {criticalCount || 3} PAST SLA
             </span>
           </div>
-          <div className="text-[11px] font-mono text-[#121210]/70 mt-1 font-bold tracking-wider hidden sm:block">
-            {currentTimeStr || 'MON · 06 OCT 2026 · 08:30:15 IST'}
+          <div className="text-[10px] font-mono text-[#121210]/60 mt-1 font-bold tracking-wider hidden sm:block leading-none">
+            {currentTimeStr || 'TUE · 06 OCT 2026 · 09:03:04 IST'}
           </div>
         </div>
       </div>
@@ -191,14 +191,14 @@ export const TopBar: React.FC<TopBarProps> = ({
           <span>DEMO</span>
         </button>
 
-        {/* Approva + NEW REQUEST button */}
+        {/* Approva NEW REQUEST button without duplicate plus */}
         <button
           onClick={() => setCurrentView('REPORT')}
           className="brut bg-[#121210] text-[#FFFFFF] px-3.5 py-1.5 font-display font-extrabold text-xs sm:text-sm btn-press cursor-pointer flex items-center gap-1.5 shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[3]" />
-          <span className="hidden sm:inline">+ NEW REQUEST</span>
-          <span className="sm:hidden">+ NEW</span>
+          <span className="hidden sm:inline">NEW REQUEST</span>
+          <span className="sm:hidden">NEW</span>
         </button>
 
         {/* Notifications */}

@@ -67,7 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         `}
       >
         {/* Brand Stamp Header */}
-        <div className="h-18 flex items-center justify-between px-4 border-b-[3px] border-[#121210] bg-[#CFE8D6]">
+        <div className="h-[74px] flex items-center justify-between px-4 border-b-[3px] border-[#121210] bg-[#CFE8D6]">
           <div
             onClick={() => {
               setCurrentView('PRIORITY_QUEUE');
