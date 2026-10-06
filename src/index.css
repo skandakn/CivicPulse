@@ -3,272 +3,341 @@
 
 @layer base {
   :root {
-    --canvas-bg: #CFE8D6;
-    --ink-black: #121210;
-    --card-bg: #FFFFFF;
-    --accent-green: #2E8C42;
-    --accent-amber: #E8A030;
-    --accent-red: #C03A3A;
-    --accent-mint: #CFE8D6;
-    --border-dark: #121210;
+    /* Steep Color Tokens */
+    --color-ink-black: #17191c;
+    --color-paper-white: #ffffff;
+    --color-mist-gray: #f2f2f3;
+    --color-fog-white: #fafafb;
+    --color-slate-gray: #777b86;
+    --color-ash-gray: #979799;
+    --color-smoke-gray: #a3a6af;
+    --color-blush-peach: #fbe1d1;
+    --color-sienna-brown: #5d2a1a;
+
+    /* Legacy mapping tokens */
+    --canvas-bg: #ffffff;
+    --ink-black: #17191c;
+    --card-bg: #ffffff;
+    --accent-green: #2e7d32;
+    --accent-amber: #5d2a1a;
+    --accent-red: #c03a3a;
+    --accent-mint: #f2f2f3;
+    --border-dark: #17191c;
+
+    /* Typography */
+    --font-signifier: 'Newsreader', 'Signifier', Georgia, 'Times New Roman', serif;
+    --font-sohne: 'Inter', 'Sohne', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* Shadows */
+    --shadow-subtle: oklab(0 0 0 / 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.08) 0px 4px 24px 0px;
+    --shadow-subtle-2: oklab(0 0 0 / 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 8px 40px 0px;
+    --shadow-subtle-3: rgba(4, 23, 43, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.08) 0px 20px 25px -5px, rgba(0, 0, 0, 0.06) 0px 8px 10px -6px;
+
+    /* Radii */
+    --radius-cards: 24px;
+    --radius-images: 12px;
+    --radius-inputs: 16px;
+    --radius-buttons: 9999px;
+    --radius-smallcards: 16px;
+    --radius-elevatedcards: 20px;
   }
 
   body {
-    background-color: #CFE8D6;
-    color: #121210;
-    font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #ffffff;
+    color: #17191c;
+    font-family: var(--font-sohne);
     overflow-x: hidden;
     margin: 0;
     padding: 0;
+    -webkit-font-smoothing: antialiased;
   }
 }
 
-/* Typography tokens from Approva */
-.font-display {
-  font-family: 'Archivo', -apple-system, BlinkMacSystemFont, sans-serif;
-  letter-spacing: -0.01em;
+@theme {
+  --color-ink-black: #17191c;
+  --color-paper-white: #ffffff;
+  --color-mist-gray: #f2f2f3;
+  --color-fog-white: #fafafb;
+  --color-slate-gray: #777b86;
+  --color-ash-gray: #979799;
+  --color-smoke-gray: #a3a6af;
+  --color-blush-peach: #fbe1d1;
+  --color-sienna-brown: #5d2a1a;
+
+  --font-signifier: 'Newsreader', 'Signifier', Georgia, serif;
+  --font-display: 'Newsreader', 'Signifier', Georgia, serif;
+  --font-sohne: 'Inter', 'Sohne', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-body: 'Inter', 'Sohne', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
-.font-body {
-  font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+/* Typography styles matching Steep */
+.font-display, .font-serif, .font-signifier {
+  font-family: 'Newsreader', 'Signifier', Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+
+.font-body, .font-sans, .font-sohne {
+  font-family: 'Inter', 'Sohne', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .font-mono {
-  font-family: 'Space Mono', 'JetBrains Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-variant-numeric: tabular-nums;
 }
 
-/* Brutalist borders and hard drop shadows */
+/* Steep Signature Cards */
+.steep-card {
+  background: #f2f2f3;
+  border-radius: 24px;
+  border: none;
+  box-shadow: none;
+}
+
+.steep-card-white {
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid rgba(4, 23, 43, 0.06);
+  box-shadow: none;
+}
+
+.steep-artifact {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: var(--shadow-subtle-3);
+  border: 1px solid rgba(4, 23, 43, 0.05);
+}
+
+.steep-peach-card {
+  background: #fbe1d1;
+  color: #5d2a1a;
+  border-radius: 24px;
+  border: none;
+  box-shadow: none;
+}
+
+/* Pill Buttons */
+.pill-btn-filled {
+  background: #17191c;
+  color: #ffffff;
+  border-radius: 9999px;
+  padding: 8px 22px;
+  font-size: 15px;
+  font-weight: 450;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.pill-btn-filled:hover {
+  background: #2b2e34;
+}
+
+.pill-btn-ghost {
+  background: transparent;
+  color: #17191c;
+  border: 1px solid #17191c;
+  border-radius: 9999px;
+  padding: 8px 22px;
+  font-size: 15px;
+  font-weight: 450;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.pill-btn-ghost:hover {
+  background: #f2f2f3;
+}
+
+.pill-btn-peach {
+  background: #fbe1d1;
+  color: #5d2a1a;
+  border-radius: 9999px;
+  padding: 6px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Graceful adapter for existing class names */
 .brut {
-  border: 3px solid #121210;
-  box-shadow: 4px 4px 0 #121210;
+  border: 1px solid rgba(4, 23, 43, 0.07);
+  box-shadow: var(--shadow-subtle-3);
+  border-radius: 20px;
+  background: #ffffff;
 }
 
 .brut-lg {
-  border: 3px solid #121210;
-  box-shadow: 6px 6px 0 #121210;
+  border: 1px solid rgba(4, 23, 43, 0.08);
+  box-shadow: var(--shadow-subtle-2);
+  border-radius: 24px;
+  background: #ffffff;
 }
 
 .brut-sm {
-  border: 2px solid #121210;
-  box-shadow: 3px 3px 0 #121210;
+  border: 1px solid rgba(4, 23, 43, 0.08);
+  box-shadow: none;
+  border-radius: 9999px;
+  background: #f2f2f3;
 }
 
 .brut-card {
-  border: 3px solid #121210;
-  box-shadow: 4px 4px 0 #121210;
-  background: #FFFFFF;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border: 1px solid rgba(4, 23, 43, 0.06);
+  box-shadow: var(--shadow-subtle-3);
+  border-radius: 20px;
+  background: #ffffff;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .brut-card:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 7px 7px 0 #121210;
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1px rgba(4, 23, 43, 0.08), 0 24px 30px -5px rgba(0, 0, 0, 0.1), 0 12px 14px -6px rgba(0, 0, 0, 0.08);
 }
 
 .btn-press {
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  transition: transform 0.12s ease, opacity 0.12s ease;
 }
 
 .btn-press:active {
-  transform: translate(3px, 3px);
-  box-shadow: 0 0 0 #121210 !important;
+  transform: scale(0.98);
 }
 
-/* Background Patterns */
+/* Soft Canvas Background replacing brutalist grid */
 .grid-paper {
-  background-image: 
-    linear-gradient(rgba(18, 18, 16, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(18, 18, 16, 0.07) 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-color: #fafafb;
+  background-image: none;
 }
 
 .polka {
-  background-image: radial-gradient(circle, #121210 1.5px, transparent 1.5px);
-  background-size: 20px 20px;
+  background-color: #ffffff;
+  background-image: none;
 }
 
-.stripes-amber {
-  background-image: repeating-linear-gradient(
-    45deg,
-    #F4D89A,
-    #F4D89A 12px,
-    #E8A030 12px,
-    #E8A030 14px
-  );
-}
-
-.stripes-red {
-  background-image: repeating-linear-gradient(
-    45deg,
-    #FCA5A5,
-    #FCA5A5 12px,
-    #C03A3A 12px,
-    #C03A3A 14px
-  );
-}
-
-/* Approva Tags and Badges */
+/* Steep Tags and Badges */
 .tag {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 3px 8px;
-  border: 2px solid #121210;
-  font-weight: 700;
-  font-size: 11px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  gap: 6px;
+  padding: 4px 12px;
+  border: 1px solid rgba(4, 23, 43, 0.08);
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.01em;
 }
 
-/* Approva Stamped Badges */
+/* Stamp adapters into elegant seals */
 .stamp {
-  font-family: 'Archivo', sans-serif;
-  font-weight: 800;
-  border: 3px solid currentColor;
-  padding: 6px 14px;
-  letter-spacing: 0.12em;
-  display: inline-block;
-  border-radius: 2px;
-  position: relative;
-  text-transform: uppercase;
-}
-
-.stamp::before {
-  content: "";
-  position: absolute;
-  inset: 2px;
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
   border: 1px solid currentColor;
-  border-radius: 1px;
-  opacity: 0.6;
+  padding: 4px 12px;
+  display: inline-block;
+  border-radius: 9999px;
 }
 
-.stamp::after {
-  content: "";
-  position: absolute;
-  inset: -3px;
-  border: 1.5px dashed currentColor;
-  opacity: 0.35;
-}
-
-/* Interactive Watermark Big Stamp */
 .big-stamp {
-  font-family: 'Archivo', sans-serif;
-  font-weight: 900;
-  font-size: clamp(32px, 5vw, 56px);
-  letter-spacing: 0.15em;
-  border: 6px solid currentColor;
-  padding: 12px 28px;
-  border-radius: 4px;
-  opacity: 0.92;
+  font-family: 'Newsreader', Georgia, serif;
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(32px, 5vw, 52px);
+  border: 2px solid currentColor;
+  padding: 8px 24px;
+  border-radius: 16px;
+  opacity: 0.9;
   pointer-events: none;
-  text-transform: uppercase;
-  animation: stampImpact 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-  box-shadow: inset 0 0 0 2px currentColor;
+  animation: stampImpact 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes stampImpact {
   0% {
-    transform: scale(3) rotate(-18deg);
+    transform: scale(1.8) rotate(-8deg);
     opacity: 0;
   }
   100% {
-    transform: scale(1) rotate(-6deg);
-    opacity: 0.92;
+    transform: scale(1) rotate(-3deg);
+    opacity: 0.9;
   }
 }
 
-/* Approva Chunky Action Buttons */
 .stamp-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 16px 12px;
-  border: 3px solid #121210;
-  box-shadow: 4px 4px 0 #121210;
+  padding: 12px 18px;
+  border-radius: 9999px;
+  border: 1px solid rgba(4, 23, 43, 0.1);
+  box-shadow: none;
   cursor: pointer;
-  font-family: 'Archivo', sans-serif;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  transition: all 0.15s ease;
 }
 
 .stamp-btn:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 6px 6px 0 #121210;
-}
-
-.stamp-btn:active {
-  transform: translate(3px, 3px);
-  box-shadow: 0 0 0 #121210 !important;
-}
-
-/* Approval Chain Pipeline Nodes */
-.chain-node {
-  width: 26px;
-  height: 26px;
-  border: 2px solid #121210;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 800;
-}
-
-.chain-line {
-  width: 14px;
-  height: 3px;
-  background: #121210;
+  background: #f2f2f3;
+  transform: translateY(-1px);
 }
 
 /* Tabs */
 .tab-active {
-  background: #121210;
-  color: #FFFFFF;
+  background: #17191c;
+  color: #ffffff;
 }
 
-/* Custom Scrollbar for Neo-Brutalist Theme */
+/* Editorial Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #CFE8D6;
-  border-left: 2px solid #121210;
+  background: #fafafb;
 }
 ::-webkit-scrollbar-thumb {
-  background: #121210;
-  border: 1px solid #CFE8D6;
+  background: #d6d7dc;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2E8C42;
+  background: #a3a6af;
 }
 
-/* Leaflet Map overrides for Brutalist aesthetics */
+/* Leaflet Map overrides for Steep */
 .leaflet-container {
-  background-color: #E2ECE5 !important;
-  font-family: 'Hanken Grotesk', sans-serif !important;
-  border: 3px solid #121210 !important;
+  background-color: #f2f2f3 !important;
+  font-family: 'Inter', sans-serif !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(4, 23, 43, 0.08) !important;
+  box-shadow: var(--shadow-subtle-3) !important;
 }
 
 .leaflet-popup-content-wrapper {
-  background: #FFFFFF !important;
-  color: #121210 !important;
-  border: 3px solid #121210 !important;
-  border-radius: 0px !important;
-  box-shadow: 4px 4px 0 #121210 !important;
+  background: #ffffff !important;
+  color: #17191c !important;
+  border: 1px solid rgba(4, 23, 43, 0.08) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--shadow-subtle-3) !important;
   padding: 0px !important;
 }
 
 .leaflet-popup-tip {
-  background: #121210 !important;
+  background: #ffffff !important;
 }
 
-/* Input focus style */
 input:focus, select:focus, textarea:focus, button:focus {
   outline: none;
 }

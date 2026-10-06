@@ -421,35 +421,35 @@ export const ReportPage: React.FC = () => {
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-16 text-left">
       {/* Approva-Style Header Bar */}
-      <div className="bg-white brut p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="rounded-[24px] bg-white border border-[#17191c]/8 p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)] flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="tag bg-[#CFE8D6] text-[#121210] font-mono font-bold flex items-center gap-1.5">
+            <span className="tag bg-[#f2f2f3] text-[#17191c] font-mono font-bold flex items-center gap-1.5">
               <Camera className="w-3.5 h-3.5" />
               INGESTION INBOX · MULTIMODAL
             </span>
             <span className="tag bg-white font-mono text-xs">
               IRC-SP-100 SPEC
             </span>
-            <span className="tag bg-[#E8A030] text-[#121210] font-mono text-xs font-bold">
+            <span className="tag bg-[#E8A030] text-[#17191c] font-mono text-xs font-bold">
               EDGE INFERENCE
             </span>
           </div>
-          <h1 className="font-display text-3xl font-black text-[#121210] tracking-tight">
+          <h1 className="font-serif text-3xl sm:text-4xl font-normal text-[#17191c] tracking-tight">
             Report Road Hazard &amp; Pothole
           </h1>
-          <p className="font-body text-sm text-[#4A4A46] mt-1 max-w-2xl">
+          <p className="font-body text-sm text-[#777b86] mt-1 max-w-2xl">
             Upload dashcam footage, record a voice grievance, or submit text. CivicPulse extracts crater geometry, verifies duplicate clusters, and dispatches to PWD contractors.
           </p>
         </div>
 
         {/* Step Indicator / Mode Switch */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center bg-[#CFE8D6]/30 p-1 border-2 border-[#121210] text-xs font-mono font-bold">
+          <div className="flex items-center bg-[#fafafb] p-1 border border-[#17191c]/15 text-xs font-mono font-bold">
             <button
               onClick={() => setDetectorMode('auto')}
               className={`px-3 py-1.5 uppercase transition-all cursor-pointer ${
-                detectorMode === 'auto' ? 'bg-[#121210] text-[#CFE8D6] brut-sm' : 'text-[#121210] hover:bg-white'
+                detectorMode === 'auto' ? 'bg-[#17191c] text-white rounded-full' : 'text-[#17191c] hover:bg-white'
               }`}
             >
               Auto
@@ -457,7 +457,7 @@ export const ReportPage: React.FC = () => {
             <button
               onClick={() => setDetectorMode('demo')}
               className={`px-3 py-1.5 uppercase transition-all cursor-pointer ${
-                detectorMode === 'demo' ? 'bg-[#121210] text-[#CFE8D6] brut-sm' : 'text-[#121210] hover:bg-white'
+                detectorMode === 'demo' ? 'bg-[#17191c] text-white rounded-full' : 'text-[#17191c] hover:bg-white'
               }`}
             >
               Demo Benchmark
@@ -465,7 +465,7 @@ export const ReportPage: React.FC = () => {
             <button
               onClick={() => setDetectorMode('opencv')}
               className={`px-3 py-1.5 uppercase transition-all cursor-pointer ${
-                detectorMode === 'opencv' ? 'bg-[#121210] text-[#CFE8D6] brut-sm' : 'text-[#121210] hover:bg-white'
+                detectorMode === 'opencv' ? 'bg-[#17191c] text-white rounded-full' : 'text-[#17191c] hover:bg-white'
               }`}
             >
               OpenCV
@@ -478,15 +478,15 @@ export const ReportPage: React.FC = () => {
       {reportStep === 'INPUT' && (
         <div className="space-y-6">
           {/* Approva-Style Channel Switcher Bar */}
-          <div className="bg-white brut p-3 flex flex-wrap items-center justify-between gap-4">
+          <div className="rounded-2xl bg-white border border-[#17191c]/8 p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setSubmissionMode('PHOTO')}
                 className={`flex items-center gap-2 px-4 py-2 text-xs font-mono font-black uppercase transition-all cursor-pointer ${
                   submissionMode === 'PHOTO'
-                    ? 'bg-[#121210] text-[#CFE8D6] brut-sm'
-                    : 'bg-white text-[#121210] border-2 border-[#121210] hover:bg-[#CFE8D6]'
+                    ? 'bg-[#17191c] text-white rounded-full'
+                    : 'bg-white text-[#17191c] border border-[#17191c]/15 hover:bg-[#fafafb]'
                 }`}
               >
                 <Camera className="w-3.5 h-3.5" />
@@ -497,13 +497,13 @@ export const ReportPage: React.FC = () => {
                 onClick={() => setSubmissionMode('VOICE')}
                 className={`flex items-center gap-2 px-4 py-2 text-xs font-mono font-black uppercase transition-all cursor-pointer ${
                   submissionMode === 'VOICE'
-                    ? 'bg-[#121210] text-[#CFE8D6] brut-sm'
-                    : 'bg-white text-[#121210] border-2 border-[#121210] hover:bg-[#CFE8D6]'
+                    ? 'bg-[#17191c] text-white rounded-full'
+                    : 'bg-white text-[#17191c] border border-[#17191c]/15 hover:bg-[#fafafb]'
                 }`}
               >
                 <Mic className="w-3.5 h-3.5 text-[#E8A030]" />
                 <span>Voice Grievance</span>
-                <span className="tag bg-[#E8A030] text-[#121210] text-[9px] font-bold">
+                <span className="tag bg-[#E8A030] text-[#17191c] text-[9px] font-bold">
                   AI STT
                 </span>
               </button>
@@ -512,8 +512,8 @@ export const ReportPage: React.FC = () => {
                 onClick={() => setSubmissionMode('TEXT')}
                 className={`flex items-center gap-2 px-4 py-2 text-xs font-mono font-black uppercase transition-all cursor-pointer ${
                   submissionMode === 'TEXT'
-                    ? 'bg-[#121210] text-[#CFE8D6] brut-sm'
-                    : 'bg-white text-[#121210] border-2 border-[#121210] hover:bg-[#CFE8D6]'
+                    ? 'bg-[#17191c] text-white rounded-full'
+                    : 'bg-white text-[#17191c] border border-[#17191c]/15 hover:bg-[#fafafb]'
                 }`}
               >
                 <FileText className="w-3.5 h-3.5" />
@@ -522,13 +522,13 @@ export const ReportPage: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-3 text-xs font-mono pr-2">
-              <div className="flex items-center gap-1.5 text-[#121210] font-bold">
+              <div className="flex items-center gap-1.5 text-[#17191c] font-bold">
                 <MapPin className="w-3.5 h-3.5 text-[#2E8C42]" />
                 <span>GPS Geotagging: <strong className="text-[#2E8C42]">LOCKED</strong></span>
               </div>
               <span>|</span>
-              <span className="text-[#4A4A46] text-[11px]">
-                Active: <strong className="text-[#121210]">Photo · Voice · Text · Map</strong>
+              <span className="text-[#777b86] text-[11px]">
+                Active: <strong className="text-[#17191c]">Photo · Voice · Text · Map</strong>
               </span>
             </div>
           </div>
@@ -539,13 +539,13 @@ export const ReportPage: React.FC = () => {
               {/* Left Column: Upload, Presets & Preview */}
               <div className="lg:col-span-6 space-y-4">
                 {/* Curated Benchmark Samples Bar */}
-                <div className="bg-white brut p-4 space-y-3">
-                  <div className="flex items-center justify-between border-b-2 border-[#121210] pb-2">
-                    <span className="font-display text-xs font-black uppercase text-[#121210] flex items-center gap-1.5">
+                <div className="rounded-2xl bg-white border border-[#17191c]/8 p-5 shadow-sm space-y-3">
+                  <div className="flex items-center justify-between border-b border-[#17191c]/8 pb-2">
+                    <span className="font-display text-xs font-black uppercase text-[#17191c] flex items-center gap-1.5">
                       <Sparkles className="w-3.5 h-3.5 text-[#2E8C42]" />
                       Bengaluru Benchmark Test Cards
                     </span>
-                    <span className="tag bg-[#CFE8D6] font-mono text-[10px] font-bold">1-CLICK TEST</span>
+                    <span className="tag bg-[#f2f2f3] font-mono text-[10px] font-bold">1-CLICK TEST</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     {PRESET_SAMPLES.map((sample) => (
@@ -553,15 +553,15 @@ export const ReportPage: React.FC = () => {
                         key={sample.id}
                         type="button"
                         onClick={() => handleSelectPreset(sample)}
-                        className={`p-2.5 text-left text-xs transition-all border-2 border-[#121210] cursor-pointer
+                        className={`p-2.5 text-left text-xs transition-all border border-[#17191c]/15 cursor-pointer
                           ${roadName === sample.roadName
-                            ? 'bg-[#CFE8D6] font-bold shadow-[2px_2px_0_#121210]'
-                            : 'bg-white hover:bg-[#CFE8D6]/30'
+                            ? 'bg-[#f2f2f3] font-bold shadow-sm'
+                            : 'bg-white hover:bg-[#fafafb]'
                           }
                         `}
                       >
-                        <div className="font-display font-black text-[#121210] truncate">{sample.title.split('-')[0]}</div>
-                        <div className="text-[10px] text-[#4A4A46] font-mono truncate mt-0.5">
+                        <div className="font-display font-black text-[#17191c] truncate">{sample.title.split('-')[0]}</div>
+                        <div className="text-[10px] text-[#777b86] font-mono truncate mt-0.5">
                           {sample.potholeCount} crater(s) · Dup: {sample.expectedDuplicate}
                         </div>
                       </button>
@@ -572,7 +572,7 @@ export const ReportPage: React.FC = () => {
                 {/* Upload Drop Zone */}
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="bg-white brut p-6 text-center cursor-pointer transition-all hover:bg-[#CFE8D6]/20 border-dashed"
+                  className="rounded-2xl bg-white border border-[#17191c]/8 p-6 shadow-sm text-center cursor-pointer transition-all hover:bg-[#fafafb] border-dashed"
                 >
                   <input
                     ref={fileInputRef}
@@ -583,7 +583,7 @@ export const ReportPage: React.FC = () => {
                   />
 
                   {selectedImage ? (
-                    <div className="relative border-2 border-[#121210] overflow-hidden max-h-72">
+                    <div className="relative border border-[#17191c]/15 overflow-hidden max-h-72">
                       <img
                         src={selectedImage}
                         alt="Pothole capture preview"
@@ -593,19 +593,19 @@ export const ReportPage: React.FC = () => {
                         <span className="text-xs font-mono font-bold text-white bg-black/80 px-2 py-0.5 border border-white/40">
                           SURFACE IMAGE LOADED
                         </span>
-                        <span className="text-xs font-mono font-bold text-[#CFE8D6] bg-black/80 px-2 py-1 border border-[#CFE8D6]">
+                        <span className="text-xs font-mono font-bold text-white bg-black/80 px-2 py-1 border border-[#CFE8D6]">
                           Click to change
                         </span>
                       </div>
                     </div>
                   ) : (
                     <div className="space-y-4 py-8">
-                      <div className="w-16 h-16 mx-auto bg-[#CFE8D6] border-2 border-[#121210] flex items-center justify-center text-[#121210]">
+                      <div className="w-16 h-16 mx-auto bg-[#f2f2f3] border border-[#17191c]/15 flex items-center justify-center text-[#17191c]">
                         <Upload className="w-8 h-8" />
                       </div>
                       <div>
-                        <h3 className="font-display text-base font-black text-[#121210]">Drop a pothole photo or video</h3>
-                        <p className="font-body text-xs text-[#4A4A46] mt-1">
+                        <h3 className="font-display text-base font-black text-[#17191c]">Drop a pothole photo or video</h3>
+                        <p className="font-body text-xs text-[#777b86] mt-1">
                           Supports high-res JPG, PNG, WEBP dashcam clips up to 15MB
                         </p>
                       </div>
@@ -618,16 +618,16 @@ export const ReportPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="flex items-center justify-center gap-2 py-3 px-3 bg-white hover:bg-[#CFE8D6] brut-sm text-xs font-mono font-bold text-[#121210] transition-colors cursor-pointer"
+                    className="flex items-center justify-center gap-2 py-3 px-3 bg-white hover:bg-[#fafafb] rounded-full text-xs font-mono font-bold text-[#17191c] transition-colors cursor-pointer"
                   >
-                    <FileImage className="w-4 h-4 text-[#121210]" />
+                    <FileImage className="w-4 h-4 text-[#17191c]" />
                     <span>Upload</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="flex items-center justify-center gap-2 py-3 px-3 bg-white hover:bg-[#CFE8D6] brut-sm text-xs font-mono font-bold text-[#121210] transition-colors cursor-pointer"
+                    className="flex items-center justify-center gap-2 py-3 px-3 bg-white hover:bg-[#fafafb] rounded-full text-xs font-mono font-bold text-[#17191c] transition-colors cursor-pointer"
                   >
                     <Camera className="w-4 h-4 text-[#2E8C42]" />
                     <span>Camera</span>
@@ -636,17 +636,17 @@ export const ReportPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={runVisionAnalysis}
-                    className="flex items-center justify-center gap-2 py-3 px-3 bg-[#121210] hover:bg-[#2E8C42] text-[#CFE8D6] hover:text-white brut-sm text-xs font-mono font-bold uppercase transition-colors cursor-pointer btn-press"
+                    className="flex items-center justify-center gap-2 py-3 px-3 bg-[#17191c] hover:bg-[#2E8C42] text-white hover:text-white rounded-full text-xs font-mono font-bold uppercase transition-colors cursor-pointer btn-press"
                   >
-                    <Sparkles className="w-4 h-4 text-[#CFE8D6]" />
+                    <Sparkles className="w-4 h-4 text-white" />
                     <span>Run Scan</span>
                   </button>
                 </div>
 
                 {/* Description & Contact Notes */}
-                <div className="space-y-3 p-4 bg-white brut">
+                <div className="space-y-3 p-5 rounded-2xl bg-white border border-[#17191c]/8 shadow-sm">
                   <div>
-                    <label className="block text-xs font-mono font-bold text-[#121210] uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-mono font-bold text-[#17191c] uppercase tracking-wider mb-1.5">
                       Citizen Description / Hazard Notes
                     </label>
                     <textarea
@@ -654,19 +654,19 @@ export const ReportPage: React.FC = () => {
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       placeholder="Mention specific lane, depth, accidents observed..."
-                      className="w-full bg-[#CFE8D6]/20 border-2 border-[#121210] p-2.5 text-xs text-[#121210] placeholder-[#4A4A46] focus:outline-none font-body"
+                      className="w-full bg-[#fafafb] border border-[#17191c]/15 p-2.5 text-xs text-[#17191c] placeholder-[#777b86] focus:outline-none font-body"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-mono font-bold text-[#121210] uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-mono font-bold text-[#17191c] uppercase tracking-wider mb-1.5">
                       Contact Phone (For BBMP Sahaya SMS Tracking)
                     </label>
                     <input
                       type="text"
                       value={reporterPhone}
                       onChange={(e) => setReporterPhone(e.target.value)}
-                      className="w-full bg-[#CFE8D6]/20 border-2 border-[#121210] px-3 py-2 text-xs text-[#121210] placeholder-[#4A4A46] focus:outline-none font-mono"
+                      className="w-full bg-[#fafafb] border border-[#17191c]/15 px-3 py-2 text-xs text-[#17191c] placeholder-[#777b86] focus:outline-none font-mono"
                     />
                   </div>
                 </div>
@@ -675,20 +675,20 @@ export const ReportPage: React.FC = () => {
               {/* Right Column: Interactive Map Picker & Primary Trigger */}
               <div className="lg:col-span-6 space-y-4">
                 {/* Location Picker Map */}
-                <div className="bg-white brut p-4 space-y-3">
-                  <div className="flex items-center justify-between border-b-2 border-[#121210] pb-2">
+                <div className="rounded-2xl bg-white border border-[#17191c]/8 p-5 shadow-sm space-y-3">
+                  <div className="flex items-center justify-between border-b border-[#17191c]/8 pb-2">
                     <div className="flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-[#2E8C42]" />
-                      <span className="font-display text-xs font-black text-[#121210] uppercase tracking-wider">
+                      <span className="font-display text-xs font-black text-[#17191c] uppercase tracking-wider">
                         Pinpoint Bengaluru Location
                       </span>
                     </div>
-                    <span className="tag bg-[#CFE8D6] font-mono text-[10px] font-bold">
+                    <span className="tag bg-[#f2f2f3] font-mono text-[10px] font-bold">
                       CLICK MAP TO PIN
                     </span>
                   </div>
 
-                  <div className="h-64 border-2 border-[#121210] overflow-hidden relative">
+                  <div className="h-64 border border-[#17191c]/15 overflow-hidden relative">
                     <BengaluruMap
                       height="100%"
                       isPickerMode={true}
@@ -700,23 +700,23 @@ export const ReportPage: React.FC = () => {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 text-xs bg-[#CFE8D6]/30 p-3 border-2 border-[#121210] font-mono">
+                  <div className="grid grid-cols-2 gap-3 text-xs bg-[#fafafb] p-3 border border-[#17191c]/15 font-mono">
                     <div>
-                      <span className="text-[#4A4A46] block text-[10px] font-bold uppercase">COORDINATES</span>
-                      <span className="text-[#121210] font-bold">
+                      <span className="text-[#777b86] block text-[10px] font-bold uppercase">COORDINATES</span>
+                      <span className="text-[#17191c] font-bold">
                         {selectedCoords.lat.toFixed(4)}° N, {selectedCoords.lng.toFixed(4)}° E
                       </span>
                     </div>
                     <div>
-                      <span className="text-[#4A4A46] block text-[10px] font-bold uppercase">BBMP WARD</span>
-                      <span className="text-[#121210] font-bold">
+                      <span className="text-[#777b86] block text-[10px] font-bold uppercase">BBMP WARD</span>
+                      <span className="text-[#17191c] font-bold">
                         Ward {wardNumber}: {wardName}
                       </span>
                     </div>
                     <div className="col-span-2">
-                      <span className="text-[#4A4A46] block text-[10px] font-bold uppercase">ROAD CORRIDOR</span>
-                      <span className="text-[#121210] font-bold">{roadName}</span>
-                      <div className="text-[11px] text-[#4A4A46] font-sans mt-0.5">{landmark}</div>
+                      <span className="text-[#777b86] block text-[10px] font-bold uppercase">ROAD CORRIDOR</span>
+                      <span className="text-[#17191c] font-bold">{roadName}</span>
+                      <div className="text-[11px] text-[#777b86] font-sans mt-0.5">{landmark}</div>
                     </div>
                   </div>
                 </div>
@@ -725,7 +725,7 @@ export const ReportPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={runVisionAnalysis}
-                  className="w-full py-4 bg-[#121210] text-[#CFE8D6] hover:bg-[#2E8C42] hover:text-white brut font-display font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2 btn-press transition-all cursor-pointer"
+                  className="w-full py-4 bg-[#17191c] text-white hover:bg-[#2E8C42] hover:text-white rounded-full font-display font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2 btn-press transition-all cursor-pointer"
                 >
                   <Sparkles className="w-5 h-5" />
                   <span>LAUNCH COMPUTER VISION PIPELINE</span>
@@ -740,29 +740,29 @@ export const ReportPage: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Left Column: Voice Recording Cockpit & STT Transcription */}
               <div className="lg:col-span-6 space-y-4">
-                <div className="bg-white brut p-5 space-y-4">
-                  <div className="flex items-center justify-between border-b-2 border-[#121210] pb-2 text-xs font-mono font-bold">
+                <div className="rounded-2xl bg-white border border-[#17191c]/8 p-6 shadow-sm space-y-4">
+                  <div className="flex items-center justify-between border-b border-[#17191c]/8 pb-2 text-xs font-mono font-bold">
                     <div className="flex items-center gap-2">
                       <Radio className={`w-4 h-4 ${isRecording ? 'text-[#C03A3A] animate-pulse' : 'text-[#2E8C42]'}`} />
-                      <span className="font-display font-black text-[#121210] uppercase tracking-wider">
+                      <span className="font-display font-black text-[#17191c] uppercase tracking-wider">
                         {isRecording ? 'Recording In Progress...' : isTranscribing ? 'Transcribing Speech...' : 'Spoken Grievance Cockpit'}
                       </span>
                     </div>
-                    <span className="tag bg-[#CFE8D6] text-[#121210] text-[10px] font-bold">
+                    <span className="tag bg-[#f2f2f3] text-[#17191c] text-[10px] font-bold">
                       {transcriptionResult?.providerLabel || 'Gemini 3.8 Flash Speech'}
                     </span>
                   </div>
 
                   {/* Central Interactive Microphone Record Button */}
-                  <div className="py-6 text-center space-y-4 bg-[#CFE8D6]/30 border-2 border-[#121210]">
+                  <div className="py-6 text-center space-y-4 bg-[#fafafb] border border-[#17191c]/15">
                     <div className="relative inline-flex items-center justify-center">
                       <button
                         type="button"
                         onClick={isRecording ? stopVoiceRecording : startVoiceRecording}
-                        className={`w-24 h-24 border-3 border-[#121210] flex flex-col items-center justify-center transition-all cursor-pointer ${
+                        className={`w-24 h-24 border-3 border-[#17191c] flex flex-col items-center justify-center transition-all cursor-pointer ${
                           isRecording
-                            ? 'bg-[#C03A3A] text-white shadow-[4px_4px_0_#121210]'
-                            : 'bg-[#121210] text-[#CFE8D6] hover:bg-[#2E8C42] hover:text-white shadow-[4px_4px_0_#121210]'
+                            ? 'bg-[#C03A3A] text-white shadow-sm'
+                            : 'bg-[#17191c] text-white hover:bg-[#2E8C42] hover:text-white shadow-sm'
                         }`}
                       >
                         {isRecording ? (
@@ -780,10 +780,10 @@ export const ReportPage: React.FC = () => {
                     </div>
 
                     <div className="space-y-1">
-                      <div className="font-mono text-3xl font-black text-[#121210]">
+                      <div className="font-mono text-3xl font-black text-[#17191c]">
                         00:{recordingDuration < 10 ? `0${recordingDuration}` : recordingDuration}
                       </div>
-                      <p className="font-body text-xs text-[#4A4A46]">
+                      <p className="font-body text-xs text-[#777b86]">
                         {isRecording
                           ? 'Speak clearly — mention corridor, landmark, crater severity, or waterlogging'
                           : 'Tap Record to speak, or pick an offline benchmark voice clip below'}
@@ -799,12 +799,12 @@ export const ReportPage: React.FC = () => {
 
                   {/* 1-Click Benchmark Voice Clips */}
                   <div className="pt-2 space-y-2">
-                    <div className="flex items-center justify-between text-xs border-b-2 border-[#121210] pb-1">
-                      <span className="font-display font-black text-[#121210] uppercase flex items-center gap-1.5">
+                    <div className="flex items-center justify-between text-xs border-b border-[#17191c]/8 pb-1">
+                      <span className="font-display font-black text-[#17191c] uppercase flex items-center gap-1.5">
                         <Sparkles className="w-3.5 h-3.5 text-[#E8A030]" />
                         1-Click Benchmark Voice Clips
                       </span>
-                      <span className="tag bg-[#CFE8D6] font-mono text-[10px] font-bold">3 SAMPLES</span>
+                      <span className="tag bg-[#f2f2f3] font-mono text-[10px] font-bold">3 SAMPLES</span>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                       {DEMO_VOICE_SAMPLES.map((sample) => (
@@ -812,19 +812,19 @@ export const ReportPage: React.FC = () => {
                           key={sample.id}
                           type="button"
                           onClick={() => handleSelectDemoVoice(sample)}
-                          className={`p-2.5 border-2 border-[#121210] text-left transition-all cursor-pointer ${
+                          className={`p-2.5 border border-[#17191c]/15 text-left transition-all cursor-pointer ${
                             voiceText === sample.transcript
-                              ? 'bg-[#CFE8D6] shadow-[2px_2px_0_#121210]'
-                              : 'bg-white hover:bg-[#CFE8D6]/30'
+                              ? 'bg-[#f2f2f3] shadow-sm'
+                              : 'bg-white hover:bg-[#fafafb]'
                           }`}
                         >
                           <div className="flex items-center justify-between">
-                            <span className="font-display font-black text-xs text-[#121210] truncate">{sample.title.split(' ')[0]}</span>
-                            <span className="text-[10px] font-mono text-[#4A4A46]">{sample.duration}</span>
+                            <span className="font-display font-black text-xs text-[#17191c] truncate">{sample.title.split(' ')[0]}</span>
+                            <span className="text-[10px] font-mono text-[#777b86]">{sample.duration}</span>
                           </div>
-                          <div className="text-[10px] text-[#4A4A46] font-mono truncate mt-0.5">{sample.location.split(',')[0]}</div>
+                          <div className="text-[10px] text-[#777b86] font-mono truncate mt-0.5">{sample.location.split(',')[0]}</div>
                           <span className={`tag text-[9px] font-mono font-bold mt-1 inline-block ${
-                            sample.severity === 'CRITICAL' ? 'bg-[#C03A3A] text-white' : 'bg-[#E8A030] text-[#121210]'
+                            sample.severity === 'CRITICAL' ? 'bg-[#C03A3A] text-white' : 'bg-[#E8A030] text-[#17191c]'
                           }`}>
                             {sample.severity}
                           </span>
@@ -835,13 +835,13 @@ export const ReportPage: React.FC = () => {
                 </div>
 
                 {/* Editable Transcription Text Area */}
-                <div className="p-4 bg-white brut space-y-3">
-                  <div className="flex items-center justify-between border-b-2 border-[#121210] pb-2">
-                    <label className="font-display text-xs font-black text-[#121210] uppercase tracking-wider flex items-center gap-1.5">
+                <div className="p-5 rounded-2xl bg-white border border-[#17191c]/8 shadow-sm space-y-3">
+                  <div className="flex items-center justify-between border-b border-[#17191c]/8 pb-2">
+                    <label className="font-display text-xs font-black text-[#17191c] uppercase tracking-wider flex items-center gap-1.5">
                       <FileText className="w-3.5 h-3.5 text-[#2E8C42]" />
                       Transcribed Spoken Complaint (Editable)
                     </label>
-                    <span className="tag bg-[#CFE8D6] text-[10px] font-mono font-bold flex items-center gap-1">
+                    <span className="tag bg-[#f2f2f3] text-[10px] font-mono font-bold flex items-center gap-1">
                       <CheckCircle2 className="w-3 h-3 text-[#2E8C42]" />
                       Auto-Triage Active
                     </span>
@@ -854,26 +854,26 @@ export const ReportPage: React.FC = () => {
                       applyInterpretedData(e.target.value);
                     }}
                     placeholder="Citizen spoken complaint transcription..."
-                    className="w-full bg-[#CFE8D6]/20 border-2 border-[#121210] p-3 text-xs text-[#121210] placeholder-[#4A4A46] focus:outline-none leading-relaxed font-body"
+                    className="w-full bg-[#fafafb] border border-[#17191c]/15 p-3 text-xs text-[#17191c] placeholder-[#777b86] focus:outline-none leading-relaxed font-body"
                   />
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                     <div>
-                      <label className="block text-[11px] font-mono font-bold text-[#121210] uppercase tracking-wider mb-1">
+                      <label className="block text-[11px] font-mono font-bold text-[#17191c] uppercase tracking-wider mb-1">
                         Complainant Contact (SMS Tracking)
                       </label>
                       <input
                         type="text"
                         value={reporterPhone}
                         onChange={(e) => setReporterPhone(e.target.value)}
-                        className="w-full bg-white border-2 border-[#121210] px-3 py-2 text-xs text-[#121210] focus:outline-none font-mono"
+                        className="w-full bg-white border border-[#17191c]/15 px-3 py-2 text-xs text-[#17191c] focus:outline-none font-mono"
                       />
                     </div>
                     <div className="flex items-end">
                       <button
                         type="button"
                         onClick={submitVoiceOrTextComplaint}
-                        className="w-full py-2.5 px-4 bg-[#121210] text-[#CFE8D6] hover:bg-[#2E8C42] hover:text-white brut-sm font-display font-black text-xs uppercase flex items-center justify-center gap-2 btn-press transition-all cursor-pointer"
+                        className="w-full py-2.5 px-4 bg-[#17191c] text-white hover:bg-[#2E8C42] hover:text-white rounded-full font-display font-black text-xs uppercase flex items-center justify-center gap-2 btn-press transition-all cursor-pointer"
                       >
                         <Sparkles className="w-4 h-4" />
                         <span>Submit Grievance</span>
@@ -893,20 +893,20 @@ export const ReportPage: React.FC = () => {
                   routingReason={interpretedComplaint?.department.routingReason}
                 />
 
-                <div className="bg-white brut p-4 space-y-3">
-                  <div className="flex items-center justify-between border-b-2 border-[#121210] pb-2">
+                <div className="rounded-2xl bg-white border border-[#17191c]/8 p-5 shadow-sm space-y-3">
+                  <div className="flex items-center justify-between border-b border-[#17191c]/8 pb-2">
                     <div className="flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-[#2E8C42]" />
-                      <span className="font-display text-xs font-black text-[#121210] uppercase tracking-wider">
+                      <span className="font-display text-xs font-black text-[#17191c] uppercase tracking-wider">
                         AI Resolved Location
                       </span>
                     </div>
-                    <span className="tag bg-[#CFE8D6] font-mono text-[10px] font-bold">
+                    <span className="tag bg-[#f2f2f3] font-mono text-[10px] font-bold">
                       CLICK TO ADJUST
                     </span>
                   </div>
 
-                  <div className="h-56 border-2 border-[#121210] overflow-hidden relative">
+                  <div className="h-56 border border-[#17191c]/15 overflow-hidden relative">
                     <BengaluruMap
                       height="100%"
                       isPickerMode={true}
@@ -918,14 +918,14 @@ export const ReportPage: React.FC = () => {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 text-xs bg-[#CFE8D6]/30 p-3 border-2 border-[#121210] font-mono">
+                  <div className="grid grid-cols-2 gap-3 text-xs bg-[#fafafb] p-3 border border-[#17191c]/15 font-mono">
                     <div>
-                      <span className="text-[#4A4A46] block text-[10px] uppercase font-bold">CORRIDOR RESOLVED</span>
-                      <span className="text-[#121210] font-bold truncate block">{interpretedComplaint?.roadName || roadName}</span>
+                      <span className="text-[#777b86] block text-[10px] uppercase font-bold">CORRIDOR RESOLVED</span>
+                      <span className="text-[#17191c] font-bold truncate block">{interpretedComplaint?.roadName || roadName}</span>
                     </div>
                     <div>
-                      <span className="text-[#4A4A46] block text-[10px] uppercase font-bold">SEVERITY TRIAGE</span>
-                      <span className={`tag font-bold ${interpretedComplaint?.severity === 'CRITICAL' ? 'bg-[#C03A3A] text-white' : 'bg-[#E8A030] text-[#121210]'}`}>
+                      <span className="text-[#777b86] block text-[10px] uppercase font-bold">SEVERITY TRIAGE</span>
+                      <span className={`tag font-bold ${interpretedComplaint?.severity === 'CRITICAL' ? 'bg-[#C03A3A] text-white' : 'bg-[#E8A030] text-[#17191c]'}`}>
                         {interpretedComplaint?.severity || 'HIGH'} (~{interpretedComplaint?.estimatedDepthCm || 12} cm)
                       </span>
                     </div>
@@ -946,22 +946,22 @@ export const ReportPage: React.FC = () => {
           {submissionMode === 'TEXT' && (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               <div className="lg:col-span-6 space-y-4">
-                <div className="bg-white brut p-5 space-y-4">
-                  <div className="flex items-center justify-between border-b-2 border-[#121210] pb-2 text-xs font-mono font-bold">
+                <div className="rounded-2xl bg-white border border-[#17191c]/8 p-6 shadow-sm space-y-4">
+                  <div className="flex items-center justify-between border-b border-[#17191c]/8 pb-2 text-xs font-mono font-bold">
                     <div className="flex items-center gap-2">
                       <FileText className="w-4 h-4 text-[#2E8C42]" />
-                      <span className="font-display font-black text-[#121210] uppercase tracking-wider">
+                      <span className="font-display font-black text-[#17191c] uppercase tracking-wider">
                         Natural Language Ingestion
                       </span>
                     </div>
-                    <span className="tag bg-[#CFE8D6] text-[#121210] text-[10px] font-bold">
+                    <span className="tag bg-[#f2f2f3] text-[#17191c] text-[10px] font-bold">
                       Real-time NLP Parser
                     </span>
                   </div>
 
                   {/* 1-Click Quick Prompts */}
                   <div className="space-y-2">
-                    <span className="text-[11px] font-mono font-bold text-[#121210] flex items-center gap-1.5 uppercase">
+                    <span className="text-[11px] font-mono font-bold text-[#17191c] flex items-center gap-1.5 uppercase">
                       <Sparkles className="w-3.5 h-3.5 text-[#E8A030]" />
                       Quick Grievance Templates
                     </span>
@@ -984,14 +984,14 @@ export const ReportPage: React.FC = () => {
                           key={idx}
                           type="button"
                           onClick={() => handleTextComplaintChange(tmpl.text)}
-                          className={`w-full p-2.5 border-2 border-[#121210] text-left text-xs transition-all cursor-pointer ${
+                          className={`w-full p-2.5 border border-[#17191c]/15 text-left text-xs transition-all cursor-pointer ${
                             textComplaintInput === tmpl.text
-                              ? 'bg-[#CFE8D6] shadow-[2px_2px_0_#121210]'
-                              : 'bg-white hover:bg-[#CFE8D6]/30'
+                              ? 'bg-[#f2f2f3] shadow-sm'
+                              : 'bg-white hover:bg-[#fafafb]'
                           }`}
                         >
-                          <div className="font-display font-black text-[#121210]">{tmpl.title}</div>
-                          <div className="text-[11px] text-[#4A4A46] font-mono truncate mt-0.5">{tmpl.text}</div>
+                          <div className="font-display font-black text-[#17191c]">{tmpl.title}</div>
+                          <div className="text-[11px] text-[#777b86] font-mono truncate mt-0.5">{tmpl.text}</div>
                         </button>
                       ))}
                     </div>
@@ -999,7 +999,7 @@ export const ReportPage: React.FC = () => {
 
                   {/* Direct Textarea */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-mono font-bold text-[#121210] uppercase tracking-wider block">
+                    <label className="text-xs font-mono font-bold text-[#17191c] uppercase tracking-wider block">
                       Hazard Description &amp; Location Context
                     </label>
                     <textarea
@@ -1007,28 +1007,28 @@ export const ReportPage: React.FC = () => {
                       value={textComplaintInput}
                       onChange={(e) => handleTextComplaintChange(e.target.value)}
                       placeholder="Describe road name, nearest landmark, crater size, waterlogging..."
-                      className="w-full bg-[#CFE8D6]/20 border-2 border-[#121210] p-3 text-xs text-[#121210] placeholder-[#4A4A46] focus:outline-none leading-relaxed font-body"
+                      className="w-full bg-[#fafafb] border border-[#17191c]/15 p-3 text-xs text-[#17191c] placeholder-[#777b86] focus:outline-none leading-relaxed font-body"
                     />
                   </div>
 
                   {/* Reporter contact & submit */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                     <div>
-                      <label className="block text-[11px] font-mono font-bold text-[#121210] uppercase tracking-wider mb-1">
+                      <label className="block text-[11px] font-mono font-bold text-[#17191c] uppercase tracking-wider mb-1">
                         Contact Phone (SMS Tracking)
                       </label>
                       <input
                         type="text"
                         value={reporterPhone}
                         onChange={(e) => setReporterPhone(e.target.value)}
-                        className="w-full bg-white border-2 border-[#121210] px-3 py-2 text-xs text-[#121210] focus:outline-none font-mono"
+                        className="w-full bg-white border border-[#17191c]/15 px-3 py-2 text-xs text-[#17191c] focus:outline-none font-mono"
                       />
                     </div>
                     <div className="flex items-end">
                       <button
                         type="button"
                         onClick={submitVoiceOrTextComplaint}
-                        className="w-full py-2.5 px-4 bg-[#121210] text-[#CFE8D6] hover:bg-[#2E8C42] hover:text-white brut-sm font-display font-black text-xs uppercase flex items-center justify-center gap-2 btn-press transition-all cursor-pointer"
+                        className="w-full py-2.5 px-4 bg-[#17191c] text-white hover:bg-[#2E8C42] hover:text-white rounded-full font-display font-black text-xs uppercase flex items-center justify-center gap-2 btn-press transition-all cursor-pointer"
                       >
                         <Sparkles className="w-4 h-4" />
                         <span>Submit Grievance</span>
@@ -1048,20 +1048,20 @@ export const ReportPage: React.FC = () => {
                   routingReason={interpretedComplaint?.department.routingReason}
                 />
 
-                <div className="bg-white brut p-4 space-y-3">
-                  <div className="flex items-center justify-between border-b-2 border-[#121210] pb-2">
+                <div className="rounded-2xl bg-white border border-[#17191c]/8 p-5 shadow-sm space-y-3">
+                  <div className="flex items-center justify-between border-b border-[#17191c]/8 pb-2">
                     <div className="flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-[#2E8C42]" />
-                      <span className="font-display text-xs font-black text-[#121210] uppercase tracking-wider">
+                      <span className="font-display text-xs font-black text-[#17191c] uppercase tracking-wider">
                         Interactive Bengaluru GPS Pinpoint
                       </span>
                     </div>
-                    <span className="tag bg-[#CFE8D6] font-mono text-[10px] font-bold">
+                    <span className="tag bg-[#f2f2f3] font-mono text-[10px] font-bold">
                       CLICK TO ADJUST
                     </span>
                   </div>
 
-                  <div className="h-56 border-2 border-[#121210] overflow-hidden relative">
+                  <div className="h-56 border border-[#17191c]/15 overflow-hidden relative">
                     <BengaluruMap
                       height="100%"
                       isPickerMode={true}
@@ -1073,14 +1073,14 @@ export const ReportPage: React.FC = () => {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 text-xs bg-[#CFE8D6]/30 p-3 border-2 border-[#121210] font-mono">
+                  <div className="grid grid-cols-2 gap-3 text-xs bg-[#fafafb] p-3 border border-[#17191c]/15 font-mono">
                     <div>
-                      <span className="text-[#4A4A46] block text-[10px] uppercase font-bold">ROAD CORRIDOR</span>
-                      <span className="text-[#121210] font-bold truncate block">{interpretedComplaint?.roadName || roadName}</span>
+                      <span className="text-[#777b86] block text-[10px] uppercase font-bold">ROAD CORRIDOR</span>
+                      <span className="text-[#17191c] font-bold truncate block">{interpretedComplaint?.roadName || roadName}</span>
                     </div>
                     <div>
-                      <span className="text-[#4A4A46] block text-[10px] uppercase font-bold">SEVERITY TRIAGE</span>
-                      <span className={`tag font-bold ${interpretedComplaint?.severity === 'CRITICAL' ? 'bg-[#C03A3A] text-white' : 'bg-[#E8A030] text-[#121210]'}`}>
+                      <span className="text-[#777b86] block text-[10px] uppercase font-bold">SEVERITY TRIAGE</span>
+                      <span className={`tag font-bold ${interpretedComplaint?.severity === 'CRITICAL' ? 'bg-[#C03A3A] text-white' : 'bg-[#E8A030] text-[#17191c]'}`}>
                         {interpretedComplaint?.severity || 'HIGH'} (~{interpretedComplaint?.estimatedDepthCm || 12} cm)
                       </span>
                     </div>
@@ -1103,24 +1103,24 @@ export const ReportPage: React.FC = () => {
       {reportStep === 'CINEMATIC_ANALYSIS' && analysisResult && (
         <div className="space-y-6">
           {/* Top Bar for Vision Controls */}
-          <div className="bg-white brut p-3 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
+          <div className="rounded-2xl bg-white border border-[#17191c]/8 p-4 shadow-sm flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
             <div className="flex items-center gap-3">
-              <span className="tag bg-[#121210] text-[#CFE8D6] font-bold">
+              <span className="tag bg-[#17191c] text-white font-bold">
                 {analysisResult.modelName}
               </span>
-              <span className="text-[#4A4A46]">
-                Latency: <strong className="text-[#121210]">{analysisResult.inferenceTimeMs}ms</strong>
+              <span className="text-[#777b86]">
+                Latency: <strong className="text-[#17191c]">{analysisResult.inferenceTimeMs}ms</strong>
               </span>
-              <span className="text-[#4A4A46]">
-                Resolution: <strong className="text-[#121210]">{analysisResult.imageMetadata.width}×{analysisResult.imageMetadata.height}px</strong>
+              <span className="text-[#777b86]">
+                Resolution: <strong className="text-[#17191c]">{analysisResult.imageMetadata.width}×{analysisResult.imageMetadata.height}px</strong>
               </span>
             </div>
 
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setShowPolygons(!showPolygons)}
-                className={`px-3 py-1.5 border-2 border-[#121210] uppercase font-bold transition-all cursor-pointer ${
-                  showPolygons ? 'bg-[#121210] text-[#CFE8D6] brut-sm' : 'bg-white text-[#121210] hover:bg-[#CFE8D6]'
+                className={`px-3 py-1.5 border border-[#17191c]/15 uppercase font-bold transition-all cursor-pointer ${
+                  showPolygons ? 'bg-[#17191c] text-white rounded-full' : 'bg-white text-[#17191c] hover:bg-[#fafafb]'
                 }`}
               >
                 <Layers className="w-3.5 h-3.5 inline mr-1" />
@@ -1128,7 +1128,7 @@ export const ReportPage: React.FC = () => {
               </button>
               <button
                 onClick={() => setReportStep('INPUT')}
-                className="px-3 py-1.5 bg-white hover:bg-[#CFE8D6] border-2 border-[#121210] text-[#121210] font-bold uppercase cursor-pointer"
+                className="px-3 py-1.5 bg-white hover:bg-[#fafafb] border border-[#17191c]/15 text-[#17191c] font-bold uppercase cursor-pointer"
               >
                 ← Change Image
               </button>
@@ -1138,7 +1138,7 @@ export const ReportPage: React.FC = () => {
           {/* Main Inspection Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* Left 7 cols: Image Viewport with Bounding Boxes */}
-            <div className="lg:col-span-7 bg-white brut overflow-hidden relative">
+            <div className="lg:col-span-7 rounded-[20px] bg-white border border-[#17191c]/8 overflow-hidden shadow-sm relative">
               <div className="relative w-full overflow-hidden bg-black">
                 <img
                   src={selectedImage}
@@ -1147,7 +1147,7 @@ export const ReportPage: React.FC = () => {
                 />
 
                 {/* Radar Scanline Sweep Animation */}
-                <div className="absolute inset-x-0 h-1 bg-[#2E8C42] border-y border-[#121210] animate-pulse pointer-events-none" style={{ top: '48%' }} />
+                <div className="absolute inset-x-0 h-1 bg-[#2E8C42] border-y border-[#17191c] animate-pulse pointer-events-none" style={{ top: '48%' }} />
 
                 {/* SVG Overlay for Bounding Boxes and Polygons */}
                 <svg
@@ -1157,7 +1157,7 @@ export const ReportPage: React.FC = () => {
                   {analysisResult.detections.map((det, idx) => {
                     const isSelected = activeDetectionId === det.id;
                     const isCritical = det.severity === 'Critical' || det.severity === 'High';
-                    const strokeColor = isCritical ? '#C03A3A' : '#121210';
+                    const strokeColor = isCritical ? '#C03A3A' : '#17191c';
                     const fillColor = isCritical ? 'rgba(192, 58, 58, 0.25)' : 'rgba(46, 140, 66, 0.25)';
 
                     return (
@@ -1193,7 +1193,7 @@ export const ReportPage: React.FC = () => {
                             y={-22}
                             width={190}
                             height={24}
-                            fill="#121210"
+                            fill="#17191c"
                           />
                           <text
                             x={8}
@@ -1213,12 +1213,12 @@ export const ReportPage: React.FC = () => {
               </div>
 
               {/* Viewport Telemetry Footer */}
-              <div className="p-3 bg-white border-t-2 border-[#121210] flex items-center justify-between text-xs font-mono">
-                <span className="font-bold text-[#121210] flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 bg-[#2E8C42] border border-[#121210] inline-block" />
+              <div className="p-3 bg-white border-t-2 border-[#17191c] flex items-center justify-between text-xs font-mono">
+                <span className="font-bold text-[#17191c] flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 bg-[#2E8C42] border border-[#17191c] inline-block" />
                   Live Edge CV Sensor
                 </span>
-                <span className="text-[#4A4A46] font-bold">
+                <span className="text-[#777b86] font-bold">
                   {selectedCoords.lat.toFixed(4)}°N, {selectedCoords.lng.toFixed(4)}°E
                 </span>
               </div>
@@ -1226,13 +1226,13 @@ export const ReportPage: React.FC = () => {
 
             {/* Right 5 cols: AI Analysis Panel & Pipeline */}
             <div className="lg:col-span-5 space-y-4">
-              <div className="bg-white brut p-5 space-y-4">
-                <div className="flex items-center justify-between border-b-2 border-[#121210] pb-3">
+              <div className="rounded-2xl bg-white border border-[#17191c]/8 p-6 shadow-sm space-y-4">
+                <div className="flex items-center justify-between border-b border-[#17191c]/8 pb-3">
                   <div>
-                    <span className="tag bg-[#CFE8D6] text-[#121210] font-mono text-[10px] font-bold uppercase">
+                    <span className="tag bg-[#f2f2f3] text-[#17191c] font-mono text-[10px] font-bold uppercase">
                       VISION ANALYSIS
                     </span>
-                    <h2 className="font-display text-xl font-black text-[#121210] mt-1">
+                    <h2 className="font-display text-xl font-black text-[#17191c] mt-1">
                       Road Hazard Telemetry
                     </h2>
                   </div>
@@ -1244,47 +1244,47 @@ export const ReportPage: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 text-center font-mono">
-                  <div className="p-3 bg-[#CFE8D6]/30 border-2 border-[#121210]">
-                    <span className="text-[10px] font-bold text-[#4A4A46] uppercase block mb-0.5">Potholes detected</span>
-                    <span className="font-display text-2xl font-black text-[#121210]">{analysisResult.potholeCount}</span>
+                  <div className="p-3 bg-[#fafafb] border border-[#17191c]/15">
+                    <span className="text-[10px] font-bold text-[#777b86] uppercase block mb-0.5">Potholes detected</span>
+                    <span className="font-display text-2xl font-black text-[#17191c]">{analysisResult.potholeCount}</span>
                   </div>
 
-                  <div className="p-3 bg-[#C03A3A]/10 border-2 border-[#121210]">
+                  <div className="p-3 bg-[#C03A3A]/10 border border-[#17191c]/15">
                     <span className="text-[10px] font-bold text-[#C03A3A] uppercase block mb-0.5">Largest severity</span>
                     <span className="font-display text-2xl font-black text-[#C03A3A]">
                       {analysisResult.detections[0]?.severity || 'High'}
                     </span>
                   </div>
 
-                  <div className="p-3 bg-white border-2 border-[#121210]">
-                    <span className="text-[10px] font-bold text-[#4A4A46] uppercase block mb-0.5">Confidence</span>
+                  <div className="p-3 bg-white border border-[#17191c]/15">
+                    <span className="text-[10px] font-bold text-[#777b86] uppercase block mb-0.5">Confidence</span>
                     <span className="font-display text-2xl font-black text-[#2E8C42]">
                       {(analysisResult.confidence * 100).toFixed(1)}%
                     </span>
                   </div>
 
-                  <div className="p-3 bg-[#E8A030]/20 border-2 border-[#121210]">
-                    <span className="text-[10px] font-bold text-[#4A4A46] uppercase block mb-0.5">Damage Index</span>
-                    <span className="font-display text-2xl font-black text-[#121210]">{analysisResult.estimatedSeverity}</span>
+                  <div className="p-3 bg-[#E8A030]/20 border border-[#17191c]/15">
+                    <span className="text-[10px] font-bold text-[#777b86] uppercase block mb-0.5">Damage Index</span>
+                    <span className="font-display text-2xl font-black text-[#17191c]">{analysisResult.estimatedSeverity}</span>
                   </div>
                 </div>
 
-                <div className="p-3 bg-[#CFE8D6]/40 border-2 border-[#121210] space-y-1 text-xs">
-                  <div className="font-display font-black text-[#121210]">{analysisResult.roadCondition}</div>
-                  <div className="font-body text-[#4A4A46] text-[11px] leading-relaxed">{analysisResult.explanation}</div>
+                <div className="p-3 bg-[#fafafb] border border-[#17191c]/15 space-y-1 text-xs">
+                  <div className="font-display font-black text-[#17191c]">{analysisResult.roadCondition}</div>
+                  <div className="font-body text-[#777b86] text-[11px] leading-relaxed">{analysisResult.explanation}</div>
                 </div>
 
-                <div className="flex justify-between text-xs font-mono text-[#4A4A46] pt-1 border-t-2 border-[#121210]">
-                  <span>Surface Area: <strong className="text-[#121210]">{analysisResult.damageArea}</strong></span>
+                <div className="flex justify-between text-xs font-mono text-[#777b86] pt-1 border-t-2 border-[#17191c]">
+                  <span>Surface Area: <strong className="text-[#17191c]">{analysisResult.damageArea}</strong></span>
                   <span>Lane Obstruction: <strong className="text-[#C03A3A]">{analysisResult.damageImpact.roadObstructionPct}%</strong></span>
                 </div>
               </div>
 
               {/* Animated Pipeline Progression */}
-              <div className="bg-white brut p-5 space-y-3">
-                <div className="flex items-center justify-between text-xs font-mono border-b-2 border-[#121210] pb-2">
-                  <span className="font-display font-black text-[#121210] uppercase">Pipeline Progression</span>
-                  <span className="tag bg-[#CFE8D6] font-bold text-[10px]">
+              <div className="rounded-2xl bg-white border border-[#17191c]/8 p-6 shadow-sm space-y-3">
+                <div className="flex items-center justify-between text-xs font-mono border-b border-[#17191c]/8 pb-2">
+                  <span className="font-display font-black text-[#17191c] uppercase">Pipeline Progression</span>
+                  <span className="tag bg-[#f2f2f3] font-bold text-[10px]">
                     {activeStepIndex >= pipelineStepLabels.length ? 'COMPLETE' : 'IN PROGRESS'}
                   </span>
                 </div>
@@ -1297,21 +1297,21 @@ export const ReportPage: React.FC = () => {
                     return (
                       <div
                         key={idx}
-                        className={`flex items-center justify-between p-2 border-2 border-[#121210] transition-all ${
+                        className={`flex items-center justify-between p-2 border border-[#17191c]/15 transition-all ${
                           isDone
-                            ? 'bg-[#CFE8D6]'
+                            ? 'bg-[#f2f2f3]'
                             : isActive
-                            ? 'bg-white shadow-[2px_2px_0_#121210]'
+                            ? 'bg-white shadow-sm'
                             : 'bg-white/40 opacity-60'
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
-                          <div className={`w-5 h-5 border border-[#121210] flex items-center justify-center text-[10px] font-black ${
-                            isDone ? 'bg-[#2E8C42] text-white' : isActive ? 'bg-[#E8A030] text-[#121210]' : 'bg-white text-[#4A4A46]'
+                          <div className={`w-5 h-5 border border-[#17191c] flex items-center justify-center text-[10px] font-black ${
+                            isDone ? 'bg-[#2E8C42] text-white' : isActive ? 'bg-[#E8A030] text-[#17191c]' : 'bg-white text-[#777b86]'
                           }`}>
                             {isDone ? '✓' : idx + 1}
                           </div>
-                          <span className="font-bold text-[#121210]">
+                          <span className="font-bold text-[#17191c]">
                             {label}
                           </span>
                         </div>
@@ -1328,7 +1328,7 @@ export const ReportPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={finalizeAndGoToReport}
-                  className="w-full mt-4 py-3 bg-[#121210] text-[#CFE8D6] hover:bg-[#2E8C42] hover:text-white brut font-display font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 btn-press transition-all cursor-pointer"
+                  className="w-full mt-4 py-3 bg-[#17191c] text-white hover:bg-[#2E8C42] hover:text-white rounded-full font-display font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 btn-press transition-all cursor-pointer"
                 >
                   <span>VIEW INCIDENT DOSSIER &amp; DEDUPLICATION</span>
                   <ArrowRight className="w-4 h-4" />
@@ -1343,17 +1343,17 @@ export const ReportPage: React.FC = () => {
       {reportStep === 'REPORT_SUMMARY' && analysisResult && (
         <div className="space-y-6">
           {/* Top Hero Banner */}
-          <div className="bg-white brut p-6 space-y-6">
-            <div className="flex items-center justify-between border-b-2 border-[#121210] pb-4">
+          <div className="rounded-[24px] bg-white border border-[#17191c]/8 p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)] space-y-6">
+            <div className="flex items-center justify-between border-b border-[#17191c]/8 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-[#C03A3A] border-2 border-[#121210] flex items-center justify-center text-white">
+                <div className="w-12 h-12 bg-[#C03A3A] border border-[#17191c]/15 flex items-center justify-center text-white">
                   <ShieldAlert className="w-7 h-7" />
                 </div>
                 <div>
                   <span className="tag bg-[#C03A3A] text-white font-mono text-xs font-black tracking-widest uppercase">
                     HAZARD VERIFIED
                   </span>
-                  <h1 className="font-display text-4xl font-black text-[#121210] tracking-tight mt-1">
+                  <h1 className="font-serif text-3xl sm:text-4xl font-normal text-[#17191c] tracking-tight mt-1">
                     POTHOLE DETECTED
                   </h1>
                 </div>
@@ -1367,37 +1367,37 @@ export const ReportPage: React.FC = () => {
             {/* 3 Metric Pillars */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Priority */}
-              <div className="p-4 bg-[#CFE8D6]/40 border-2 border-[#121210]">
-                <span className="text-xs font-mono font-bold text-[#4A4A46] uppercase block mb-1">
+              <div className="p-4 bg-[#fafafb] border border-[#17191c]/15">
+                <span className="text-xs font-mono font-bold text-[#777b86] uppercase block mb-1">
                   Priority Score
                 </span>
                 <div className="flex items-baseline gap-2">
-                  <span className="font-display text-5xl font-black text-[#121210]">
+                  <span className="font-display text-5xl font-black text-[#17191c]">
                     {analysisResult.incident.priority}
                   </span>
-                  <span className="text-base font-bold text-[#4A4A46] font-mono">/100</span>
+                  <span className="text-base font-bold text-[#777b86] font-mono">/100</span>
                 </div>
-                <div className="w-full bg-white border border-[#121210] h-3 mt-3 overflow-hidden p-0.5">
-                  <div className="bg-[#121210] h-full" style={{ width: `${analysisResult.incident.priority}%` }} />
+                <div className="w-full bg-white border border-[#17191c] h-3 mt-3 overflow-hidden p-0.5">
+                  <div className="bg-[#17191c] h-full" style={{ width: `${analysisResult.incident.priority}%` }} />
                 </div>
               </div>
 
               {/* Severity */}
-              <div className="p-4 bg-[#C03A3A]/10 border-2 border-[#121210]">
+              <div className="p-4 bg-[#C03A3A]/10 border border-[#17191c]/15">
                 <span className="text-xs font-mono font-bold text-[#C03A3A] uppercase block mb-1">
                   Severity Level
                 </span>
                 <div className="font-display text-4xl font-black text-[#C03A3A] tracking-wide">
                   {analysisResult.incident.severity.toUpperCase()}
                 </div>
-                <div className="text-xs text-[#4A4A46] mt-2 font-mono truncate">
+                <div className="text-xs text-[#777b86] mt-2 font-mono truncate">
                   {analysisResult.roadCondition.split('/')[0]}
                 </div>
               </div>
 
               {/* Reports Merged */}
-              <div className="p-4 bg-white border-2 border-[#121210]">
-                <span className="text-xs font-mono font-bold text-[#4A4A46] uppercase block mb-1">
+              <div className="p-4 bg-white border border-[#17191c]/15">
+                <span className="text-xs font-mono font-bold text-[#777b86] uppercase block mb-1">
                   Reports Merged
                 </span>
                 <div className="flex items-baseline gap-2">
@@ -1408,7 +1408,7 @@ export const ReportPage: React.FC = () => {
                     CONSOLIDATED
                   </span>
                 </div>
-                <div className="text-xs text-[#4A4A46] mt-2 font-mono">
+                <div className="text-xs text-[#777b86] mt-2 font-mono">
                   No duplicate ticket created
                 </div>
               </div>
@@ -1419,7 +1419,7 @@ export const ReportPage: React.FC = () => {
               <button
                 type="button"
                 onClick={navigateToRoadIntelligence}
-                className="py-3 px-6 bg-[#121210] text-[#CFE8D6] hover:bg-[#2E8C42] hover:text-white brut font-display font-black text-sm uppercase tracking-wider flex items-center gap-3 btn-press transition-all cursor-pointer"
+                className="py-3 px-6 bg-[#17191c] text-white hover:bg-[#2E8C42] hover:text-white rounded-full font-display font-black text-sm uppercase tracking-wider flex items-center gap-3 btn-press transition-all cursor-pointer"
               >
                 <span>Continue to Road Intelligence</span>
                 <ArrowRight className="w-4 h-4" />
@@ -1428,7 +1428,7 @@ export const ReportPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setReportStep('CINEMATIC_ANALYSIS')}
-                className="py-3 px-5 bg-white hover:bg-[#CFE8D6] brut text-[#121210] font-mono font-bold text-xs uppercase transition-colors cursor-pointer"
+                className="py-3 px-5 bg-white hover:bg-[#fafafb] rounded-full text-[#17191c] font-mono font-bold text-xs uppercase transition-colors cursor-pointer"
               >
                 Review Vision Overlay
               </button>
@@ -1438,64 +1438,64 @@ export const ReportPage: React.FC = () => {
           {/* Duplicate Detection Card & Master Incident Dossier */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Duplicate Detection Verification */}
-            <div className="bg-white brut p-5 space-y-4">
+            <div className="rounded-2xl bg-white border border-[#17191c]/8 p-6 shadow-sm space-y-4">
               <div className="flex items-center gap-2 text-[#2E8C42] font-display font-black text-sm uppercase">
                 <FileCheck className="w-5 h-5 text-[#2E8C42]" />
                 <span>DUPLICATE DETECTION ENGINE</span>
               </div>
 
-              <div className="p-3 bg-[#CFE8D6]/40 border-2 border-[#121210] text-xs">
+              <div className="p-3 bg-[#fafafb] border border-[#17191c]/15 text-xs">
                 <div className="font-mono text-[#2E8C42] font-black mb-1">
                   {(analysisResult.duplicateCheck.duplicateProbability * 100).toFixed(0)}% MATCH CONFIDENCE
                 </div>
-                <div className="font-body text-[#121210] font-bold">
+                <div className="font-body text-[#17191c] font-bold">
                   {analysisResult.duplicateCheck.reason}
                 </div>
               </div>
 
               <div className="space-y-2 text-xs font-mono">
-                <div className="flex justify-between text-[#4A4A46]">
+                <div className="flex justify-between text-[#777b86]">
                   <span>Matched Master Incident:</span>
-                  <strong className="text-[#121210] font-black">{analysisResult.incident.id}</strong>
+                  <strong className="text-[#17191c] font-black">{analysisResult.incident.id}</strong>
                 </div>
-                <div className="flex justify-between text-[#4A4A46]">
+                <div className="flex justify-between text-[#777b86]">
                   <span>Action Taken:</span>
                   <strong className="text-[#2E8C42] font-black">Appended Supporting Evidence</strong>
                 </div>
-                <div className="flex justify-between text-[#4A4A46]">
+                <div className="flex justify-between text-[#777b86]">
                   <span>Status:</span>
-                  <strong className="text-[#121210] font-black">{analysisResult.incident.status}</strong>
+                  <strong className="text-[#17191c] font-black">{analysisResult.incident.status}</strong>
                 </div>
               </div>
             </div>
 
             {/* BBMP Ward & Contractor SLA Dossier */}
-            <div className="bg-white brut p-5 space-y-4">
-              <div className="flex items-center gap-2 text-[#121210] font-display font-black text-sm uppercase">
-                <Building2 className="w-5 h-5 text-[#121210]" />
+            <div className="rounded-2xl bg-white border border-[#17191c]/8 p-6 shadow-sm space-y-4">
+              <div className="flex items-center gap-2 text-[#17191c] font-display font-black text-sm uppercase">
+                <Building2 className="w-5 h-5 text-[#17191c]" />
                 <span>BBMP JURISDICTION &amp; CONTRACTOR SLA</span>
               </div>
 
               <div className="space-y-3 text-xs font-mono">
                 <div>
-                  <span className="text-[10px] text-[#4A4A46] font-bold uppercase block">Corridor</span>
-                  <span className="text-[#121210] font-black text-sm">{analysisResult.incident.road}</span>
+                  <span className="text-[10px] text-[#777b86] font-bold uppercase block">Corridor</span>
+                  <span className="text-[#17191c] font-black text-sm">{analysisResult.incident.road}</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="p-2 bg-[#CFE8D6]/30 border border-[#121210]">
-                    <span className="text-[10px] text-[#4A4A46] uppercase font-bold block">Ward</span>
-                    <span className="text-[#121210] font-bold">{analysisResult.incident.canonicalLocation.ward}</span>
+                  <div className="p-2 bg-[#fafafb] border border-[#17191c]">
+                    <span className="text-[10px] text-[#777b86] uppercase font-bold block">Ward</span>
+                    <span className="text-[#17191c] font-bold">{analysisResult.incident.canonicalLocation.ward}</span>
                   </div>
-                  <div className="p-2 bg-[#CFE8D6]/30 border border-[#121210]">
-                    <span className="text-[10px] text-[#4A4A46] uppercase font-bold block">Zone</span>
-                    <span className="text-[#121210] font-bold">{analysisResult.incident.canonicalLocation.zone}</span>
+                  <div className="p-2 bg-[#fafafb] border border-[#17191c]">
+                    <span className="text-[10px] text-[#777b86] uppercase font-bold block">Zone</span>
+                    <span className="text-[#17191c] font-bold">{analysisResult.incident.canonicalLocation.zone}</span>
                   </div>
                 </div>
 
                 <div>
-                  <span className="text-[10px] text-[#4A4A46] font-bold uppercase block">Assigned Contractor</span>
-                  <span className="tag bg-[#E8A030] text-[#121210] font-bold text-xs inline-block mt-0.5">
+                  <span className="text-[10px] text-[#777b86] font-bold uppercase block">Assigned Contractor</span>
+                  <span className="tag bg-[#E8A030] text-[#17191c] font-bold text-xs inline-block mt-0.5">
                     {analysisResult.incident.contractor}
                   </span>
                 </div>

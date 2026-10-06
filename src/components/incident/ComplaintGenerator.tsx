@@ -147,16 +147,16 @@ export const ComplaintGenerator: React.FC<ComplaintGeneratorProps> = ({ incident
   };
 
   return (
-    <div className="bg-white brut overflow-hidden">
+    <div className="bg-white rounded-2xl overflow-hidden">
       {/* Header */}
-      <div className="p-4 border-b-2 border-[#121210] flex items-center justify-between bg-[#CFE8D6]/30">
+      <div className="p-4 border-b border-[#17191c]/8 flex items-center justify-between bg-[#fafafb]">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-white border-2 border-[#121210] flex items-center justify-center">
-            <FileText className="w-4 h-4 text-[#121210]" />
+          <div className="w-9 h-9 bg-white border border-[#17191c]/15 flex items-center justify-center">
+            <FileText className="w-4 h-4 text-[#17191c]" />
           </div>
           <div>
-            <h3 className="font-display text-sm font-black text-[#121210] uppercase">Generate Official Grievance</h3>
-            <p className="text-[11px] text-[#4A4A46] font-mono">Structured complaint notice with audited evidence</p>
+            <h3 className="font-display text-sm font-black text-[#17191c] uppercase">Generate Official Grievance</h3>
+            <p className="text-[11px] text-[#777b86] font-mono">Structured complaint notice with audited evidence</p>
           </div>
         </div>
         {complaint && (
@@ -164,7 +164,7 @@ export const ComplaintGenerator: React.FC<ComplaintGeneratorProps> = ({ incident
             submissionStatus === 'SUBMITTED'
               ? 'border-[#2E8C42] text-[#2E8C42]'
               : submissionStatus === 'COPIED'
-              ? 'border-[#121210] text-[#121210]'
+              ? 'border-[#17191c] text-[#17191c]'
               : 'border-[#E8A030] text-[#E8A030]'
           }`}>
             {submissionStatus === 'SUBMITTED' ? 'SUBMITTED' : submissionStatus === 'COPIED' ? 'COPIED' : 'DRAFT'}
@@ -184,37 +184,37 @@ export const ComplaintGenerator: React.FC<ComplaintGeneratorProps> = ({ incident
                 { icon: Building2, label: 'AUTHORITY', value: incident.authorityName.split(' ').slice(0, 2).join(' ') },
                 { icon: Calendar, label: 'EVIDENCE IMAGES', value: `${Object.values(incident.images).filter(Boolean).length} attached` },
               ].map(({ icon: Icon, label, value }) => (
-                <div key={label} className="flex items-center gap-2.5 p-2.5 bg-[#CFE8D6]/30 border-2 border-[#121210]">
-                  <Icon className="w-3.5 h-3.5 text-[#121210] flex-shrink-0" />
+                <div key={label} className="flex items-center gap-2.5 p-2.5 bg-[#fafafb] border border-[#17191c]/15">
+                  <Icon className="w-3.5 h-3.5 text-[#17191c] flex-shrink-0" />
                   <div>
-                    <div className="text-[10px] text-[#4A4A46] font-mono font-bold uppercase">{label}</div>
-                    <div className="text-[#121210] font-black">{value}</div>
+                    <div className="text-[10px] text-[#777b86] font-mono font-bold uppercase">{label}</div>
+                    <div className="text-[#17191c] font-black">{value}</div>
                   </div>
                 </div>
               ))}
             </div>
 
             {incident.isUnderWarranty && (
-              <div className="p-3 bg-[#CFE8D6]/50 border-2 border-[#121210] flex items-start gap-2.5 text-xs">
+              <div className="p-3 bg-[#fafafb]/50 border border-[#17191c]/15 flex items-start gap-2.5 text-xs">
                 <ShieldAlert className="w-4 h-4 text-[#2E8C42] flex-shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-display font-black text-[#121210]">Warranty Clause 45.2 Active</div>
-                  <p className="font-body text-[#4A4A46] mt-0.5">
+                  <div className="font-display font-black text-[#17191c]">Warranty Clause 45.2 Active</div>
+                  <p className="font-body text-[#777b86] mt-0.5">
                     Repair must be completed at ZERO public cost by {incident.contractorName} under PWD Defect Liability terms.
                   </p>
                 </div>
               </div>
             )}
 
-            <div className="p-3 bg-[#E8A030]/20 border-2 border-[#121210] flex items-start gap-2.5 text-xs font-mono text-[#121210]">
-              <AlertTriangle className="w-4 h-4 text-[#121210] flex-shrink-0 mt-0.5" />
+            <div className="p-3 bg-[#E8A030]/20 border border-[#17191c]/15 flex items-start gap-2.5 text-xs font-mono text-[#17191c]">
+              <AlertTriangle className="w-4 h-4 text-[#17191c] flex-shrink-0 mt-0.5" />
               <span>AI-generated draft notice — audit details before submission to BBMP Sahaya.</span>
             </div>
 
             <button
               onClick={generateComplaint}
               disabled={isGenerating}
-              className="w-full py-3 bg-[#121210] text-[#CFE8D6] hover:bg-[#2E8C42] hover:text-white brut font-display font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 btn-press transition-all disabled:opacity-60 cursor-pointer"
+              className="w-full py-3 bg-[#17191c] text-white hover:bg-[#2E8C42] hover:text-white rounded-2xl font-display font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 btn-press transition-all disabled:opacity-60 cursor-pointer"
             >
               {isGenerating ? (
                 <>
@@ -231,11 +231,11 @@ export const ComplaintGenerator: React.FC<ComplaintGeneratorProps> = ({ incident
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="p-4 bg-[#CFE8D6]/30 border-2 border-[#121210] space-y-3">
+            <div className="p-4 bg-[#fafafb] border border-[#17191c]/15 space-y-3">
               <div className="flex items-center justify-between">
-                <div className="font-mono text-xs font-black text-[#121210]">{complaint.complaintId}</div>
+                <div className="font-mono text-xs font-black text-[#17191c]">{complaint.complaintId}</div>
                 <span className={`tag font-mono text-[10px] font-bold ${
-                  complaint.severity === 'CRITICAL' ? 'bg-[#C03A3A] text-white' : 'bg-[#E8A030] text-[#121210]'
+                  complaint.severity === 'CRITICAL' ? 'bg-[#C03A3A] text-white' : 'bg-[#E8A030] text-[#17191c]'
                 }`}>
                   {complaint.severity}
                 </span>
@@ -243,27 +243,27 @@ export const ComplaintGenerator: React.FC<ComplaintGeneratorProps> = ({ incident
 
               <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs font-mono">
                 <div>
-                  <div className="text-[10px] text-[#4A4A46] uppercase font-bold">LOCATION</div>
-                  <div className="text-[#121210] font-bold">{complaint.location}</div>
+                  <div className="text-[10px] text-[#777b86] uppercase font-bold">LOCATION</div>
+                  <div className="text-[#17191c] font-bold">{complaint.location}</div>
                 </div>
                 <div>
-                  <div className="text-[10px] text-[#4A4A46] uppercase font-bold">PRIORITY SCORE</div>
+                  <div className="text-[10px] text-[#777b86] uppercase font-bold">PRIORITY SCORE</div>
                   <div className="text-[#2E8C42] font-black">{complaint.priorityScore}/100</div>
                 </div>
                 <div>
-                  <div className="text-[10px] text-[#4A4A46] uppercase font-bold">AUTHORITY</div>
-                  <div className="text-[#121210] font-bold">{complaint.responsibleAuthority}</div>
+                  <div className="text-[10px] text-[#777b86] uppercase font-bold">AUTHORITY</div>
+                  <div className="text-[#17191c] font-bold">{complaint.responsibleAuthority}</div>
                 </div>
                 <div>
-                  <div className="text-[10px] text-[#4A4A46] uppercase font-bold">SUPPORTING REPORTS</div>
-                  <div className="text-[#121210] font-bold">{complaint.supportingReportsCount} upvotes</div>
+                  <div className="text-[10px] text-[#777b86] uppercase font-bold">SUPPORTING REPORTS</div>
+                  <div className="text-[#17191c] font-bold">{complaint.supportingReportsCount} upvotes</div>
                 </div>
                 {complaint.contractorName && (
                   <div className="col-span-2">
-                    <div className="text-[10px] text-[#4A4A46] uppercase font-bold">
+                    <div className="text-[10px] text-[#777b86] uppercase font-bold">
                       {complaint.isUnderWarranty ? 'CONTRACTOR (WARRANTY ACTIVE)' : 'PREVIOUS CONTRACTOR'}
                     </div>
-                    <div className="text-[#121210] font-bold">{complaint.contractorName}</div>
+                    <div className="text-[#17191c] font-bold">{complaint.contractorName}</div>
                     {complaint.warrantyClause && (
                       <div className="text-[10px] text-[#2E8C42] font-bold mt-0.5">{complaint.warrantyClause}</div>
                     )}
@@ -273,18 +273,18 @@ export const ComplaintGenerator: React.FC<ComplaintGeneratorProps> = ({ incident
             </div>
 
             {/* Full complaint text in brutalist document box */}
-            <div className="border-2 border-[#121210] bg-white overflow-hidden">
-              <div className="flex items-center justify-between px-3 py-2 border-b-2 border-[#121210] bg-[#CFE8D6]/40">
-                <span className="text-[10px] font-mono font-bold text-[#121210] uppercase tracking-wider">Complaint Notice Document</span>
-                <ExternalLink className="w-3.5 h-3.5 text-[#121210]" />
+            <div className="border border-[#17191c]/15 bg-white overflow-hidden">
+              <div className="flex items-center justify-between px-3 py-2 border-b border-[#17191c]/8 bg-[#fafafb]">
+                <span className="text-[10px] font-mono font-bold text-[#17191c] uppercase tracking-wider">Complaint Notice Document</span>
+                <ExternalLink className="w-3.5 h-3.5 text-[#17191c]" />
               </div>
-              <pre className="p-4 text-[11px] text-[#121210] font-mono leading-relaxed whitespace-pre-wrap overflow-auto max-h-48">
+              <pre className="p-4 text-[11px] text-[#17191c] font-mono leading-relaxed whitespace-pre-wrap overflow-auto max-h-48">
                 {complaint.fullText}
               </pre>
             </div>
 
             {/* AI disclaimer */}
-            <div className="p-2.5 bg-[#E8A030]/20 border-2 border-[#121210] flex items-center gap-2 text-[10px] text-[#121210] font-mono font-bold">
+            <div className="p-2.5 bg-[#E8A030]/20 border border-[#17191c]/15 flex items-center gap-2 text-[10px] text-[#17191c] font-mono font-bold">
               <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
               <span>{complaint.aiDisclaimer}</span>
             </div>
@@ -293,14 +293,14 @@ export const ComplaintGenerator: React.FC<ComplaintGeneratorProps> = ({ incident
             <div className="grid grid-cols-3 gap-2">
               <button
                 onClick={handleCopy}
-                className="flex items-center justify-center gap-1.5 py-2.5 bg-white hover:bg-[#CFE8D6] brut-sm text-xs font-mono font-bold text-[#121210] transition-all cursor-pointer"
+                className="flex items-center justify-center gap-1.5 py-2.5 bg-white hover:bg-[#fafafb] rounded-full text-xs font-mono font-bold text-[#17191c] transition-all cursor-pointer"
               >
                 <Copy className="w-3.5 h-3.5" />
                 <span>Copy</span>
               </button>
               <button
                 onClick={handleDownload}
-                className="flex items-center justify-center gap-1.5 py-2.5 bg-white hover:bg-[#CFE8D6] brut-sm text-xs font-mono font-bold text-[#121210] transition-all cursor-pointer"
+                className="flex items-center justify-center gap-1.5 py-2.5 bg-white hover:bg-[#fafafb] rounded-full text-xs font-mono font-bold text-[#17191c] transition-all cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Download</span>
@@ -308,13 +308,13 @@ export const ComplaintGenerator: React.FC<ComplaintGeneratorProps> = ({ incident
               {submissionStatus !== 'SUBMITTED' ? (
                 <button
                   onClick={handleMarkSubmitted}
-                  className="flex items-center justify-center gap-1.5 py-2.5 bg-[#2E8C42] hover:bg-[#121210] text-white hover:text-[#CFE8D6] brut-sm text-xs font-mono font-bold transition-all cursor-pointer btn-press"
+                  className="flex items-center justify-center gap-1.5 py-2.5 bg-[#2E8C42] hover:bg-[#17191c] text-white hover:text-white rounded-full text-xs font-mono font-bold transition-all cursor-pointer btn-press"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>Submit</span>
                 </button>
               ) : (
-                <div className="flex items-center justify-center gap-1.5 py-2.5 bg-[#CFE8D6] border-2 border-[#121210] text-xs font-mono font-black text-[#2E8C42]">
+                <div className="flex items-center justify-center gap-1.5 py-2.5 bg-[#fafafb] border border-[#17191c]/15 text-xs font-mono font-black text-[#2E8C42]">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   <span>Submitted</span>
                 </div>
@@ -324,7 +324,7 @@ export const ComplaintGenerator: React.FC<ComplaintGeneratorProps> = ({ incident
             {/* Regenerate */}
             <button
               onClick={() => setComplaint(null)}
-              className="w-full text-center text-xs text-[#121210] hover:underline font-mono font-bold cursor-pointer"
+              className="w-full text-center text-xs text-[#17191c] hover:underline font-mono font-bold cursor-pointer"
             >
               ← Regenerate notice
             </button>

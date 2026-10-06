@@ -163,27 +163,27 @@ export const AuthModal: React.FC = () => {
   if (!isAuthModalOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#121210]/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#17191c]/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div
-        className="relative w-full max-w-lg bg-white brut shadow-[8px_8px_0_#121210] p-5 sm:p-6 overflow-hidden max-h-[92vh] flex flex-col text-left"
+        className="relative w-full max-w-lg bg-white rounded-2xl shadow-xl p-5 sm:p-6 overflow-hidden max-h-[92vh] flex flex-col text-left"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Top Bar */}
-        <div className="flex items-center justify-between pb-3.5 border-b-2 border-[#121210] shrink-0">
+        <div className="flex items-center justify-between pb-3.5 border-b border-[#17191c]/8 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#CFE8D6] border-2 border-[#121210] flex items-center justify-center">
-              <ShieldCheck className="w-5 h-5 text-[#121210]" />
+            <div className="w-10 h-10 bg-[#fafafb] border border-[#17191c]/15 flex items-center justify-center">
+              <ShieldCheck className="w-5 h-5 text-[#17191c]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-display text-base font-black text-[#121210] tracking-tight">
+                <h3 className="font-display text-base font-black text-[#17191c] tracking-tight">
                   CivicPulse Command Access
                 </h3>
-                <span className="tag bg-[#CFE8D6] text-[#121210] font-mono text-[10px] font-bold">
+                <span className="tag bg-[#fafafb] text-[#17191c] font-mono text-[10px] font-bold">
                   {isClerkAvailable ? 'CLERK ACTIVE' : 'CIVIC AUTH'}
                 </span>
               </div>
-              <p className="text-[11px] text-[#4A4A46] font-mono">
+              <p className="text-[11px] text-[#777b86] font-mono">
                 AI-Powered Pothole Intelligence &amp; Accountability
               </p>
             </div>
@@ -191,10 +191,10 @@ export const AuthModal: React.FC = () => {
 
           <button
             onClick={closeAuthModal}
-            className="p-1.5 border-2 border-[#121210] hover:bg-[#CFE8D6] transition-colors cursor-pointer"
+            className="p-1.5 border border-[#17191c]/15 hover:bg-[#fafafb] transition-colors cursor-pointer"
             title="Close authentication modal"
           >
-            <X className="w-4 h-4 text-[#121210]" />
+            <X className="w-4 h-4 text-[#17191c]" />
           </button>
         </div>
 
@@ -204,8 +204,8 @@ export const AuthModal: React.FC = () => {
             onClick={openSignIn}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-mono font-bold transition-all cursor-pointer ${
               authModalTab === 'sign-in'
-                ? 'bg-[#121210] text-[#CFE8D6] brut-sm'
-                : 'bg-white text-[#121210] border-2 border-[#121210] hover:bg-[#CFE8D6]'
+                ? 'bg-[#17191c] text-white rounded-full'
+                : 'bg-white text-[#17191c] border border-[#17191c]/15 hover:bg-[#fafafb]'
             }`}
           >
             <LogIn className="w-3.5 h-3.5" />
@@ -216,8 +216,8 @@ export const AuthModal: React.FC = () => {
             onClick={openSignUp}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-mono font-bold transition-all cursor-pointer ${
               authModalTab === 'sign-up'
-                ? 'bg-[#121210] text-[#CFE8D6] brut-sm'
-                : 'bg-white text-[#121210] border-2 border-[#121210] hover:bg-[#CFE8D6]'
+                ? 'bg-[#17191c] text-white rounded-full'
+                : 'bg-white text-[#17191c] border border-[#17191c]/15 hover:bg-[#fafafb]'
             }`}
           >
             <UserPlus className="w-3.5 h-3.5" />
@@ -241,7 +241,7 @@ export const AuthModal: React.FC = () => {
               <div className="text-center pt-1">
                 <button
                   onClick={() => setShowDemoRoleSelector(true)}
-                  className="text-xs text-[#121210] hover:underline font-mono font-bold cursor-pointer"
+                  className="text-xs text-[#17191c] hover:underline font-mono font-bold cursor-pointer"
                 >
                   ⚡ Or switch to 1-Click Multi-Role Fast Track
                 </button>
@@ -254,11 +254,11 @@ export const AuthModal: React.FC = () => {
                 <>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-mono text-[#121210] font-bold uppercase tracking-wider flex items-center gap-1.5">
+                      <span className="text-[11px] font-mono text-[#17191c] font-bold uppercase tracking-wider flex items-center gap-1.5">
                         <Sparkles className="w-3.5 h-3.5 text-[#2E8C42]" />
                         1-Click Instant Sign In by Role
                       </span>
-                      <span className="text-[10px] font-mono text-[#4A4A46]">
+                      <span className="text-[10px] font-mono text-[#777b86]">
                         Select to authenticate
                       </span>
                     </div>
@@ -268,22 +268,22 @@ export const AuthModal: React.FC = () => {
                         <button
                           key={profile.role}
                           onClick={() => handleSelectProfile(profile)}
-                          className="p-2.5 bg-white hover:bg-[#CFE8D6] border-2 border-[#121210] shadow-[2px_2px_0_#121210] transition-all text-left group cursor-pointer btn-press"
+                          className="p-2.5 bg-white hover:bg-[#fafafb] border border-[#17191c]/15 shadow-sm transition-all text-left group cursor-pointer btn-press"
                         >
                           <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 bg-[#CFE8D6] border-2 border-[#121210] flex items-center justify-center text-[#121210] font-bold text-xs font-mono shrink-0">
+                            <div className="w-8 h-8 bg-[#fafafb] border border-[#17191c]/15 flex items-center justify-center text-[#17191c] font-bold text-xs font-mono shrink-0">
                               {profile.initials}
                             </div>
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center justify-between gap-1">
-                                <span className="font-display text-xs font-bold text-[#121210] truncate">
+                                <span className="font-display text-xs font-bold text-[#17191c] truncate">
                                   {profile.name}
                                 </span>
-                                <span className="tag bg-[#121210] text-[#CFE8D6] text-[8px] font-mono shrink-0">
+                                <span className="tag bg-[#17191c] text-white text-[8px] font-mono shrink-0">
                                   {profile.badge}
                                 </span>
                               </div>
-                              <p className="text-[10px] text-[#4A4A46] truncate mt-0.5 font-mono">
+                              <p className="text-[10px] text-[#777b86] truncate mt-0.5 font-mono">
                                 {profile.designation}
                               </p>
                             </div>
@@ -294,8 +294,8 @@ export const AuthModal: React.FC = () => {
                   </div>
 
                   {/* Or Sign In With Custom Email & Password */}
-                  <div className="p-3.5 bg-[#CFE8D6]/30 border-2 border-[#121210] space-y-2.5">
-                    <div className="text-[11px] font-mono font-bold text-[#121210] uppercase tracking-wider">
+                  <div className="p-3.5 bg-[#fafafb] border border-[#17191c]/15 space-y-2.5">
+                    <div className="text-[11px] font-mono font-bold text-[#17191c] uppercase tracking-wider">
                       Or Sign In With Custom Credentials
                     </div>
 
@@ -306,7 +306,7 @@ export const AuthModal: React.FC = () => {
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="resident@civicpulse.blr"
-                          className="w-full px-3 py-2 text-xs bg-white border-2 border-[#121210] text-[#121210] placeholder-[#4A4A46] focus:outline-none font-mono"
+                          className="w-full px-3 py-2 text-xs bg-white border border-[#17191c]/15 text-[#17191c] placeholder-[#777b86] focus:outline-none font-mono"
                         />
                       </div>
 
@@ -316,11 +316,11 @@ export const AuthModal: React.FC = () => {
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="Password (any accepted)"
-                          className="flex-1 px-3 py-2 text-xs bg-white border-2 border-[#121210] text-[#121210] placeholder-[#4A4A46] focus:outline-none font-mono"
+                          className="flex-1 px-3 py-2 text-xs bg-white border border-[#17191c]/15 text-[#17191c] placeholder-[#777b86] focus:outline-none font-mono"
                         />
                         <button
                           type="submit"
-                          className="px-4 py-2 bg-[#121210] text-[#CFE8D6] hover:bg-[#2E8C42] hover:text-white font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer shrink-0 border-2 border-[#121210] btn-press"
+                          className="px-4 py-2 bg-[#17191c] text-white hover:bg-[#2E8C42] hover:text-white font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer shrink-0 border border-[#17191c]/15 btn-press"
                         >
                           <span>Sign In</span>
                           <ArrowRight className="w-3 h-3" />
@@ -333,16 +333,16 @@ export const AuthModal: React.FC = () => {
                 /* Sign-Up Tab: Create Account */
                 <form
                   onSubmit={handleDirectSignUp}
-                  className="p-3.5 bg-[#CFE8D6]/30 border-2 border-[#121210] space-y-3"
+                  className="p-3.5 bg-[#fafafb] border border-[#17191c]/15 space-y-3"
                 >
-                  <div className="text-[11px] font-mono text-[#121210] font-bold uppercase tracking-wider flex items-center gap-1.5">
+                  <div className="text-[11px] font-mono text-[#17191c] font-bold uppercase tracking-wider flex items-center gap-1.5">
                     <UserPlus className="w-3.5 h-3.5 text-[#2E8C42]" />
                     Create Citizen / Official Account
                   </div>
 
                   <div className="space-y-2">
                     <div>
-                      <label className="text-[10px] font-mono font-bold text-[#121210] uppercase tracking-wider block mb-1">
+                      <label className="text-[10px] font-mono font-bold text-[#17191c] uppercase tracking-wider block mb-1">
                         Full Name
                       </label>
                       <input
@@ -351,12 +351,12 @@ export const AuthModal: React.FC = () => {
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
                         placeholder="e.g. Ramesh Balaji"
-                        className="w-full px-3 py-2 text-xs bg-white border-2 border-[#121210] text-[#121210] placeholder-[#4A4A46] focus:outline-none font-mono"
+                        className="w-full px-3 py-2 text-xs bg-white border border-[#17191c]/15 text-[#17191c] placeholder-[#777b86] focus:outline-none font-mono"
                       />
                     </div>
 
                     <div>
-                      <label className="text-[10px] font-mono font-bold text-[#121210] uppercase tracking-wider block mb-1">
+                      <label className="text-[10px] font-mono font-bold text-[#17191c] uppercase tracking-wider block mb-1">
                         Email Address
                       </label>
                       <input
@@ -365,12 +365,12 @@ export const AuthModal: React.FC = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="ramesh@example.com"
-                        className="w-full px-3 py-2 text-xs bg-white border-2 border-[#121210] text-[#121210] placeholder-[#4A4A46] focus:outline-none font-mono"
+                        className="w-full px-3 py-2 text-xs bg-white border border-[#17191c]/15 text-[#17191c] placeholder-[#777b86] focus:outline-none font-mono"
                       />
                     </div>
 
                     <div>
-                      <label className="text-[10px] font-mono font-bold text-[#121210] uppercase tracking-wider block mb-1">
+                      <label className="text-[10px] font-mono font-bold text-[#17191c] uppercase tracking-wider block mb-1">
                         Select Role Perspective
                       </label>
                       <div className="grid grid-cols-2 gap-1.5">
@@ -380,10 +380,10 @@ export const AuthModal: React.FC = () => {
                               type="button"
                               key={role}
                               onClick={() => setSelectedRole(role)}
-                              className={`py-1.5 px-2 text-[10px] font-mono font-bold border-2 border-[#121210] transition-all text-center cursor-pointer ${
+                              className={`py-1.5 px-2 text-[10px] font-mono font-bold border border-[#17191c]/15 transition-all text-center cursor-pointer ${
                                 selectedRole === role
-                                  ? 'bg-[#121210] text-[#CFE8D6]'
-                                  : 'bg-white text-[#121210] hover:bg-[#CFE8D6]'
+                                  ? 'bg-[#17191c] text-white'
+                                  : 'bg-white text-[#17191c] hover:bg-[#fafafb]'
                               }`}
                             >
                               {role.replace('_', ' ')}
@@ -394,7 +394,7 @@ export const AuthModal: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="text-[10px] font-mono font-bold text-[#121210] uppercase tracking-wider block mb-1">
+                      <label className="text-[10px] font-mono font-bold text-[#17191c] uppercase tracking-wider block mb-1">
                         Password
                       </label>
                       <input
@@ -402,14 +402,14 @@ export const AuthModal: React.FC = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Create a password"
-                        className="w-full px-3 py-2 text-xs bg-white border-2 border-[#121210] text-[#121210] placeholder-[#4A4A46] focus:outline-none font-mono"
+                        className="w-full px-3 py-2 text-xs bg-white border border-[#17191c]/15 text-[#17191c] placeholder-[#777b86] focus:outline-none font-mono"
                       />
                     </div>
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full py-2.5 px-4 bg-[#121210] text-[#CFE8D6] hover:bg-[#2E8C42] hover:text-white font-mono font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 border-2 border-[#121210] btn-press transition-all cursor-pointer"
+                    className="w-full py-2.5 px-4 bg-[#17191c] text-white hover:bg-[#2E8C42] hover:text-white font-mono font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 border border-[#17191c]/15 btn-press transition-all cursor-pointer"
                   >
                     <UserPlus className="w-3.5 h-3.5" />
                     <span>Create Account &amp; Sign In</span>
@@ -420,26 +420,26 @@ export const AuthModal: React.FC = () => {
           )}
 
           {/* Hackathon Judge / Presentation Bypass Card */}
-          <div className="p-3.5 bg-[#E8A030]/20 border-2 border-[#121210] space-y-2.5">
+          <div className="p-3.5 bg-[#E8A030]/20 border border-[#17191c]/15 space-y-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Zap className="w-4 h-4 text-[#121210]" />
-                <span className="text-xs font-mono font-black text-[#121210] uppercase tracking-wider">
+                <Zap className="w-4 h-4 text-[#17191c]" />
+                <span className="text-xs font-mono font-black text-[#17191c] uppercase tracking-wider">
                   Hackathon Judge Bypass
                 </span>
               </div>
-              <span className="tag bg-[#E8A030] text-[#121210] font-mono text-[9px] font-bold">
+              <span className="tag bg-[#E8A030] text-[#17191c] font-mono text-[9px] font-bold">
                 ZERO FRICTION
               </span>
             </div>
 
-            <p className="text-[11px] text-[#121210] leading-relaxed font-body">
+            <p className="text-[11px] text-[#17191c] leading-relaxed font-body">
               Evaluating CivicPulse for live hackathon judging? Skip authentication to inspect God’s Eye geospatial intelligence, Pothole Vision, and contractor liability records instantly.
             </p>
 
             <button
               onClick={enableDemoBypass}
-              className="w-full py-2.5 px-4 bg-[#121210] text-[#E8A030] hover:bg-[#2E8C42] hover:text-white font-mono font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 border-2 border-[#121210] btn-press transition-all cursor-pointer"
+              className="w-full py-2.5 px-4 bg-[#17191c] text-[#E8A030] hover:bg-[#2E8C42] hover:text-white font-mono font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 border border-[#17191c]/15 btn-press transition-all cursor-pointer"
             >
               <Zap className="w-3.5 h-3.5" />
               <span>⚡ Enter as Guest Judge (Explore All Features)</span>
@@ -447,14 +447,14 @@ export const AuthModal: React.FC = () => {
           </div>
 
           {/* Collapsible: Connect Live Clerk Key */}
-          <div className="border-2 border-[#121210] bg-white overflow-hidden transition-all">
+          <div className="border border-[#17191c]/15 bg-white overflow-hidden transition-all">
             <button
               type="button"
               onClick={() => setIsKeyDrawerOpen(!isKeyDrawerOpen)}
-              className="w-full px-3.5 py-2.5 flex items-center justify-between text-left text-xs font-bold text-[#121210] hover:bg-[#CFE8D6] transition-colors cursor-pointer"
+              className="w-full px-3.5 py-2.5 flex items-center justify-between text-left text-xs font-bold text-[#17191c] hover:bg-[#fafafb] transition-colors cursor-pointer"
             >
               <div className="flex items-center gap-2">
-                <KeyRound className="w-3.5 h-3.5 text-[#121210]" />
+                <KeyRound className="w-3.5 h-3.5 text-[#17191c]" />
                 <span className="font-mono text-[11px]">
                   {isClerkAvailable
                     ? 'Clerk Live Connected (Click to Reconfigure)'
@@ -462,15 +462,15 @@ export const AuthModal: React.FC = () => {
                 </span>
               </div>
               {isKeyDrawerOpen ? (
-                <ChevronUp className="w-3.5 h-3.5 text-[#121210]" />
+                <ChevronUp className="w-3.5 h-3.5 text-[#17191c]" />
               ) : (
-                <ChevronDown className="w-3.5 h-3.5 text-[#121210]" />
+                <ChevronDown className="w-3.5 h-3.5 text-[#17191c]" />
               )}
             </button>
 
             {isKeyDrawerOpen && (
-              <div className="px-3.5 pb-3.5 pt-1 space-y-2.5 border-t-2 border-[#121210] bg-[#CFE8D6]/20">
-                <p className="text-[11px] text-[#4A4A46] leading-relaxed font-mono">
+              <div className="px-3.5 pb-3.5 pt-1 space-y-2.5 border-t-2 border-[#17191c] bg-[#fafafb]">
+                <p className="text-[11px] text-[#777b86] leading-relaxed font-mono">
                   Enter your Clerk Publishable Key (from dashboard.clerk.com) to activate live OAuth, SMS OTP, and Clerk user management:
                 </p>
 
@@ -481,11 +481,11 @@ export const AuthModal: React.FC = () => {
                       value={keyInput}
                       onChange={(e) => setKeyInput(e.target.value)}
                       placeholder="pk_test_..."
-                      className="flex-1 px-3 py-2 text-xs bg-white border-2 border-[#121210] text-[#121210] placeholder-[#4A4A46] focus:outline-none font-mono"
+                      className="flex-1 px-3 py-2 text-xs bg-white border border-[#17191c]/15 text-[#17191c] placeholder-[#777b86] focus:outline-none font-mono"
                     />
                     <button
                       type="submit"
-                      className="px-3 py-2 bg-[#121210] text-[#CFE8D6] hover:bg-[#2E8C42] hover:text-white border-2 border-[#121210] font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-1 transition-all cursor-pointer shrink-0"
+                      className="px-3 py-2 bg-[#17191c] text-white hover:bg-[#2E8C42] hover:text-white border border-[#17191c]/15 font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-1 transition-all cursor-pointer shrink-0"
                     >
                       {keySaved ? (
                         <>
@@ -509,7 +509,7 @@ export const AuthModal: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setShowDemoRoleSelector(false)}
-                      className="text-[11px] text-[#121210] hover:underline font-mono font-bold"
+                      className="text-[11px] text-[#17191c] hover:underline font-mono font-bold"
                     >
                       Return to live Clerk widget
                     </button>

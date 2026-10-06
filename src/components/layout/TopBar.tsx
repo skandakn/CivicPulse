@@ -104,34 +104,34 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   return (
     <header
-      className={`fixed top-0 right-0 z-30 h-[74px] bg-[#CFE8D6] border-b-[3px] border-[#121210] transition-all duration-200 flex items-center justify-between px-4 lg:px-6
+      className={`fixed top-0 right-0 z-30 h-[74px] bg-[#ffffff]/95 backdrop-blur-md border-b border-[#17191c]/8 transition-all duration-200 flex items-center justify-between px-4 lg:px-8
         ${isSidebarCollapsed ? 'left-0 lg:left-20' : 'left-0 lg:left-64'}
       `}
     >
-      {/* Left side: Hamburger + Approva Header Title & Badges */}
+      {/* Left side: Hamburger + Steep Editorial Serif Title & Badges */}
       <div className="flex items-center gap-3">
         <button
           onClick={onOpenMobileSidebar}
-          className="lg:hidden p-2 brut-sm bg-white text-[#121210] hover:bg-black hover:text-white cursor-pointer transition-colors"
+          className="lg:hidden w-9 h-9 rounded-full bg-[#f2f2f3] flex items-center justify-center text-[#17191c] hover:bg-[#ececec] cursor-pointer transition-colors"
           title="Open menu"
         >
-          <Menu className="w-5 h-5" />
+          <Menu className="w-4 h-4" />
         </button>
 
         <div className="flex flex-col justify-center">
-          <div className="flex items-center gap-2 sm:gap-2.5">
-            <h1 className="font-display font-black text-xl sm:text-2xl text-[#121210] tracking-tight leading-none whitespace-nowrap">
-              Approver Inbox
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <h1 className="font-serif text-2xl lg:text-3xl text-[#17191c] font-normal tracking-[-0.015em] leading-none whitespace-nowrap">
+              Approver <em className="italic">Inbox</em>
             </h1>
-            <span className="tag bg-[#FFFFFF] text-[#121210] text-[10px] sm:text-[11px] font-bold px-2 py-0.5 whitespace-nowrap">
-              {pendingCount || 12} PENDING
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-sans bg-[#f2f2f3] text-[#777b86] font-normal whitespace-nowrap">
+              {pendingCount || 12} pending
             </span>
-            <span className="tag bg-[#C03A3A] text-[#FFFFFF] border-[#121210] text-[10px] sm:text-[11px] font-bold px-2 py-0.5 whitespace-nowrap">
-              {criticalCount || 3} PAST SLA
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-sans bg-[#fbe1d1] text-[#5d2a1a] font-medium whitespace-nowrap">
+              {criticalCount || 3} past SLA
             </span>
           </div>
-          <div className="text-[10px] font-mono text-[#121210]/60 mt-1 font-bold tracking-wider hidden sm:block leading-none">
-            {currentTimeStr || 'TUE · 06 OCT 2026 · 09:03:04 IST'}
+          <div className="text-xs font-sans text-[#777b86] mt-1 hidden sm:block leading-none">
+            {currentTimeStr || 'Tue · 06 Oct 2026 · 09:03 IST'}
           </div>
         </div>
       </div>
@@ -139,8 +139,8 @@ export const TopBar: React.FC<TopBarProps> = ({
       {/* Right side: Search, Ward, Role, Demo, New Request */}
       <div className="flex items-center gap-2 lg:gap-3">
         {/* Ward Jurisdiction selector */}
-        <div className="hidden xl:flex items-center gap-1.5 brut-sm bg-white px-2 py-1.5">
-          <MapPin className="w-3.5 h-3.5 text-[#121210] shrink-0" />
+        <div className="hidden xl:flex items-center gap-1.5 rounded-full bg-[#f2f2f3] px-3 py-1.5">
+          <MapPin className="w-3.5 h-3.5 text-[#777b86] shrink-0" />
           <select
             value={selectedWardId}
             onChange={(e) => {
@@ -152,7 +152,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 'info'
               );
             }}
-            className="bg-transparent text-xs font-mono font-bold text-[#121210] outline-none cursor-pointer pr-1"
+            className="bg-transparent text-xs font-sans text-[#17191c] outline-none cursor-pointer pr-1"
           >
             <option value="ALL">All Bengaluru (8 Zones)</option>
             {wards.map((ward) => (
@@ -163,17 +163,17 @@ export const TopBar: React.FC<TopBarProps> = ({
           </select>
         </div>
 
-        {/* Search Bar matching Approva */}
+        {/* Search Bar matching Steep input style */}
         <div
           onClick={() => setIsSearchOpen(true)}
-          className="brut bg-[#FFFFFF] flex items-center gap-2 px-3 py-1.5 w-36 sm:w-56 md:w-64 cursor-pointer hover:bg-[#F3FAF5] transition-colors"
+          className="rounded-full bg-[#f2f2f3] flex items-center gap-2 px-3.5 py-1.5 w-36 sm:w-52 md:w-60 cursor-pointer hover:bg-[#ececec] transition-colors"
           title="Search incidents, work orders, vendors..."
         >
-          <Search className="w-4 h-4 text-[#121210] shrink-0" />
-          <span className="text-xs font-body text-[#121210]/60 truncate select-none flex-1">
+          <Search className="w-3.5 h-3.5 text-[#a3a6af] shrink-0" />
+          <span className="text-xs font-sans text-[#a3a6af] truncate select-none flex-1">
             Search hazard, PO#, ward…
           </span>
-          <span className="font-mono text-[10px] border border-[#121210] px-1 font-bold text-[#121210] shrink-0 hidden sm:inline">
+          <span className="font-sans text-[11px] text-[#a3a6af] shrink-0 hidden sm:inline">
             ⌘K
           </span>
         </div>
@@ -181,55 +181,55 @@ export const TopBar: React.FC<TopBarProps> = ({
         {/* 3D Scroll World Button */}
         <button
           onClick={() => setCurrentView('SCROLL_WORLD')}
-          className="hidden sm:flex brut bg-[#2E8C42] text-white hover:bg-[#257336] items-center gap-1.5 px-3 py-1.5 text-xs font-display font-extrabold btn-press cursor-pointer"
+          className="hidden sm:inline-flex pill-btn-ghost text-xs px-3.5 py-1.5"
           title="Fly through 3D Bengaluru Road Odyssey (Scroll-World)"
         >
-          <Compass className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '10s' }} />
-          <span>3D WORLD</span>
+          <Compass className="w-3.5 h-3.5" />
+          <span>3D World</span>
         </button>
 
-        {/* 1-Click Judge Demo Button */}
+        {/* 1-Click Judge Demo Ghost Pill */}
         <button
           onClick={loadDemoCase}
-          className="hidden md:flex brut bg-[#E8A030] text-[#121210] items-center gap-1.5 px-3 py-1.5 text-xs font-display font-extrabold btn-press cursor-pointer"
+          className="hidden md:inline-flex pill-btn-ghost text-xs px-3.5 py-1.5"
           title="Load high-risk demonstration scenario"
         >
-          <Zap className="w-3.5 h-3.5 fill-[#121210]" />
-          <span>DEMO</span>
+          <Zap className="w-3.5 h-3.5" />
+          <span>Demo</span>
         </button>
 
-        {/* Approva NEW REQUEST button without duplicate plus */}
+        {/* Steep Filled Pill: NEW REQUEST */}
         <button
           onClick={() => setCurrentView('REPORT')}
-          className="brut bg-[#121210] text-[#FFFFFF] px-3.5 py-1.5 font-display font-extrabold text-xs sm:text-sm btn-press cursor-pointer flex items-center gap-1.5 shrink-0"
+          className="pill-btn-filled text-xs px-4 py-1.5"
         >
-          <Plus className="w-4 h-4 stroke-[3]" />
-          <span className="hidden sm:inline">NEW REQUEST</span>
-          <span className="sm:hidden">NEW</span>
+          <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+          <span className="hidden sm:inline">New request</span>
+          <span className="sm:hidden">New</span>
         </button>
 
         {/* Notifications */}
         <div className="relative">
           <button
             onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-            className="relative brut-sm bg-white p-2 text-[#121210] hover:bg-black hover:text-white transition-colors cursor-pointer"
+            className="relative w-9 h-9 rounded-full bg-[#f2f2f3] text-[#17191c] hover:bg-[#ececec] transition-colors cursor-pointer flex items-center justify-center"
             title="System alerts"
           >
-            <Bell className="w-4 h-4" />
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#C03A3A] border border-[#121210]" />
+            <Bell className="w-4 h-4 text-[#17191c]" />
+            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#5d2a1a]" />
           </button>
 
           {isNotificationsOpen && (
-            <div className="absolute right-0 mt-2 w-80 sm:w-96 brut bg-white p-4 z-50 animate-in fade-in">
-              <div className="flex items-center justify-between pb-3 mb-3 border-b-2 border-[#121210]">
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-3xl bg-white border border-[#17191c]/8 p-5 z-50 shadow-[0_20px_25px_-5px_rgba(0,0,0,0.08)] animate-in fade-in">
+              <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#17191c]/8">
                 <div className="flex items-center gap-2">
-                  <Bell className="w-4 h-4 text-[#121210]" />
-                  <span className="text-xs font-display font-extrabold uppercase tracking-wider text-[#121210]">
+                  <Bell className="w-4 h-4 text-[#17191c]" />
+                  <span className="text-xs font-serif italic text-[#17191c]">
                     Civic Alerts & Audits
                   </span>
                 </div>
-                <span className="tag bg-[#C03A3A] text-white">
-                  3 NEW
+                <span className="px-2 py-0.5 rounded-full text-[11px] bg-[#fbe1d1] text-[#5d2a1a] font-medium">
+                  3 new
                 </span>
               </div>
 
@@ -237,18 +237,18 @@ export const TopBar: React.FC<TopBarProps> = ({
                 {notifications.map((n) => (
                   <div
                     key={n.id}
-                    className="p-2.5 border-2 border-[#121210] bg-[#CFE8D6]/40 hover:bg-[#CFE8D6] transition-all text-xs"
+                    className="p-3 rounded-2xl bg-[#f2f2f3] hover:bg-[#ececec] transition-all text-xs"
                   >
-                    <div className="flex items-start gap-2">
-                      {n.type === 'danger' && <AlertTriangle className="w-4 h-4 text-[#C03A3A] shrink-0 mt-0.5" />}
-                      {n.type === 'success' && <CheckCircle2 className="w-4 h-4 text-[#2E8C42] shrink-0 mt-0.5" />}
-                      {n.type === 'warning' && <FileCheck className="w-4 h-4 text-[#E8A030] shrink-0 mt-0.5" />}
+                    <div className="flex items-start gap-2.5">
+                      {n.type === 'danger' && <AlertTriangle className="w-4 h-4 text-[#5d2a1a] shrink-0 mt-0.5" />}
+                      {n.type === 'success' && <CheckCircle2 className="w-4 h-4 text-[#2e7d32] shrink-0 mt-0.5" />}
+                      {n.type === 'warning' && <FileCheck className="w-4 h-4 text-[#5d2a1a] shrink-0 mt-0.5" />}
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
-                          <span className="font-bold text-[#121210]">{n.title}</span>
-                          <span className="text-[10px] font-mono text-[#121210]/60">{n.time}</span>
+                          <span className="font-medium text-[#17191c]">{n.title}</span>
+                          <span className="text-[11px] text-[#777b86]">{n.time}</span>
                         </div>
-                        <p className="text-[11px] text-[#121210]/80 mt-1 leading-snug">{n.desc}</p>
+                        <p className="text-[11px] text-[#777b86] mt-1 leading-snug">{n.desc}</p>
                       </div>
                     </div>
                   </div>
@@ -257,9 +257,9 @@ export const TopBar: React.FC<TopBarProps> = ({
 
               <button
                 onClick={() => setIsNotificationsOpen(false)}
-                className="w-full mt-3 py-1.5 brut-sm bg-[#121210] text-white font-mono text-xs font-bold hover:bg-zinc-800 cursor-pointer"
+                className="w-full mt-3 py-2 rounded-full bg-[#17191c] text-white text-xs font-sans hover:bg-[#2b2e34] cursor-pointer"
               >
-                CLOSE
+                Close
               </button>
             </div>
           )}
@@ -269,29 +269,29 @@ export const TopBar: React.FC<TopBarProps> = ({
         <div className="relative">
           <button
             onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-            className="flex items-center gap-2 brut-sm bg-white px-2 py-1.5 cursor-pointer hover:bg-zinc-100 transition-colors"
+            className="flex items-center gap-2 rounded-full bg-[#f2f2f3] px-2.5 py-1.5 cursor-pointer hover:bg-[#ececec] transition-colors"
           >
             {isClerkAvailable && isRealClerkUser && !isDemoBypass ? (
               <div onClick={(e) => e.stopPropagation()} className="flex items-center">
                 <UserButton appearance={clerkAppearance} />
               </div>
             ) : (
-              <div className="w-6 h-6 border border-[#121210] bg-[#CFE8D6] flex items-center justify-center font-display font-extrabold text-[11px] text-[#121210]">
+              <div className="w-6 h-6 rounded-full bg-[#17191c] flex items-center justify-center text-[11px] text-white font-medium">
                 {user?.firstName ? user.firstName.charAt(0) : 'A'}
               </div>
             )}
             <div className="hidden sm:block text-left">
-              <div className="text-xs font-bold leading-tight font-display text-[#121210]">
+              <div className="text-xs font-medium text-[#17191c]">
                 {roleLabels[userRole].badge}
               </div>
             </div>
-            <ChevronDown className="w-3 h-3 text-[#121210]" />
+            <ChevronDown className="w-3 h-3 text-[#777b86]" />
           </button>
 
           {isRoleDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-60 brut bg-white p-3 z-50 space-y-2.5">
-              <div className="text-[10px] font-mono font-bold tracking-widest text-[#121210]/60 uppercase">
-                SWITCH PERSPECTIVE
+            <div className="absolute right-0 mt-2 w-64 rounded-3xl bg-white border border-[#17191c]/8 p-4 z-50 shadow-[0_20px_25px_-5px_rgba(0,0,0,0.08)] space-y-2.5">
+              <div className="text-[11px] font-sans text-[#777b86] uppercase tracking-wider">
+                Switch Perspective
               </div>
               <div className="space-y-1">
                 {(Object.keys(roleLabels) as UserRole[]).map((role) => (
@@ -302,24 +302,24 @@ export const TopBar: React.FC<TopBarProps> = ({
                       setIsRoleDropdownOpen(false);
                       addToast(`Switched perspective to ${roleLabels[role].title}`, 'Interface privileges adjusted', 'info');
                     }}
-                    className={`w-full text-left px-2.5 py-1.5 border-2 border-[#121210] text-xs font-display font-bold flex items-center justify-between cursor-pointer transition-colors ${
-                      userRole === role ? 'bg-[#E8A030] text-[#121210]' : 'bg-white text-[#121210] hover:bg-[#CFE8D6]'
+                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-sans flex items-center justify-between cursor-pointer transition-colors ${
+                      userRole === role ? 'bg-[#fbe1d1] text-[#5d2a1a] font-medium' : 'text-[#17191c] hover:bg-[#f2f2f3]'
                     }`}
                   >
                     <span>{roleLabels[role].title}</span>
-                    <span className="font-mono text-[9px] bg-[#121210] text-white px-1">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[#f2f2f3] text-[#777b86]">
                       {roleLabels[role].badge}
                     </span>
                   </button>
                 ))}
               </div>
 
-              <div className="pt-2 border-t-2 border-[#121210] flex justify-between gap-2">
+              <div className="pt-2 border-t border-[#17191c]/8 flex justify-between gap-2">
                 <button
                   onClick={resetDemo}
-                  className="flex-1 py-1 brut-sm bg-white hover:bg-slate-100 font-mono text-[10px] font-bold text-center cursor-pointer"
+                  className="flex-1 py-1.5 rounded-full bg-[#f2f2f3] hover:bg-[#ececec] text-xs text-[#17191c] text-center cursor-pointer"
                 >
-                  RESET SEED
+                  Reset
                 </button>
                 {isSignedIn ? (
                   <button
@@ -327,9 +327,9 @@ export const TopBar: React.FC<TopBarProps> = ({
                       setIsRoleDropdownOpen(false);
                       await signOut();
                     }}
-                    className="flex-1 py-1 brut-sm bg-[#C03A3A] text-white font-mono text-[10px] font-bold text-center cursor-pointer"
+                    className="flex-1 py-1.5 rounded-full bg-[#5d2a1a] text-white text-xs text-center cursor-pointer"
                   >
-                    SIGN OUT
+                    Sign out
                   </button>
                 ) : (
                   <button
@@ -337,9 +337,9 @@ export const TopBar: React.FC<TopBarProps> = ({
                       setIsRoleDropdownOpen(false);
                       openSignIn();
                     }}
-                    className="flex-1 py-1 brut-sm bg-[#2E8C42] text-white font-mono text-[10px] font-bold text-center cursor-pointer"
+                    className="flex-1 py-1.5 rounded-full bg-[#17191c] text-white text-xs text-center cursor-pointer"
                   >
-                    SIGN IN
+                    Sign in
                   </button>
                 )}
               </div>
