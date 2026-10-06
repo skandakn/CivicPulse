@@ -127,7 +127,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const demoIncident = incidents.find(i => i.code === 'BNG-PTH-1042') || incidents[0];
     setSelectedIncident(demoIncident);
     setIsJudgeDemoOpen(true);
-    addToast('1-Click Judge Demo Activated', `Case ${demoIncident.code} loaded with complete end-to-end evidence`, 'info');
+    addToast('1-Click Judge Case Activated', `Case ${demoIncident.code} loaded with complete end-to-end evidence`, 'info');
   };
 
   const resetDemo = () => {
@@ -139,7 +139,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setComplaints(INITIAL_COMPLAINTS);
     setIsJudgeDemoOpen(false);
     setCurrentView('LANDING');
-    addToast('Demo State Reset', 'System returned to pristine state (10 seed incidents ready)', 'info');
+    addToast('State Reset', 'System returned to pristine state (10 seed incidents ready)', 'info');
   };
 
   const upvoteComplaint = (complaintId: string) => {

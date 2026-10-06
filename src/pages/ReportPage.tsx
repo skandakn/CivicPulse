@@ -358,7 +358,7 @@ export const ReportPage: React.FC = () => {
     } catch (err: any) {
       isRecordingRef.current = false;
       console.warn('Microphone access restricted:', err);
-      addToast('Mic Access Restricted', 'Switched to 1-Click Demo Voice Mode', 'info');
+      addToast('Mic Access Restricted', 'Switched to 1-Click Voice Mode', 'info');
     }
   };
 

@@ -38,12 +38,12 @@ export const DemoPage: React.FC = () => {
   const handleLoadDemo = (incidentId: string) => {
     setLoadedDemoId(incidentId);
     selectIncidentById(incidentId, 'INCIDENT_DETAIL');
-    addToast('Demo Case Loaded', `Navigate through the incident detail to explore the full lifecycle`, 'success');
+    addToast('Case Loaded', `Navigate through the incident detail to explore the full lifecycle`, 'success');
   };
 
   const handleReset = () => {
     setLoadedDemoId(null);
-    addToast('Demo Reset', 'All demo state cleared', 'info');
+    addToast('Reset', 'All state cleared', 'info');
   };
 
   const getDemoTag = (id: string) => {

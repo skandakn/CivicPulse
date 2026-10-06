@@ -15,13 +15,146 @@ import {
 import { useApp } from '../context/AppContext';
 import { PotholeIncident } from '../types';
 
+export interface HistoryRecord {
+  id: string;
+  woId: string;
+  roadName: string;
+  amount: number;
+  inspector: string;
+  timestamp: string;
+  status: 'APPROVED' | 'REJECTED' | 'NEEDS DETAIL';
+  incidentId?: string;
+}
+
+export interface EscalationItem {
+  id: string;
+  incidentId: string;
+  roadName: string;
+  amount: number;
+  slaNotice: string;
+  stuckAt: string;
+  severity: 'CRITICAL' | 'HIGH';
+  status: 'PENDING' | 'DECIDED';
+  decidedStatus?: 'APPROVED' | 'REJECTED' | 'NEEDS DETAIL';
+}
+
+const INITIAL_HISTORY: HistoryRecord[] = [
+  {
+    id: 'hist-01',
+    woId: 'WO-2026-0418',
+    roadName: 'Outer Ring Road (Bellandur)',
+    amount: 48920,
+    inspector: 'Chief Auditor Mara',
+    timestamp: '06 OCT · 08:30',
+    status: 'APPROVED',
+    incidentId: 'inc-01'
+  },
+  {
+    id: 'hist-02',
+    woId: 'WO-2026-0416',
+    roadName: '100ft Road Indiranagar',
+    amount: 18440,
+    inspector: 'Ward Engg A. Klein',
+    timestamp: '06 OCT · 08:14',
+    status: 'APPROVED',
+    incidentId: 'inc-05'
+  },
+  {
+    id: 'hist-03',
+    woId: 'WO-2026-0412',
+    roadName: 'Mysore Road Flyover Ramp',
+    amount: 82250,
+    inspector: 'Auditor R. Sato',
+    timestamp: '05 OCT · 17:04',
+    status: 'REJECTED',
+    incidentId: 'inc-11'
+  },
+  {
+    id: 'hist-04',
+    woId: 'WO-2026-0409',
+    roadName: 'Hosur Road (Silk Board)',
+    amount: 36120,
+    inspector: 'Chief Auditor Mara',
+    timestamp: '05 OCT · 15:32',
+    status: 'APPROVED',
+    incidentId: 'inc-02'
+  },
+  {
+    id: 'hist-05',
+    woId: 'WO-2026-0408',
+    roadName: 'Sarjapur Main Road',
+    amount: 24482,
+    inspector: 'Exec Engg Devin',
+    timestamp: '05 OCT · 14:48',
+    status: 'NEEDS DETAIL',
+    incidentId: 'inc-12'
+  }
+];
+
+const INITIAL_ESCALATIONS: EscalationItem[] = [
+  {
+    id: 'esc-01',
+    incidentId: 'inc-01',
+    roadName: 'Outer Ring Road (Bellandur)',
+    amount: 48920,
+    slaNotice: '+52H PAST SLA',
+    stuckAt: 'Executive Engineer Tenders',
+    severity: 'CRITICAL',
+    status: 'PENDING'
+  },
+  {
+    id: 'esc-02',
+    incidentId: 'inc-09',
+    roadName: 'Bannerghatta Road (Meenakshi)',
+    amount: 31200,
+    slaNotice: '+18H PAST SLA',
+    stuckAt: 'Quality Auditor Lab Core',
+    severity: 'CRITICAL',
+    status: 'PENDING'
+  },
+  {
+    id: 'esc-03',
+    incidentId: 'inc-10',
+    roadName: 'Old Madras Road (Swami Vivekananda)',
+    amount: 61440,
+    slaNotice: '+71H PAST SLA',
+    stuckAt: 'Zonal Commissioner Sanction',
+    severity: 'CRITICAL',
+    status: 'PENDING'
+  }
+];
+
+export const getIncidentWorkOrderId = (inc: PotholeIncident): string => {
+  if (inc.id === 'inc-01' || inc.roadName.includes('Outer Ring Road (Bellandur)')) return 'WO-2026-0418';
+  if (inc.id === 'inc-05' || inc.roadName.includes('100ft Road')) return 'WO-2026-0416';
+  if (inc.id === 'inc-02' || inc.roadName.includes('Hosur Road')) return 'WO-2026-0409';
+  if (inc.id === 'inc-09' || inc.roadName.includes('Bannerghatta Road')) return 'WO-2026-0422';
+  if (inc.id === 'inc-10' || inc.roadName.includes('Old Madras Road')) return 'WO-2026-0425';
+  if (inc.id === 'inc-11' || inc.roadName.includes('Mysore Road')) return 'WO-2026-0412';
+  if (inc.id === 'inc-12' || inc.roadName.includes('Sarjapur')) return 'WO-2026-0408';
+  const numPart = inc.code.replace(/\D/g, '').slice(-4) || '0418';
+  return `WO-2026-${numPart.padStart(4, '0')}`;
+};
+
+export const getIncidentWorkOrderCost = (inc: PotholeIncident): number => {
+  if (inc.id === 'inc-01' || inc.roadName.includes('Outer Ring Road (Bellandur)')) return 48920;
+  if (inc.id === 'inc-05' || inc.roadName.includes('100ft Road')) return 18440;
+  if (inc.id === 'inc-02' || inc.roadName.includes('Hosur Road')) return 36120;
+  if (inc.id === 'inc-09' || inc.roadName.includes('Bannerghatta Road')) return 31200;
+  if (inc.id === 'inc-10' || inc.roadName.includes('Old Madras Road')) return 61440;
+  if (inc.id === 'inc-11' || inc.roadName.includes('Mysore Road')) return 82250;
+  if (inc.id === 'inc-12' || inc.roadName.includes('Sarjapur')) return 24482;
+  return Math.max(12000, Math.round((inc.depthCm * 1800) + (inc.surfaceAreaSqM * 6500)));
+};
+
 export const PriorityQueuePage: React.FC = () => {
   const {
     filteredIncidents,
     selectedIncident,
     setSelectedIncident,
     roads,
-    addToast
+    addToast,
+    updateIncidentStatus
   } = useApp();
 
   // Active top tab matching Approva: Inbox | Escalations | History | Workflow Builder
@@ -29,6 +162,12 @@ export const PriorityQueuePage: React.FC = () => {
 
   // Sub-filter: ALL | ARTERIAL | CRITICAL | UNDER WARRANTY
   const [subFilter, setSubFilter] = useState<'ALL' | 'ARTERIAL' | 'CRITICAL' | 'WARRANTY'>('ALL');
+
+  // Escalation items state
+  const [escalations, setEscalations] = useState<EscalationItem[]>(INITIAL_ESCALATIONS);
+
+  // History ledger state
+  const [historyRecords, setHistoryRecords] = useState<HistoryRecord[]>(INITIAL_HISTORY);
 
   // Active incident in queue (derived directly from selected or first item)
   const activeItem = selectedIncident || filteredIncidents[0];
@@ -64,46 +203,134 @@ export const PriorityQueuePage: React.FC = () => {
     return true;
   });
 
-  // Calculate simulated repair costs based on volume
-  const getEstimatedCost = (inc: PotholeIncident) => {
-    const base = Math.max(12000, Math.round((inc.depthCm * 1800) + (inc.surfaceAreaSqM * 6500)));
-    return base;
+  // Calculate canonical work order cost
+  const getEstimatedCost = (inc: PotholeIncident): number => {
+    return getIncidentWorkOrderCost(inc);
   };
 
   const activeCost = activeItem ? getEstimatedCost(activeItem) : 48920;
+  const activeWoId = activeItem ? getIncidentWorkOrderId(activeItem) : 'WO-2026-0418';
+
+  // Exact arithmetic line items adding up to activeCost
+  const lineItem1 = Math.round(activeCost * 0.44);
+  const lineItem2 = Math.round(activeCost * 0.16);
+  const lineItem3 = Math.round(activeCost * 0.18);
+  const activeSubtotal = Math.round(activeCost * 0.84);
+  const lineItem4 = activeSubtotal - (lineItem1 + lineItem2 + lineItem3);
+  const activeGst = activeCost - activeSubtotal;
 
   // Handle dropping stamp
   const triggerStamp = useCallback((label: 'APPROVED' | 'REJECTED' | 'NEEDS DETAIL', color: string) => {
+    if (!activeItem) return;
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     setCurrentStamp({
       label,
       color,
-      time: new Date().toLocaleTimeString()
+      time: timeStr
     });
 
+    const woId = getIncidentWorkOrderId(activeItem);
+    const cost = getIncidentWorkOrderCost(activeItem);
+    const dateStr = '06 OCT · ' + timeStr;
+
     const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19) + 'Z';
-    const newLog = `${timestamp}  STAMPED    chief.auditor@bbmp.gov.in         ${label} · stage 3/4 · final decision issued`;
+    const newLog = `${timestamp}  STAMPED    chief.auditor@bbmp.gov.in         ${label} · ${woId} · final decision issued`;
     setAuditLogs((prev) => [newLog, ...prev]);
+
+    // Prepend newly decided entry to audit ledger
+    const newRecord: HistoryRecord = {
+      id: `hist-${Date.now()}`,
+      woId,
+      roadName: activeItem.roadName,
+      amount: cost,
+      inspector: 'Chief Auditor Mara',
+      timestamp: dateStr,
+      status: label,
+      incidentId: activeItem.id
+    };
+    setHistoryRecords((prev) => [newRecord, ...prev]);
+
+    // Mark escalation as decided if matching
+    setEscalations((prev) =>
+      prev.map((esc) => {
+        if (esc.incidentId === activeItem.id || esc.roadName.toLowerCase().includes(activeItem.roadName.toLowerCase().split(' ')[0])) {
+          return { ...esc, status: 'DECIDED', decidedStatus: label };
+        }
+        return esc;
+      })
+    );
+
+    // Update incident status in global app context
+    const nextStatus = label === 'APPROVED' ? 'TENDER_ASSIGNED' : 'TRIAGED';
+    updateIncidentStatus(activeItem.id, nextStatus);
 
     if (label === 'APPROVED') {
       addToast(
         'Municipal Work Order Approved & Dispatched',
-        `Dispatched rapid hot-mix repair crew for ${activeItem?.roadName || 'Road'} (WO-${activeItem?.code || '418'})`,
+        `Dispatched rapid hot-mix repair crew for ${activeItem.roadName} (${woId}) · ₹${cost.toLocaleString('en-IN')}`,
         'success'
       );
     } else if (label === 'REJECTED') {
       addToast(
         'Work Order Disputed & Rejected',
-        `Notice dispatched to contractor regarding warranty non-compliance or improper quote.`,
+        `Notice dispatched to contractor regarding warranty non-compliance for ${woId}.`,
         'error'
       );
     } else {
       addToast(
         'Clarification & Re-inspection Requested',
-        `Returned to BBMP Ward Engineer for core-sample depth verification.`,
+        `Returned ${woId} to BBMP Ward Engineer for core-sample depth verification.`,
         'warning'
       );
     }
-  }, [activeItem, addToast]);
+  }, [activeItem, addToast, updateIncidentStatus]);
+
+  // Action: Take decision on an escalation card
+  const handleTakeEscalationDecision = (esc: EscalationItem) => {
+    const matched = filteredIncidents.find(i => i.id === esc.incidentId || i.roadName.toLowerCase().includes(esc.roadName.toLowerCase().split(' ')[0])) || filteredIncidents[0];
+    if (matched) {
+      setSelectedIncident(matched);
+    }
+    if (esc.status === 'DECIDED' && esc.decidedStatus) {
+      const stampColor = esc.decidedStatus === 'APPROVED' ? '#2E8C42' : esc.decidedStatus === 'REJECTED' ? '#C03A3A' : '#E8A030';
+      setCurrentStamp({
+        label: esc.decidedStatus,
+        color: stampColor,
+        time: 'STAMPED'
+      });
+    } else {
+      setCurrentStamp(null);
+    }
+    setActiveTab('INBOX');
+    addToast(
+      'Escalation Docket Loaded',
+      `Loaded ${esc.roadName} (₹${esc.amount.toLocaleString('en-IN')}) into Hazard Inbox for immediate sanction`,
+      'warning'
+    );
+  };
+
+  // Action: Load history work order into Inbox document pane
+  const handleSelectHistoryRecord = (rec: HistoryRecord) => {
+    const matched = filteredIncidents.find(i => i.id === rec.incidentId || i.roadName.toLowerCase().includes(rec.roadName.toLowerCase().split(' ')[0])) || filteredIncidents[0];
+    if (matched) {
+      setSelectedIncident(matched);
+    }
+    const stampColor = rec.status === 'APPROVED' ? '#2E8C42' : rec.status === 'REJECTED' ? '#C03A3A' : '#E8A030';
+    setCurrentStamp({
+      label: rec.status,
+      color: stampColor,
+      time: rec.timestamp
+    });
+    setActiveTab('INBOX');
+    addToast(
+      `Audit Ledger: ${rec.woId}`,
+      `Inspecting stamped work order for ${rec.roadName} (${rec.status})`,
+      'info'
+    );
+  };
+
+  // Pending escalations count
+  const pendingEscalationsCount = escalations.filter(e => e.status === 'PENDING').length;
 
   // Keyboard shortcuts matching Approva spec: Cmd+Enter (Approve), Cmd+Backspace (Reject), Cmd+D (Needs Detail)
   useEffect(() => {
@@ -144,7 +371,7 @@ export const PriorityQueuePage: React.FC = () => {
           }`}
         >
           <Flame className="w-4 h-4 stroke-[2.5] text-[#C03A3A]" />
-          <span>Escalations (3)</span>
+          <span>Escalations ({pendingEscalationsCount})</span>
         </button>
 
         <button
@@ -216,6 +443,7 @@ export const PriorityQueuePage: React.FC = () => {
             <div className="space-y-4">
               {displayItems.map((inc, index) => {
                 const cost = getEstimatedCost(inc);
+                const woId = getIncidentWorkOrderId(inc);
                 const isSelected = activeItem?.id === inc.id;
                 const isEscalated = inc.severity === 'CRITICAL';
 
@@ -242,7 +470,7 @@ export const PriorityQueuePage: React.FC = () => {
                           : 'bg-white text-[#121210]'
                       }`}
                     >
-                      {isEscalated ? `⚠ WO-2026-${inc.code.replace('BLR-', '')}` : `WO-2026-${inc.code.replace('BLR-', '')}`}
+                      {isEscalated ? `⚠ ${woId}` : woId}
                     </span>
 
                     {/* Title + Amount */}
@@ -351,7 +579,7 @@ export const PriorityQueuePage: React.FC = () => {
                         MUNICIPAL WORK ORDER
                       </div>
                       <div className="font-mono text-xs font-bold text-[#121210]/70 mt-1">
-                        WO-2026-{activeItem.code.replace('BLR-', '')} · ISSUED 06 OCT 2026 · PWD SANCTION
+                        {activeWoId} · ISSUED 06 OCT 2026 · PWD SANCTION
                       </div>
                     </div>
                     <div className="sm:text-right">
@@ -406,7 +634,7 @@ export const PriorityQueuePage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Line Items PO Table */}
+                  {/* Line Items PO Table with exact arithmetic summing to activeCost */}
                   <table className="w-full mt-6 font-mono text-sm">
                     <thead>
                       <tr className="border-y-[3px] border-[#121210]">
@@ -432,7 +660,7 @@ export const PriorityQueuePage: React.FC = () => {
                         <td className="text-right font-bold">{Math.max(1, Math.round(activeItem.surfaceAreaSqM * 1.5))}</td>
                         <td className="text-right text-xs">₹12,400.00</td>
                         <td className="text-right font-bold">
-                          ₹{(Math.max(1, Math.round(activeItem.surfaceAreaSqM * 1.5)) * 12400).toLocaleString('en-IN')}.00
+                          ₹{lineItem1.toLocaleString('en-IN')}.00
                         </td>
                       </tr>
                       <tr>
@@ -442,7 +670,7 @@ export const PriorityQueuePage: React.FC = () => {
                         <td className="text-right font-bold">{activeItem.depthCm > 8 ? 2 : 1}</td>
                         <td className="text-right text-xs">₹3,450.00</td>
                         <td className="text-right font-bold">
-                          ₹{((activeItem.depthCm > 8 ? 2 : 1) * 3450).toLocaleString('en-IN')}.00
+                          ₹{lineItem2.toLocaleString('en-IN')}.00
                         </td>
                       </tr>
                       <tr>
@@ -451,7 +679,9 @@ export const PriorityQueuePage: React.FC = () => {
                         </td>
                         <td className="text-right font-bold">1</td>
                         <td className="text-right text-xs">₹14,800.00</td>
-                        <td className="text-right font-bold">₹14,800.00</td>
+                        <td className="text-right font-bold">
+                          ₹{lineItem3.toLocaleString('en-IN')}.00
+                        </td>
                       </tr>
                       <tr>
                         <td className="py-2.5">
@@ -459,7 +689,9 @@ export const PriorityQueuePage: React.FC = () => {
                         </td>
                         <td className="text-right font-bold">1</td>
                         <td className="text-right text-xs">₹4,200.00</td>
-                        <td className="text-right font-bold">₹4,200.00</td>
+                        <td className="text-right font-bold">
+                          ₹{lineItem4.toLocaleString('en-IN')}.00
+                        </td>
                       </tr>
                     </tbody>
                     <tfoot>
@@ -468,14 +700,16 @@ export const PriorityQueuePage: React.FC = () => {
                           Subtotal (Base Work Order Estimate)
                         </td>
                         <td className="text-right font-bold text-sm">
-                          ₹{(activeCost - 3200).toLocaleString('en-IN')}.00
+                          ₹{activeSubtotal.toLocaleString('en-IN')}.00
                         </td>
                       </tr>
                       <tr>
                         <td colSpan={3} className="text-right py-1 text-xs text-[#121210]/70">
-                          GST / Infrastructure Cess (18%)
+                          GST / Infrastructure Cess (16%)
                         </td>
-                        <td className="text-right font-bold text-sm">₹3,200.00</td>
+                        <td className="text-right font-bold text-sm">
+                          ₹{activeGst.toLocaleString('en-IN')}.00
+                        </td>
                       </tr>
                       <tr className="border-t-[3px] border-[#121210]">
                         <td colSpan={3} className="text-right py-2 font-display font-extrabold text-base text-[#121210]">
@@ -632,46 +866,32 @@ export const PriorityQueuePage: React.FC = () => {
                       <th className="text-right p-3 text-xs tracking-widest text-[#121210]">AMOUNT</th>
                       <th className="text-left p-3 text-xs tracking-widest text-[#121210]">ACTOR</th>
                       <th className="text-left p-3 text-xs tracking-widest text-[#121210]">TIMESTAMP</th>
-                      <th className="text-right p-3 text-xs tracking-widest text-[#121210]">STATUS</th>
+                      <th className="text-right p-3 text-xs tracking-widest text-[#121210] min-w-[140px]">STATUS</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#121210]/20">
-                    <tr>
-                      <td className="p-3 font-bold">WO-2026-0412</td>
-                      <td className="p-3">100ft Road Indiranagar</td>
-                      <td className="text-right p-3 font-bold">₹18,440.00</td>
-                      <td className="p-3">M. Vossberg</td>
-                      <td className="p-3 text-[#121210]/70">06 OCT · 08:21</td>
-                      <td className="text-right p-3">
-                        <span className="stamp text-[#2E8C42] text-[10px]" style={{ transform: 'rotate(-2deg)' }}>
-                          APPROVED
-                        </span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="p-3 font-bold">WO-2026-0417</td>
-                      <td className="p-3">Mysore Road Flyover Ramp</td>
-                      <td className="text-right p-3 font-bold">₹82,250.00</td>
-                      <td className="p-3">R. Sato</td>
-                      <td className="p-3 text-[#121210]/70">05 OCT · 17:04</td>
-                      <td className="text-right p-3">
-                        <span className="stamp text-[#C03A3A] text-[10px]" style={{ transform: 'rotate(2deg)' }}>
-                          REJECTED
-                        </span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="p-3 font-bold">WO-2026-0408</td>
-                      <td className="p-3">Sarjapur Main Road Junction</td>
-                      <td className="text-right p-3 font-bold">₹24,482.00</td>
-                      <td className="p-3">A. Klein</td>
-                      <td className="p-3 text-[#121210]/70">05 OCT · 14:48</td>
-                      <td className="text-right p-3">
-                        <span className="stamp text-[#E8A030] text-[10px]" style={{ transform: 'rotate(-2deg)' }}>
-                          NEEDS DETAIL
-                        </span>
-                      </td>
-                    </tr>
+                    {historyRecords.slice(0, 4).map((rec) => {
+                      const stampColor = rec.status === 'APPROVED' ? '#2E8C42' : rec.status === 'REJECTED' ? '#C03A3A' : '#E8A030';
+                      return (
+                        <tr
+                          key={rec.id}
+                          onClick={() => handleSelectHistoryRecord(rec)}
+                          className="cursor-pointer hover:bg-[#CFE8D6]/40 transition-colors group"
+                          title="Click to view work order dossier in inbox"
+                        >
+                          <td className="p-3 font-bold group-hover:underline">{rec.woId}</td>
+                          <td className="p-3 font-medium">{rec.roadName}</td>
+                          <td className="text-right p-3 font-bold">₹{rec.amount.toLocaleString('en-IN')}.00</td>
+                          <td className="p-3 text-[#121210]/80">{rec.inspector}</td>
+                          <td className="p-3 text-[#121210]/70">{rec.timestamp}</td>
+                          <td className="text-right p-3 min-w-[140px] whitespace-nowrap">
+                            <span className="stamp text-[10px]" style={{ color: stampColor }}>
+                              {rec.status}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -685,10 +905,10 @@ export const PriorityQueuePage: React.FC = () => {
         <div className="p-6 space-y-6">
           <div className="brut overflow-hidden stripes-amber p-1.5">
             <div className="bg-[#CFE8D6] p-5">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                 <div className="font-display font-extrabold text-xl flex items-center gap-2 text-[#121210]">
                   <AlertTriangle className="w-6 h-6 text-[#C03A3A] stroke-[2.5]" />
-                  <span>ESCALATION QUEUE · 3 PAST SLA</span>
+                  <span>ESCALATION QUEUE · {pendingEscalationsCount} PAST SLA</span>
                 </div>
                 <span className="font-mono text-xs font-bold text-[#121210]/60">
                   AUTO-ESCALATES TO ZONAL COMMISSIONER AT +24H
@@ -696,80 +916,49 @@ export const PriorityQueuePage: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <div className="brut bg-white p-4 border-[#C03A3A]">
-                  <div className="flex justify-between items-start">
-                    <span className="tag bg-[#C03A3A] text-white">+52H PAST SLA</span>
-                    <Flame className="w-5 h-5 text-[#C03A3A]" />
-                  </div>
-                  <div className="font-display font-extrabold text-lg mt-3 text-[#121210]">
-                    Outer Ring Road (Bellandur)
-                  </div>
-                  <div className="font-mono font-extrabold text-2xl mt-1 text-[#121210]">
-                    ₹48,920.00
-                  </div>
-                  <div className="text-xs font-mono text-[#121210]/60 mt-1">
-                    Stuck at: Executive Engineer Tenders
-                  </div>
-                  <button
-                    onClick={() => {
-                      setActiveTab('INBOX');
-                      addToast('Loaded Critical Escalation', 'Outer Ring Road Bellandur dossier opened in inbox', 'error');
-                    }}
-                    className="mt-4 w-full py-1.5 brut-sm bg-[#C03A3A] text-white font-display font-bold text-xs hover:bg-black transition-colors cursor-pointer"
-                  >
-                    TAKE DECISION NOW →
-                  </button>
-                </div>
+                {escalations.map((esc) => {
+                  const isDecided = esc.status === 'DECIDED';
+                  const badgeColor = esc.severity === 'CRITICAL' ? 'bg-[#C03A3A] text-white' : 'bg-[#E8A030] text-[#121210]';
+                  const cardBorder = isDecided ? 'border-[#2E8C42]' : esc.severity === 'CRITICAL' ? 'border-[#C03A3A]' : 'border-[#E8A030]';
 
-                <div className="brut bg-white p-4 border-[#E8A030]">
-                  <div className="flex justify-between items-start">
-                    <span className="tag bg-[#E8A030] text-[#121210]">+18H PAST SLA</span>
-                    <AlertTriangle className="w-5 h-5 text-[#E8A030]" />
-                  </div>
-                  <div className="font-display font-extrabold text-lg mt-3 text-[#121210]">
-                    Bannerghatta Road (Meenakshi)
-                  </div>
-                  <div className="font-mono font-extrabold text-2xl mt-1 text-[#121210]">
-                    ₹31,200.00
-                  </div>
-                  <div className="text-xs font-mono text-[#121210]/60 mt-1">
-                    Stuck at: Quality Auditor Lab Core
-                  </div>
-                  <button
-                    onClick={() => {
-                      setActiveTab('INBOX');
-                      addToast('Loaded Escalation', 'Bannerghatta Road dossier opened in inbox', 'warning');
-                    }}
-                    className="mt-4 w-full py-1.5 brut-sm bg-[#E8A030] text-[#121210] font-display font-bold text-xs hover:bg-black hover:text-white transition-colors cursor-pointer"
-                  >
-                    TAKE DECISION NOW →
-                  </button>
-                </div>
-
-                <div className="brut bg-white p-4 border-[#C03A3A]">
-                  <div className="flex justify-between items-start">
-                    <span className="tag bg-[#C03A3A] text-white">+71H PAST SLA</span>
-                    <Flame className="w-5 h-5 text-[#C03A3A]" />
-                  </div>
-                  <div className="font-display font-extrabold text-lg mt-3 text-[#121210]">
-                    Old Madras Road (Swami Vivekananda)
-                  </div>
-                  <div className="font-mono font-extrabold text-2xl mt-1 text-[#121210]">
-                    ₹61,440.00
-                  </div>
-                  <div className="text-xs font-mono text-[#121210]/60 mt-1">
-                    Stuck at: Zonal Commissioner Sanction
-                  </div>
-                  <button
-                    onClick={() => {
-                      setActiveTab('INBOX');
-                      addToast('Loaded Critical Escalation', 'Old Madras Road dossier opened in inbox', 'error');
-                    }}
-                    className="mt-4 w-full py-1.5 brut-sm bg-[#C03A3A] text-white font-display font-bold text-xs hover:bg-black transition-colors cursor-pointer"
-                  >
-                    TAKE DECISION NOW →
-                  </button>
-                </div>
+                  return (
+                    <div key={esc.id} className={`brut bg-white p-4 ${cardBorder}`}>
+                      <div className="flex justify-between items-start">
+                        <span className={`tag ${badgeColor}`}>{esc.slaNotice}</span>
+                        {isDecided ? (
+                          <span className="tag bg-[#2E8C42] text-white font-bold">DECIDED</span>
+                        ) : (
+                          <Flame className="w-5 h-5 text-[#C03A3A]" />
+                        )}
+                      </div>
+                      <div className="font-display font-extrabold text-lg mt-3 text-[#121210]">
+                        {esc.roadName}
+                      </div>
+                      <div className="font-mono font-extrabold text-2xl mt-1 text-[#121210]">
+                        ₹{esc.amount.toLocaleString('en-IN')}.00
+                      </div>
+                      <div className="text-xs font-mono text-[#121210]/60 mt-1">
+                        {isDecided ? (
+                          <span className="text-[#2E8C42] font-bold">Sanction recorded: {esc.decidedStatus}</span>
+                        ) : (
+                          `Stuck at: ${esc.stuckAt}`
+                        )}
+                      </div>
+                      <button
+                        onClick={() => handleTakeEscalationDecision(esc)}
+                        className={`mt-4 w-full py-1.5 brut-sm font-display font-bold text-xs transition-colors cursor-pointer ${
+                          isDecided
+                            ? 'bg-[#121210] text-white hover:bg-zinc-800'
+                            : esc.severity === 'CRITICAL'
+                            ? 'bg-[#C03A3A] text-white hover:bg-black'
+                            : 'bg-[#E8A030] text-[#121210] hover:bg-black hover:text-white'
+                        }`}
+                      >
+                        {isDecided ? 'VIEW SANCTIONED DOCKET →' : 'TAKE DECISION NOW →'}
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -780,16 +969,18 @@ export const PriorityQueuePage: React.FC = () => {
       {activeTab === 'HISTORY' && (
         <div className="p-6">
           <div className="brut bg-white p-6">
-            <div className="flex items-center justify-between border-b-[3px] border-[#121210] pb-4 mb-4">
+            <div className="flex items-center justify-between border-b-[3px] border-[#121210] pb-4 mb-4 flex-wrap gap-2">
               <div>
                 <h2 className="font-display font-extrabold text-2xl text-[#121210]">
                   MUNICIPAL AUDIT & DISPATCH HISTORY
                 </h2>
                 <p className="font-mono text-xs text-[#121210]/60 mt-0.5">
-                  Complete immutable ledger of 2,481 approved, rejected, and clarified road repair work orders.
+                  Complete immutable ledger of 2,481 approved, rejected, and clarified road repair work orders. Click any entry to inspect or reopen the work order docket.
                 </p>
               </div>
-              <span className="tag bg-[#CFE8D6]">2,481 TOTAL AUDITS</span>
+              <span className="tag bg-[#CFE8D6]">
+                {2481 + (historyRecords.length - INITIAL_HISTORY.length)} TOTAL AUDITS
+              </span>
             </div>
 
             <div className="overflow-x-auto">
@@ -801,70 +992,32 @@ export const PriorityQueuePage: React.FC = () => {
                     <th className="text-right p-3 text-xs tracking-widest text-[#121210]">AMOUNT (INR)</th>
                     <th className="text-left p-3 text-xs tracking-widest text-[#121210]">INSPECTOR / AUDITOR</th>
                     <th className="text-left p-3 text-xs tracking-widest text-[#121210]">TIMESTAMP</th>
-                    <th className="text-right p-3 text-xs tracking-widest text-[#121210]">STAMPED DECISION</th>
+                    <th className="text-right p-3 text-xs tracking-widest text-[#121210] min-w-[150px] pr-4">STAMPED DECISION</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#121210]/20">
-                  <tr>
-                    <td className="p-3 font-bold">WO-2026-0418</td>
-                    <td className="p-3 font-display font-bold">Outer Ring Road (Bellandur)</td>
-                    <td className="text-right p-3 font-bold">₹48,920.00</td>
-                    <td className="p-3">Chief Auditor Mara</td>
-                    <td className="p-3 text-[#121210]/70">06 OCT · 08:30</td>
-                    <td className="text-right p-3">
-                      <span className="stamp text-[#2E8C42] text-[10px]" style={{ transform: 'rotate(-2deg)' }}>
-                        APPROVED
-                      </span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="p-3 font-bold">WO-2026-0416</td>
-                    <td className="p-3 font-display font-bold">100ft Road Indiranagar</td>
-                    <td className="text-right p-3 font-bold">₹18,440.00</td>
-                    <td className="p-3">Ward Engg A. Klein</td>
-                    <td className="p-3 text-[#121210]/70">06 OCT · 08:14</td>
-                    <td className="text-right p-3">
-                      <span className="stamp text-[#2E8C42] text-[10px]" style={{ transform: 'rotate(1deg)' }}>
-                        APPROVED
-                      </span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="p-3 font-bold">WO-2026-0412</td>
-                    <td className="p-3 font-display font-bold">Mysore Road Flyover Ramp</td>
-                    <td className="text-right p-3 font-bold">₹82,250.00</td>
-                    <td className="p-3">Auditor R. Sato</td>
-                    <td className="p-3 text-[#121210]/70">05 OCT · 17:04</td>
-                    <td className="text-right p-3">
-                      <span className="stamp text-[#C03A3A] text-[10px]" style={{ transform: 'rotate(-3deg)' }}>
-                        REJECTED
-                      </span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="p-3 font-bold">WO-2026-0409</td>
-                    <td className="p-3 font-display font-bold">Hosur Road (Silk Board)</td>
-                    <td className="text-right p-3 font-bold">₹36,120.00</td>
-                    <td className="p-3">Chief Auditor Mara</td>
-                    <td className="p-3 text-[#121210]/70">05 OCT · 15:32</td>
-                    <td className="text-right p-3">
-                      <span className="stamp text-[#2E8C42] text-[10px]" style={{ transform: 'rotate(2deg)' }}>
-                        APPROVED
-                      </span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="p-3 font-bold">WO-2026-0408</td>
-                    <td className="p-3 font-display font-bold">Sarjapur Main Road</td>
-                    <td className="text-right p-3 font-bold">₹24,482.00</td>
-                    <td className="p-3">Exec Engg Devin</td>
-                    <td className="p-3 text-[#121210]/70">05 OCT · 14:48</td>
-                    <td className="text-right p-3">
-                      <span className="stamp text-[#E8A030] text-[10px]" style={{ transform: 'rotate(-2deg)' }}>
-                        NEEDS DETAIL
-                      </span>
-                    </td>
-                  </tr>
+                  {historyRecords.map((rec) => {
+                    const stampColor = rec.status === 'APPROVED' ? '#2E8C42' : rec.status === 'REJECTED' ? '#C03A3A' : '#E8A030';
+                    return (
+                      <tr
+                        key={rec.id}
+                        onClick={() => handleSelectHistoryRecord(rec)}
+                        className="cursor-pointer hover:bg-[#CFE8D6]/40 transition-colors group"
+                        title="Click to inspect this work order in Hazard Inbox"
+                      >
+                        <td className="p-3 font-bold group-hover:underline">{rec.woId}</td>
+                        <td className="p-3 font-display font-bold">{rec.roadName}</td>
+                        <td className="text-right p-3 font-bold">₹{rec.amount.toLocaleString('en-IN')}.00</td>
+                        <td className="p-3">{rec.inspector}</td>
+                        <td className="p-3 text-[#121210]/70">{rec.timestamp}</td>
+                        <td className="text-right p-3 min-w-[150px] whitespace-nowrap pr-4">
+                          <span className="stamp text-[10px]" style={{ color: stampColor }}>
+                            {rec.status}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
