@@ -15,7 +15,7 @@ export const RepairVerificationPage: React.FC = () => {
 
   const [afterImage, setAfterImage] = useState<string>(
     activeIncident.repairVerification?.contractorSubmittedPhoto ||
-    'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=800&q=80'
+    '/sample_data/images/repaired_audit_inspection.jpg'
   );
 
   const [isAuditing, setIsAuditing] = useState(false);
@@ -28,8 +28,8 @@ export const RepairVerificationPage: React.FC = () => {
     addToast('Surface Scan Commenced', 'Running stereoscopic texture comparison against IRC-SP-100', 'info');
 
     const submittedPhoto = shouldPass
-      ? 'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=800&q=80'
-      : 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80';
+      ? '/sample_data/images/repaired_audit_inspection.jpg'
+      : '/sample_data/images/real/pothole_asphalt_heavy.jpg';
     setAfterImage(submittedPhoto);
 
     await new Promise(r => setTimeout(r, 800));
@@ -97,7 +97,7 @@ export const RepairVerificationPage: React.FC = () => {
                   setSelectedIncident(inc);
                   setAfterImage(
                     inc.repairVerification?.contractorSubmittedPhoto ||
-                    'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=800&q=80'
+                    '/sample_data/images/repaired_audit_inspection.jpg'
                   );
                   setAuditResult(inc.repairVerification || null);
                 }
@@ -148,6 +148,7 @@ export const RepairVerificationPage: React.FC = () => {
             <img
               src={activeIncident.images.original}
               alt="Defect before repair"
+              onError={(e) => { e.currentTarget.src = '/sample_data/images/real/bellandur_orr_flyover.jpg'; }}
               className="w-full h-full object-cover"
             />
             <div className="absolute bottom-2 left-2 bg-[#121210] text-white px-2 py-0.5 text-[10px] font-mono font-bold">
@@ -177,6 +178,7 @@ export const RepairVerificationPage: React.FC = () => {
             <img
               src={afterImage}
               alt="Contractor repair submission"
+              onError={(e) => { e.currentTarget.src = '/sample_data/images/repaired_audit_inspection.jpg'; }}
               className="w-full h-full object-cover"
             />
             {auditResult && (

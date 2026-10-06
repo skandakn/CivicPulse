@@ -503,6 +503,7 @@ export const JudgeDemoModal: React.FC = () => {
                     <img
                       src={demoIncident.images.original}
                       alt="Before"
+                      onError={(e) => { e.currentTarget.src = '/sample_data/images/real/bellandur_orr_central.jpg'; }}
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute bottom-2 left-2 bg-[#121210] text-white px-2 py-0.5 text-[10px] font-mono font-bold">
@@ -515,8 +516,9 @@ export const JudgeDemoModal: React.FC = () => {
                   <div className="text-[10px] font-mono text-[#2E8C42] font-black uppercase">AFTER: HOT-MIX PATCH</div>
                   <div className="relative border-2 border-[#121210] h-48 bg-black overflow-hidden">
                     <img
-                      src="https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=800&q=80"
+                      src="/sample_data/images/repaired_audit_inspection.jpg"
                       alt="After patch"
+                      onError={(e) => { e.currentTarget.src = '/sample_data/images/repaired_patch_closeup.jpg'; }}
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute bottom-2 left-2 bg-[#2E8C42] text-white px-2 py-0.5 text-[10px] font-mono font-bold">

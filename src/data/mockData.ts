@@ -385,7 +385,7 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     latitude: 12.9298,
     longitude: 77.6835,
     roadId: 'road-01',
-    roadName: 'Outer Ring Road (Marathahalli - Bellandur Corridor)',
+    roadName: 'Outer Ring Road (Bellandur)',
     wardId: 'ward-150',
     wardName: 'Bellandur',
     wardNumber: 150,
@@ -440,9 +440,10 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     upvotes: 142,
     sahayaTicketNo: 'BBMP-SHY-2026-90412',
     images: {
-      original: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80',
-      detectionOverlay: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80',
-      depthHeatmap: 'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=800&q=80'
+      original: '/sample_data/images/real/bellandur_orr_central.jpg',
+      detectionOverlay: '/sample_data/images/real/bellandur_orr_central.jpg',
+      depthHeatmap: '/sample_data/images/real/bellandur_orr_central.jpg',
+      repaired: '/sample_data/images/repaired_audit_inspection.jpg'
     },
     aiMetrics: {
       depthCm: 18.0,
@@ -476,7 +477,7 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     latitude: 12.9172,
     longitude: 77.6228,
     roadId: 'road-04',
-    roadName: 'Hosur Road / Silk Board Flyover Underpass',
+    roadName: 'Hosur Road (Silk Board)',
     wardId: 'ward-176',
     wardName: 'BTM Layout & Silk Board',
     wardNumber: 176,
@@ -531,7 +532,8 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     upvotes: 219,
     sahayaTicketNo: 'BBMP-SHY-2026-89841',
     images: {
-      original: 'https://images.unsplash.com/photo-1541888946425-d0fbb186c5f7?auto=format&fit=crop&w=800&q=80'
+      original: '/sample_data/images/real/silkboard_junction.jpg',
+      repaired: '/sample_data/images/repaired_patch_closeup.jpg'
     },
     aiMetrics: {
       depthCm: 13.8,
@@ -609,7 +611,8 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     upvotes: 98,
     sahayaTicketNo: 'BBMP-SHY-2026-90204',
     images: {
-      original: 'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=800&q=80'
+      original: '/sample_data/images/koramangala_80ft_road_moderate.jpg',
+      repaired: '/sample_data/images/repaired_audit_inspection.jpg'
     },
     aiMetrics: {
       depthCm: 11.2,
@@ -684,7 +687,8 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     upvotes: 75,
     sahayaTicketNo: 'BBMP-SHY-2026-89622',
     images: {
-      original: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80'
+      original: '/sample_data/images/whitefield_itpl_critical.jpg',
+      repaired: '/sample_data/images/repaired_patch_closeup.jpg'
     },
     aiMetrics: {
       depthCm: 10.5,
@@ -759,8 +763,8 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     upvotes: 45,
     sahayaTicketNo: 'BBMP-SHY-2026-88102',
     images: {
-      original: 'https://images.unsplash.com/photo-1541888946425-d0fbb186c5f7?auto=format&fit=crop&w=800&q=80',
-      repaired: 'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=800&q=80'
+      original: '/sample_data/images/real/indiranagar_100ft_road.jpg',
+      repaired: '/sample_data/images/repaired_audit_inspection.jpg'
     },
     aiMetrics: {
       depthCm: 7.2,
@@ -784,8 +788,8 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     repairVerification: {
       incidentId: 'inc-05',
       repairedAt: '2026-10-05T08:45:00Z',
-      contractorSubmittedPhoto: 'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=800&q=80',
-      aiAuditPhoto: 'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=800&q=80',
+      contractorSubmittedPhoto: '/sample_data/images/repaired_audit_inspection.jpg',
+      aiAuditPhoto: '/sample_data/images/repaired_audit_inspection.jpg',
       passConfidence: 0.984,
       surfaceSmoothnessScore: 94,
       areaReductionPercent: 98.2,
@@ -849,7 +853,8 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     upvotes: 11,
     sahayaTicketNo: 'BBMP-SHY-2026-90518',
     images: {
-      original: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80'
+      original: '/sample_data/images/real/pothole_crater_severe.jpg',
+      repaired: '/sample_data/images/repaired_patch_closeup.jpg'
     },
     aiMetrics: {
       depthCm: 4.8,
@@ -932,7 +937,23 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     upvotes: 310,
     sahayaTicketNo: 'BBMP-SHY-2026-90599',
     images: {
-      original: 'https://images.unsplash.com/photo-1541888946425-d0fbb186c5f7?auto=format&fit=crop&w=800&q=80'
+      original: '/sample_data/images/real/bellandur_orr_flyover.jpg',
+      repaired: '/sample_data/images/repaired_audit_inspection.jpg'
+    },
+    repairVerification: {
+      incidentId: 'inc-07',
+      repairedAt: '2026-10-05T10:15:00Z',
+      contractorSubmittedPhoto: '/sample_data/images/repaired_audit_inspection.jpg',
+      aiAuditPhoto: '/sample_data/images/repaired_audit_inspection.jpg',
+      passConfidence: 0.984,
+      surfaceSmoothnessScore: 94,
+      areaReductionPercent: 98.2,
+      unresolvedDamageDetected: false,
+      thermalDensityScore: 96,
+      verifiedBy: 'AI_VISION_AUDITOR',
+      status: 'APPROVED',
+      notes: 'Post-repair hot-mix audit passed. Subbase void filled and compacted under DLP Clause 45.2. IRC-SP-100 compliant.',
+      mode: 'DEMO_VERIFICATION_MODE'
     },
     aiMetrics: {
       depthCm: 16.2,
@@ -1006,7 +1027,8 @@ export const INITIAL_INCIDENTS: PotholeIncident[] = [
     upvotes: 114,
     sahayaTicketNo: 'BBMP-SHY-2026-90188',
     images: {
-      original: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80'
+      original: '/sample_data/images/real/bangalore_traffic_road.jpg',
+      repaired: '/sample_data/images/repaired_audit_inspection.jpg'
     },
     aiMetrics: {
       depthCm: 12.0,

@@ -27,8 +27,8 @@ function runDemoVerification(incident: PotholeIncident): RepairVerification {
   return {
     incidentId: incident.id,
     repairedAt: new Date().toISOString(),
-    contractorSubmittedPhoto: incident.images.repaired || incident.images.original,
-    aiAuditPhoto: incident.images.repaired || incident.images.original,
+    contractorSubmittedPhoto: incident.images.repaired || '/sample_data/images/repaired_audit_inspection.jpg',
+    aiAuditPhoto: incident.images.repaired || '/sample_data/images/repaired_audit_inspection.jpg',
     passConfidence,
     surfaceSmoothnessScore: Math.round(passConfidence * 100 * 0.9),
     thermalDensityScore: Math.round(passConfidence * 100 * 0.85),
@@ -148,6 +148,7 @@ export const RepairVerificationPanel: React.FC<RepairVerificationPanelProps> = (
             <img
               src={incident.images.original}
               alt="Before repair"
+              onError={(e) => { e.currentTarget.src = '/sample_data/images/real/bellandur_orr_flyover.jpg'; }}
               className="w-full h-32 object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-2">
@@ -162,9 +163,10 @@ export const RepairVerificationPanel: React.FC<RepairVerificationPanelProps> = (
             onClick={() => setShowBefore(false)}
           >
             <img
-              src={incident.images.repaired || incident.images.original}
+              src={incident.images.repaired || '/sample_data/images/repaired_audit_inspection.jpg'}
               alt="After repair"
-              className={`w-full h-32 object-cover ${!incident.images.repaired ? 'filter grayscale' : ''}`}
+              onError={(e) => { e.currentTarget.src = '/sample_data/images/repaired_audit_inspection.jpg'; }}
+              className="w-full h-32 object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-2">
               <span className="text-[10px] font-mono font-bold text-white bg-[#2E8C42] px-1.5 py-0.5 border border-[#121210]">

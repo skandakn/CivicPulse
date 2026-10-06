@@ -198,7 +198,7 @@ export const IncidentDetailPage: React.FC = () => {
                 >
                   3D Depth
                 </button>
-                {selectedIncident.repairVerification && (
+                {(selectedIncident.repairVerification || selectedIncident.images.repaired) && (
                   <button
                     onClick={() => setActiveImageTab('REPAIRED')}
                     className={`px-2 py-0.5 border border-[#121210] font-bold cursor-pointer transition-colors ${
@@ -212,47 +212,158 @@ export const IncidentDetailPage: React.FC = () => {
             </div>
 
             {/* Display Image with brutalist border */}
-            <div className="relative overflow-hidden h-72 border-2 border-[#121210] bg-black">
+            <div className="relative overflow-hidden h-72 border-2 border-[#121210] bg-[#121210]">
               <img
                 src={
-                  activeImageTab === 'REPAIRED' && selectedIncident.repairVerification
-                    ? selectedIncident.repairVerification.contractorSubmittedPhoto
+                  activeImageTab === 'REPAIRED'
+                    ? (selectedIncident.repairVerification?.contractorSubmittedPhoto || selectedIncident.images.repaired || '/sample_data/images/repaired_audit_inspection.jpg')
                     : selectedIncident.images.original
                 }
                 alt={selectedIncident.roadName}
+                onError={(e) => {
+                  e.currentTarget.src = activeImageTab === 'REPAIRED'
+                    ? '/sample_data/images/repaired_audit_inspection.jpg'
+                    : '/sample_data/images/real/bellandur_orr_flyover.jpg';
+                }}
                 className="w-full h-full object-cover"
               />
 
+              {/* TAB 1: 3D DEPTH HUD & LIDAR THERMAL SHADER */}
               {activeImageTab === 'HEATMAP' && (
-                <div className="absolute inset-0 bg-gradient-to-t from-red-600/40 via-amber-500/25 to-transparent mix-blend-overlay pointer-events-none" />
+                <>
+                  {/* LiDAR False-Color Gradient Shaders */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-blue-700/40 via-emerald-500/20 to-red-600/50 mix-blend-color pointer-events-none" />
+                  <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-600/50 via-amber-500/30 to-blue-900/30 mix-blend-overlay pointer-events-none" />
+
+                  {/* Top-Right Sensor Telemetry */}
+                  <div className="absolute top-2 right-2 bg-[#121210]/90 border border-emerald-400 px-2 py-0.5 text-[9px] font-mono font-bold text-emerald-400 pointer-events-none">
+                    STEREO LIDAR CV · ±0.2cm
+                  </div>
+
+                  {/* 3D Depth Wireframe Mesh Box */}
+                  <div
+                    className="absolute border-2 border-emerald-400 pointer-events-none bg-red-600/25"
+                    style={{ top: '22%', left: '20%', width: '60%', height: '56%' }}
+                  >
+                    {/* Topographical grid lines */}
+                    <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98135_1px,transparent_1px),linear-gradient(to_bottom,#10b98135_1px,transparent_1px)] bg-[size:16px_16px]" />
+
+                    {/* Centroid Reticle */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+                      <div className="w-9 h-9 border border-white/80 rounded-full flex items-center justify-center animate-pulse">
+                        <div className="w-2 h-2 bg-red-500 rounded-full" />
+                      </div>
+                    </div>
+
+                    <div className="absolute top-2 left-2 font-mono text-[10px] font-black text-white bg-[#121210] px-2 py-0.5 border border-emerald-400 flex items-center gap-1.5 shadow-[2px_2px_0_0_#121210]">
+                      <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                      <span>Z-DEPTH: -{selectedIncident.depthCm}cm (PEAK CRATER)</span>
+                    </div>
+
+                    <div className="absolute bottom-2 right-2 font-mono text-[9px] font-bold text-white bg-black/90 px-1.5 py-0.5 border border-white/30">
+                      POINT CLOUD: 48,200 PTS
+                    </div>
+                  </div>
+
+                  {/* Depth Scale Legend */}
+                  <div className="absolute bottom-2 left-2 bg-[#121210]/90 border border-emerald-400 px-2 py-1 text-[9px] font-mono text-white flex items-center gap-2 pointer-events-none">
+                    <span className="text-emerald-400 font-bold">DEPTH:</span>
+                    <div className="w-20 h-2 rounded-xs bg-gradient-to-r from-blue-500 via-emerald-400 via-amber-400 to-red-600 border border-white/30" />
+                    <span className="text-red-400 font-extrabold">-{selectedIncident.depthCm}cm</span>
+                  </div>
+                </>
               )}
 
-              {/* Bounding box marker */}
-              <div
-                className="absolute border-2 border-[#121210] bg-[#C03A3A]/20 pointer-events-none"
-                style={{ top: '25%', left: '25%', width: '50%', height: '50%' }}
-              >
-                <div className="absolute top-2 left-2 font-mono text-[10px] font-bold text-white bg-[#121210] px-1.5 py-0.5">
-                  DEPTH: {selectedIncident.depthCm}cm
+              {/* TAB 2: ORIGINAL VISUAL EVIDENCE */}
+              {activeImageTab === 'ORIGINAL' && (
+                <div
+                  className="absolute border-2 border-[#121210] bg-[#C03A3A]/20 pointer-events-none"
+                  style={{ top: '22%', left: '22%', width: '56%', height: '56%' }}
+                >
+                  <div className="absolute top-2 left-2 font-mono text-[10px] font-extrabold text-white bg-[#121210] px-2 py-0.5 border border-white/20 shadow-[2px_2px_0_0_#121210]">
+                    DEPTH: {selectedIncident.depthCm}cm
+                  </div>
+                  <div className="absolute bottom-2 right-2 font-mono text-[9px] font-bold text-white bg-[#C03A3A] px-1.5 py-0.5 border border-[#121210]">
+                    {selectedIncident.severity} HAZARD
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {/* TAB 3: REPAIRED AUDIT VERIFICATION */}
+              {activeImageTab === 'REPAIRED' && (
+                <>
+                  <div
+                    className="absolute border-2 border-[#2E8C42] bg-[#2E8C42]/20 pointer-events-none"
+                    style={{ top: '20%', left: '18%', width: '64%', height: '60%' }}
+                  >
+                    <div className="absolute top-2 left-2 font-mono text-[10px] font-extrabold text-white bg-[#2E8C42] px-2 py-0.5 border border-[#121210] shadow-[2px_2px_0_0_#121210] flex items-center gap-1">
+                      <span>✓ POST-REPAIR AUDIT: 0.0cm (GRADE RESTORED)</span>
+                    </div>
+                    <div className="absolute bottom-2 left-2 font-mono text-[9px] font-bold text-[#121210] bg-white px-2 py-0.5 border border-[#121210]">
+                      SURFACE SMOOTHNESS: {selectedIncident.repairVerification?.surfaceSmoothnessScore || 94}/100 · IRC-SP-100
+                    </div>
+                  </div>
+
+                  <div className="absolute top-3 right-3 pointer-events-none">
+                    <div className="stamp text-[#2E8C42] bg-white/95 px-2.5 py-1 text-xs font-mono font-black border-2 border-[#2E8C42] rotate-[-4deg] shadow-[2px_2px_0_0_#121210]">
+                      {selectedIncident.repairVerification?.status === 'APPROVED' ? 'AUDIT APPROVED' : 'DLP REPAIR AUDIT'}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
-            {/* Metric Strip */}
-            <div className="grid grid-cols-3 gap-2 font-mono text-center text-xs bg-[#CFE8D6]/30 p-2.5 border-2 border-[#121210]">
-              <div>
-                <span className="text-[10px] text-[#121210]/60 block font-bold">DEPTH</span>
-                <span className="font-extrabold text-[#C03A3A]">{selectedIncident.depthCm} cm</span>
+            {/* Metric Strip Contextually Tuned */}
+            {activeImageTab === 'REPAIRED' ? (
+              <div className="grid grid-cols-3 gap-2 font-mono text-center text-xs bg-[#CFE8D6] p-2.5 border-2 border-[#121210]">
+                <div>
+                  <span className="text-[10px] text-[#121210]/60 block font-bold">POST-REPAIR DEPTH</span>
+                  <span className="font-extrabold text-[#2E8C42]">0.0 cm (FLUSH)</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#121210]/60 block font-bold">SURFACE SMOOTH</span>
+                  <span className="font-bold text-[#121210]">
+                    {selectedIncident.repairVerification?.surfaceSmoothnessScore || 94} / 100
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#121210]/60 block font-bold">AREA RESTORED</span>
+                  <span className="font-bold text-[#2E8C42]">
+                    {selectedIncident.repairVerification?.areaReductionPercent || 98.2}%
+                  </span>
+                </div>
               </div>
-              <div>
-                <span className="text-[10px] text-[#121210]/60 block font-bold">CRATER AREA</span>
-                <span className="font-bold text-[#121210]">{selectedIncident.surfaceAreaSqM} m²</span>
+            ) : activeImageTab === 'HEATMAP' ? (
+              <div className="grid grid-cols-3 gap-2 font-mono text-center text-xs bg-[#FAFDFB] p-2.5 border-2 border-[#121210]">
+                <div>
+                  <span className="text-[10px] text-[#121210]/60 block font-bold">MAX VOID DEPTH</span>
+                  <span className="font-extrabold text-[#C03A3A]">-{selectedIncident.depthCm} cm</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#121210]/60 block font-bold">BITUMEN FILL VOL</span>
+                  <span className="font-bold text-[#121210]">{selectedIncident.estimatedVolumeLiters} L</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#121210]/60 block font-bold">STEREOSCOPIC ERROR</span>
+                  <span className="font-bold text-[#2E8C42]">±0.2 cm (99.2%)</span>
+                </div>
               </div>
-              <div>
-                <span className="text-[10px] text-[#121210]/60 block font-bold">BITUMEN VOL</span>
-                <span className="font-bold text-[#121210]">{selectedIncident.estimatedVolumeLiters} L</span>
+            ) : (
+              <div className="grid grid-cols-3 gap-2 font-mono text-center text-xs bg-[#CFE8D6]/30 p-2.5 border-2 border-[#121210]">
+                <div>
+                  <span className="text-[10px] text-[#121210]/60 block font-bold">DEPTH</span>
+                  <span className="font-extrabold text-[#C03A3A]">{selectedIncident.depthCm} cm</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#121210]/60 block font-bold">CRATER AREA</span>
+                  <span className="font-bold text-[#121210]">{selectedIncident.surfaceAreaSqM} m²</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#121210]/60 block font-bold">BITUMEN VOL</span>
+                  <span className="font-bold text-[#121210]">{selectedIncident.estimatedVolumeLiters} L</span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Merged Duplicate Citizen Reports */}
