@@ -191,8 +191,7 @@ export const GodsEyePage: React.FC = () => {
                 { id: 'INCIDENTS', label: 'INCIDENTS' },
                 { id: 'HEATMAP', label: 'HEATMAP' },
                 { id: 'ROAD_HEALTH', label: 'ROAD HEALTH' },
-                { id: 'PRIORITY_ZONES', label: 'PRIORITY ZONES' },
-                { id: 'CONTRACTORS', label: 'CONTRACTORS' }
+                { id: 'PRIORITY_ZONES', label: 'PRIORITY ZONES' }
               ].map(m => (
                 <button
                   key={m.id}
