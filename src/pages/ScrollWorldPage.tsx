@@ -1131,34 +1131,6 @@ export const ScrollWorldPage: React.FC = () => {
         className="absolute inset-0 z-0 cursor-grab active:cursor-grabbing w-full h-full touch-none"
       />
 
-      {/* Reliable DOM flight layer: keeps the 3D road and buildings visible
-          even when a browser's canvas compositor drops a frame. */}
-      <div className="absolute inset-0 z-[1] overflow-hidden pointer-events-none" aria-hidden="true">
-        <style>{`
-          @keyframes civicpulse-road-flow { from { transform: translateY(-4%); } to { transform: translateY(4%); } }
-          @keyframes civicpulse-grid-flow { from { transform: perspective(520px) rotateX(62deg) translateY(-8%); } to { transform: perspective(520px) rotateX(62deg) translateY(8%); } }
-          @keyframes civicpulse-building-drift { from { transform: translate3d(0, -10px, 0); } to { transform: translate3d(0, 14px, 0); } }
-          @keyframes civicpulse-window-blink { 0%, 100% { opacity: .65; } 50% { opacity: 1; } }
-        `}</style>
-        <div className="absolute left-1/2 top-[41%] h-[65%] w-[52%] -translate-x-1/2 border-x-2 border-amber-400/60 bg-[#121d17]/55 [clip-path:polygon(48%_0,52%_0,100%_100%,0_100%)]" style={{ animation: 'civicpulse-road-flow 3.2s ease-in-out infinite alternate' }}>
-          <div className="absolute left-1/2 top-0 h-full w-[3px] -translate-x-1/2 opacity-75 [background:repeating-linear-gradient(180deg,rgba(255,255,255,.95)_0%,rgba(255,255,255,.95)_5%,transparent_5%,transparent_14%)]" />
-        </div>
-        <div className="absolute left-1/2 top-[43%] h-[58%] w-[92%] -translate-x-1/2 opacity-20" style={{ animation: 'civicpulse-grid-flow 4s linear infinite alternate', backgroundImage: 'linear-gradient(rgba(46,140,66,.45) 1px, transparent 1px), linear-gradient(90deg, rgba(46,140,66,.45) 1px, transparent 1px)', backgroundSize: '44px 32px' }} />
-        {[0, 1, 2, 3, 4, 5, 6, 7].map((building) => {
-          const left = building % 2 === 0;
-          const depth = 18 + (building % 4) * 8;
-          return (
-            <div key={building} className="absolute bottom-[27%] w-[8%] min-w-[58px] max-w-[130px] border-2 border-cyan-400/80 bg-[#10251b]/95 shadow-[0_0_18px_rgba(0,240,255,.18)]" style={{ left: left ? `${12 + depth * 0.55}%` : undefined, right: left ? undefined : `${12 + depth * 0.55}%`, height: `${14 + depth * 0.7}%`, animation: `civicpulse-building-drift ${3.4 + building * 0.35}s ease-in-out ${building * 0.12}s infinite alternate` }}>
-              <div className="grid h-full grid-cols-3 gap-1 p-2" style={{ animation: `civicpulse-window-blink ${1.8 + building * 0.2}s ease-in-out infinite` }}>
-                {Array.from({ length: 15 }, (_, windowIndex) => <span key={windowIndex} className={`h-2 w-full ${windowIndex % 4 === 0 ? 'bg-cyan-300' : 'bg-amber-400/90'}`} />)}
-              </div>
-              <span className="absolute -top-5 left-1 whitespace-nowrap text-[8px] font-bold tracking-wide text-cyan-300">{['ECOSPACE', 'BAGMANE', 'EMBASSY', 'BBMP'][building % 4]} TOWER</span>
-            </div>
-          );
-        })}
-        <div className="absolute left-1/2 top-[40%] h-[2px] w-[62%] -translate-x-1/2 bg-cyan-300/60 shadow-[0_0_14px_#00f0ff]" />
-      </div>
-
       {/* 2. Cybernetic Grid Watermark & Compass Overlay */}
       <div className="absolute top-4 left-4 z-10 flex items-center gap-2 sm:gap-3 pointer-events-none">
         <div className="pointer-events-auto brut bg-[#CFE8D6] border-2 border-[#121210] px-3 py-1 text-xs font-bold text-[#121210] flex items-center gap-2">
