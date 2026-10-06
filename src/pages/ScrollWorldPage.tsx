@@ -240,7 +240,6 @@ export const ScrollWorldPage: React.FC = () => {
   const { setCurrentView, selectIncidentById } = useApp();
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const sceneryImagesRef = useRef<HTMLImageElement[]>([]);
 
   // Progressive camera scroll (0 to 1)
   // High-frequency ref decoupled from React rendering loop for smooth 60fps
@@ -516,20 +515,6 @@ export const ScrollWorldPage: React.FC = () => {
       isCyan: i % 7 === 0
     }));
 
-    const scenerySources = [
-      '/sample_data/images/real/bellandur_orr_central.jpg',
-      '/sample_data/images/real/bangalore_traffic_view.jpg',
-      '/sample_data/images/real/bellandur_orr_flyover.jpg',
-      '/sample_data/images/real/indiranagar_100ft_road.jpg',
-      '/sample_data/images/real/silkboard_junction.jpg',
-      '/sample_data/images/real/whitefield_kundalahalli_flyover.jpg'
-    ];
-    sceneryImagesRef.current = scenerySources.map((source) => {
-      const image = new Image();
-      image.src = source;
-      return image;
-    });
-
     // City tech park buildings configuration along Outer Ring Road
     const TECH_BUILDINGS = [
       { x: -38, z: 30, w: 18, d: 18, h: 45, name: 'ECOSPACE WING A', color: '#00f0ff' },
@@ -615,39 +600,6 @@ export const ScrollWorldPage: React.FC = () => {
       ctx.fillStyle = skyGrad;
       ctx.fillRect(0, 0, width, horizonY);
 
-      // Real Bengaluru streetscape: photographic road, traffic, and buildings
-      // crossfade behind the radar and 3D overlays. The lower layer is kept
-      // visible enough to read as a real place while the HUD remains legible.
-      const sceneryImages = sceneryImagesRef.current;
-      if (sceneryImages.length) {
-        const sceneryFrame = (tick / 0.025) / 300;
-        const sceneryIndex = Math.floor(sceneryFrame) % sceneryImages.length;
-        const nextSceneryIndex = (sceneryIndex + 1) % sceneryImages.length;
-        const sceneryProgress = sceneryFrame % 1;
-        const drawScenery = (image: HTMLImageElement, alpha: number, drift: number) => {
-          if (!image.complete || image.naturalWidth === 0) return;
-          const imageRatio = image.naturalWidth / image.naturalHeight;
-          const targetRatio = width / horizonY;
-          let drawWidth = width;
-          let drawHeight = horizonY;
-          if (imageRatio > targetRatio) drawWidth = horizonY * imageRatio;
-          else drawHeight = width / imageRatio;
-          const pan = Math.sin(tick * 0.45) * 18 + drift;
-          ctx.save();
-          ctx.globalAlpha = alpha;
-          ctx.filter = 'saturate(0.82) contrast(1.08) brightness(0.72)';
-          ctx.drawImage(image, (width - drawWidth) / 2 + pan, horizonY - drawHeight, drawWidth, drawHeight);
-          ctx.restore();
-        };
-        drawScenery(sceneryImages[sceneryIndex], 0.42 * (1 - sceneryProgress), 0);
-        drawScenery(sceneryImages[nextSceneryIndex], 0.42 * sceneryProgress, -8);
-        ctx.save();
-        ctx.globalAlpha = 0.08;
-        ctx.fillStyle = '#082218';
-        ctx.fillRect(0, 0, width, height);
-        ctx.restore();
-      }
-
       // 2. WARM AMBER & EMERALD HORIZON GLOW BLOOM
       const horizonBloom = ctx.createRadialGradient(width / 2, horizonY, 20, width / 2, horizonY, width * 0.7);
       horizonBloom.addColorStop(0, 'rgba(232, 160, 48, 0.28)');
@@ -715,26 +667,6 @@ export const ScrollWorldPage: React.FC = () => {
       groundGrad.addColorStop(1, '#0e1813');
       ctx.fillStyle = groundGrad;
       ctx.fillRect(0, horizonY, width, height - horizonY);
-
-      // Place the real road/building plate over the ground base, then draw the
-      // perspective grid and highway on top of it. This keeps Bengaluru's
-      // traffic and architecture visible instead of hiding it under the fill.
-      const streetImage = sceneryImagesRef.current[(Math.floor((tick / 0.025) / 300) + 1) % sceneryImagesRef.current.length];
-      if (streetImage?.complete && streetImage.naturalWidth > 0) {
-        const streetHeight = height - horizonY;
-        const streetWidth = streetHeight * (streetImage.naturalWidth / streetImage.naturalHeight);
-        ctx.save();
-        ctx.globalAlpha = 0.28;
-        ctx.filter = 'saturate(0.86) contrast(1.12) brightness(0.62)';
-        ctx.drawImage(streetImage, (width - streetWidth) / 2 + Math.sin(tick * 0.32) * 24, horizonY, streetWidth, streetHeight);
-        ctx.restore();
-        const fade = ctx.createLinearGradient(0, horizonY, 0, height);
-        fade.addColorStop(0, 'rgba(8, 22, 16, 0.08)');
-        fade.addColorStop(0.55, 'rgba(8, 22, 16, 0.34)');
-        fade.addColorStop(1, 'rgba(8, 22, 16, 0.58)');
-        ctx.fillStyle = fade;
-        ctx.fillRect(0, horizonY, width, height - horizonY);
-      }
 
       // 6. INFINITE 3D CYBERNETIC GROUND GRID
       ctx.lineWidth = 1;
@@ -1135,7 +1067,7 @@ export const ScrollWorldPage: React.FC = () => {
         </div>
         <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 bg-black/60 backdrop-blur-md border border-amber-300/30 text-[10px] text-amber-200 font-bold">
           <span className="w-2 h-2 rounded-full bg-amber-300 animate-pulse" />
-          <span>REAL BENGALURU SCENERY · CROSSFADE FEED</span>
+          <span>3D ROAD + BUILDINGS · FLYTHROUGH</span>
         </div>
       </div>
 
