@@ -1,17 +1,13 @@
 import React from 'react';
 import {
-  Compass,
   PlusCircle,
   Eye,
   Cpu,
   ListOrdered,
-  FileText,
   Building2,
   BarChart3,
   ChevronLeft,
   ChevronRight,
-  FileCheck2,
-  Sparkles,
   Lock,
   LogIn,
   CheckSquare
@@ -33,11 +29,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isMobileOpen,
   setIsMobileOpen
 }) => {
-  const { currentView, setCurrentView, incidents, complaints } = useApp();
+  const { currentView, setCurrentView, incidents } = useApp();
   const { isSignedIn, isDemoBypass, user, openSignIn } = useAuthSession();
 
   const criticalCount = incidents.filter(i => i.severity === 'CRITICAL' && i.status !== 'AI_VERIFIED').length;
-  const activeComplaintsCount = complaints.filter(c => c.status !== 'RESOLVED').length;
 
   const navItems: {
     id: ViewMode;
@@ -50,12 +45,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'REPORT', label: 'Report Incident', icon: PlusCircle, badge: 'NEW', badgeStyle: 'bg-[#121210] text-white' },
     { id: 'GODS_EYE', label: 'God’s Eye Map', icon: Eye, badge: incidents.length, badgeStyle: 'bg-[#121210] text-white' },
     { id: 'AI_ANALYSIS', label: 'Vision Lab', icon: Cpu },
-    { id: 'VERIFICATION', label: 'AI Verification', icon: FileCheck2, badge: 'AUDIT', badgeStyle: 'bg-[#2E8C42] text-white' },
-    { id: 'COMPLAINTS', label: 'SLA Escalations', icon: FileText, badge: activeComplaintsCount, badgeStyle: 'bg-[#E8A030] text-[#121210]' },
     { id: 'CONTRACTORS', label: 'Contractor DLP', icon: Building2 },
-    { id: 'ANALYTICS', label: 'Civic Analytics', icon: BarChart3 },
-    { id: 'LANDING', label: 'Platform Spec', icon: Compass },
-    { id: 'DEMO', label: 'Judge Walkthrough', icon: Sparkles, badge: 'DEMO', badgeStyle: 'bg-[#121210] text-white' }
+    { id: 'ANALYTICS', label: 'Civic Analytics', icon: BarChart3 }
   ];
 
   return (

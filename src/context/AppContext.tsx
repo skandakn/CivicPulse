@@ -66,7 +66,7 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentView, setCurrentView] = useState<ViewMode>('LANDING');
+  const [currentView, setCurrentView] = useState<ViewMode>('PRIORITY_QUEUE');
   const [incidents, setIncidents] = useState<PotholeIncident[]>(INITIAL_INCIDENTS);
   const [selectedIncident, setSelectedIncident] = useState<PotholeIncident | null>(INITIAL_INCIDENTS[0]);
   const [selectedWardId, setSelectedWardId] = useState<string>('ALL');
