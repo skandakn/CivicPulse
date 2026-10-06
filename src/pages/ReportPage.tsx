@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { BengaluruMap } from '../components/map/BengaluruMap';
 import { useApp } from '../context/AppContext';
-import { PotholeAnalysisResponse } from '../types';
+import { PotholeAnalysisResponse, PotholeIncident, ResolvedLocation } from '../types';
 import confetti from 'canvas-confetti';
 import {
   transcriptionService,
@@ -109,23 +109,30 @@ const PRESET_SAMPLES: PresetSample[] = [
 type ReportStep = 'INPUT' | 'CINEMATIC_ANALYSIS' | 'REPORT_SUMMARY';
 
 export const ReportPage: React.FC = () => {
-  const { incidents, selectIncidentById, addToast } = useApp();
+  const { incidents, selectIncidentById, addPotholeReport, mergeDuplicateReport, addToast } = useApp();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const locationMapRef = useRef<HTMLDivElement>(null);
 
   // Active step in workflow
   const [reportStep, setReportStep] = useState<ReportStep>('INPUT');
 
   // Input & Upload State
-  const [selectedImage, setSelectedImage] = useState<string>(PRESET_SAMPLES[0].imageUrl);
+  const [selectedImage, setSelectedImage] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [selectedCoords, setSelectedCoords] = useState<{ lat: number; lng: number }>(PRESET_SAMPLES[0].coords);
-  const [roadName, setRoadName] = useState(PRESET_SAMPLES[0].roadName);
-  const [landmark, setLandmark] = useState(PRESET_SAMPLES[0].landmark);
-  const [wardName, setWardName] = useState(PRESET_SAMPLES[0].wardName);
-  const [wardNumber, setWardNumber] = useState<number>(PRESET_SAMPLES[0].wardNumber);
-  const [description, setDescription] = useState('Severe road craters in primary vehicle track causing vehicle swerving.');
-  const [reporterPhone, setReporterPhone] = useState('+91 98450 78120');
+  const [selectedCoords, setSelectedCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [locationDetails, setLocationDetails] = useState<ResolvedLocation | null>(null);
+  const [locationStatus, setLocationStatus] = useState<'unselected' | 'loading' | 'resolved' | 'unresolved' | 'outside'>('unselected');
+  const [isBenchmarkCase, setIsBenchmarkCase] = useState(false);
+  const [storedIncidentId, setStoredIncidentId] = useState<string | null>(null);
+  const locationRequestRef = useRef<AbortController | null>(null);
+  const currentLocationRequestRef = useRef(0);
+  const roadName = locationDetails?.roadName || 'Not available';
+  const landmark = locationDetails?.locality || locationDetails?.address || 'Not available';
+  const wardDisplay = locationDetails?.ward || 'Not available';
+  const zoneDisplay = locationDetails?.zone || 'Not available';
+  const [description, setDescription] = useState('');
+  const [reporterPhone, setReporterPhone] = useState('');
   const [detectorMode, setDetectorMode] = useState<'auto' | 'demo' | 'opencv' | 'yolo'>('auto');
 
   // Analysis result state
@@ -156,22 +163,98 @@ export const ReportPage: React.FC = () => {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [transcriptionResult, setTranscriptionResult] = useState<TranscriptionResult | null>(null);
-  const [voiceText, setVoiceText] = useState(DEMO_VOICE_SAMPLES[0].transcript);
+  const [voiceText, setVoiceText] = useState('');
   const [interpretedComplaint, setInterpretedComplaint] = useState<InterpretedComplaint>(
-    transcriptionService.interpretComplaint(DEMO_VOICE_SAMPLES[0].transcript)
+    transcriptionService.interpretComplaint('')
   );
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const timerIntervalRef = useRef<any>(null);
 
   // Text Complaint Subsystem State
-  const [textComplaintInput, setTextComplaintInput] = useState(
-    'Massive waterlogged crater cluster on ITPL Main Road near Metro pillar 421. Water covers the hole, making it invisible to cars.'
-  );
+  const [textComplaintInput, setTextComplaintInput] = useState('');
   const [sessionTimestamp] = useState(() => new Date().toISOString());
+
+  const unresolvedLocation = (coords: { lat: number; lng: number }): ResolvedLocation => ({
+    latitude: coords.lat,
+    longitude: coords.lng,
+    lat: coords.lat,
+    lng: coords.lng,
+    address: 'Not available',
+    roadName: null,
+    roadClass: null,
+    roadReference: null,
+    locality: null,
+    ward: 'Not available',
+    zone: 'Not available',
+    city: null,
+    state: null,
+    source: 'Not available',
+    sourceUrl: null,
+    confidence: 0,
+    isWithinBengaluru: null,
+    resolved: false
+  });
+
+  const selectLocation = async (coords: { lat: number; lng: number }) => {
+    if (isBenchmarkCase) {
+      setSelectedImage('');
+      setSelectedFile(null);
+    }
+    locationRequestRef.current?.abort();
+    const requestId = ++currentLocationRequestRef.current;
+    const controller = new AbortController();
+    locationRequestRef.current = controller;
+    setSelectedCoords(coords);
+    setLocationDetails(unresolvedLocation(coords));
+    setLocationStatus('loading');
+    setIsBenchmarkCase(false);
+    setStoredIncidentId(null);
+    setAnalysisResult(null);
+
+    try {
+      const response = await fetch('/api/location/resolve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ latitude: coords.lat, longitude: coords.lng }),
+        signal: controller.signal
+      });
+      if (!response.ok) throw new Error(`Location lookup failed (${response.status})`);
+      const details = await response.json() as ResolvedLocation;
+      if (requestId !== currentLocationRequestRef.current) return;
+      setLocationDetails({ ...unresolvedLocation(coords), ...details, lat: coords.lat, lng: coords.lng });
+      if (details.isWithinBengaluru === false) {
+        setLocationStatus('outside');
+        addToast('Outside Bengaluru', 'Please select a location within Bengaluru.', 'error');
+      } else if (details.resolved) {
+        setLocationStatus('resolved');
+      } else {
+        setLocationStatus('unresolved');
+        addToast('Location selected', 'Location selected, but address information could not be resolved.', 'warning');
+      }
+    } catch (err) {
+      if (controller.signal.aborted || requestId !== currentLocationRequestRef.current) return;
+      setLocationDetails(unresolvedLocation(coords));
+      setLocationStatus('unresolved');
+      addToast('Location selected', 'Location selected, but address information could not be resolved.', 'warning');
+    }
+  };
+
+  const useCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      addToast('Location unavailable', 'This browser does not provide device location.', 'error');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      position => void selectLocation({ lat: position.coords.latitude, lng: position.coords.longitude }),
+      error => addToast('Device location unavailable', error.code === error.PERMISSION_DENIED ? 'Allow location access or select a point on the map.' : 'Select a point on the map to continue.', 'warning'),
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
 
   useEffect(() => {
     return () => {
+      locationRequestRef.current?.abort();
       if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
       if (audioUrl) URL.revokeObjectURL(audioUrl);
     };
@@ -245,11 +328,6 @@ export const ReportPage: React.FC = () => {
   const applyInterpretedData = (text: string) => {
     const parsed = transcriptionService.interpretComplaint(text);
     setInterpretedComplaint(parsed);
-    setRoadName(parsed.roadName);
-    setLandmark(parsed.landmark);
-    setWardName(parsed.wardName);
-    setWardNumber(parsed.wardNumber);
-    setSelectedCoords(parsed.coordinates);
   };
 
   const handleSelectDemoVoice = (sample: DemoVoiceSample) => {
@@ -286,10 +364,20 @@ export const ReportPage: React.FC = () => {
     setSelectedImage(preset.imageUrl);
     setSelectedFile(null);
     setSelectedCoords(preset.coords);
-    setRoadName(preset.roadName);
-    setLandmark(preset.landmark);
-    setWardName(preset.wardName);
-    setWardNumber(preset.wardNumber);
+    setLocationDetails({
+      ...unresolvedLocation(preset.coords),
+      roadName: preset.roadName,
+      address: preset.landmark,
+      locality: preset.wardName,
+      ward: `Ward ${preset.wardNumber} · ${preset.wardName}`,
+      source: 'Quick Test Case · preconfigured example',
+      confidence: 1,
+      isWithinBengaluru: true,
+      resolved: true
+    });
+    setLocationStatus('resolved');
+    setIsBenchmarkCase(true);
+    setStoredIncidentId(null);
     setReportStep('INPUT');
     setAnalysisResult(null);
     addToast('Preset Road Loaded', `${preset.title}`, 'info');
@@ -303,9 +391,16 @@ export const ReportPage: React.FC = () => {
         addToast('File Too Large', 'Maximum file size is 15MB', 'error');
         return;
       }
+      if (isBenchmarkCase) {
+        setSelectedCoords(null);
+        setLocationDetails(null);
+        setLocationStatus('unselected');
+      }
       setSelectedFile(file);
       const url = URL.createObjectURL(file);
       setSelectedImage(url);
+      setIsBenchmarkCase(false);
+      setStoredIncidentId(null);
       setReportStep('INPUT');
       setAnalysisResult(null);
       addToast('Media Uploaded', file.name, 'success');
@@ -314,6 +409,22 @@ export const ReportPage: React.FC = () => {
 
   // Trigger Full AI Computer Vision Workflow
   const runVisionAnalysis = async () => {
+    if (!selectedCoords) {
+      addToast('Choose a location', 'Use your current location or select a point on the map first.', 'warning');
+      return;
+    }
+    if (locationStatus === 'loading') {
+      addToast('Checking location', 'Wait for the selected location lookup to finish.', 'info');
+      return;
+    }
+    if (locationStatus === 'outside') {
+      addToast('Outside Bengaluru', 'Please select a location within Bengaluru.', 'error');
+      return;
+    }
+    if (!isBenchmarkCase && !selectedFile && submissionMode === 'PHOTO') {
+      addToast('Photo required', 'Choose a photo of the reported issue to run computer vision.', 'warning');
+      return;
+    }
     setReportStep('CINEMATIC_ANALYSIS');
     setActiveStepIndex(0);
     addToast('Computer Vision Triggered', 'Analyzing road surface geometry', 'info');
@@ -328,11 +439,51 @@ export const ReportPage: React.FC = () => {
     }, 280);
 
     try {
+      const actualDescription = submissionMode === 'VOICE' ? voiceText : submissionMode === 'TEXT' ? textComplaintInput : description;
+      if (submissionMode !== 'PHOTO' && !selectedFile) {
+        const response = await fetch('/api/report-text', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            latitude: selectedCoords.lat,
+            longitude: selectedCoords.lng,
+            description: actualDescription,
+            issueType: interpretedComplaint.department.acronym === 'BWSSB' ? 'water' : 'pothole',
+            roadName: locationDetails?.roadName,
+            roadClass: locationDetails?.roadClass,
+            roadReference: locationDetails?.roadReference,
+            locality: locationDetails?.locality,
+            ward: locationDetails?.ward,
+            zone: locationDetails?.zone,
+            city: locationDetails?.city,
+            source: locationDetails?.source,
+            recommendedDepartment: interpretedComplaint.department.acronym,
+            benchmarkCase: isBenchmarkCase
+          })
+        });
+        if (!response.ok) throw new Error(`Text intake failed (${response.status})`);
+        const data = await response.json() as PotholeAnalysisResponse;
+        setAnalysisResult(data);
+        setStoredIncidentId(syncIncidentToGodsEye(data));
+        setActiveStepIndex(pipelineStepLabels.length);
+        addToast('Report created', 'Your selected coordinates and description were saved.', 'success');
+        return;
+      }
+
       let response: Response;
       const formData = new FormData();
       formData.append('latitude', selectedCoords.lat.toString());
       formData.append('longitude', selectedCoords.lng.toString());
-      formData.append('road_hint', roadName);
+      if (locationDetails?.roadName) formData.append('road_hint', locationDetails.roadName);
+      if (locationDetails?.locality) formData.append('locality_hint', locationDetails.locality);
+      if (locationDetails?.ward && locationDetails.ward !== 'Not available') formData.append('ward_hint', locationDetails.ward);
+      if (locationDetails?.zone && locationDetails.zone !== 'Not available') formData.append('zone_hint', locationDetails.zone);
+      if (locationDetails?.city) formData.append('city_hint', locationDetails.city);
+      if (locationDetails?.roadClass) formData.append('road_class_hint', locationDetails.roadClass);
+      if (locationDetails?.roadReference) formData.append('road_reference_hint', locationDetails.roadReference);
+      formData.append('location_source', locationDetails?.source || 'Not available');
+      formData.append('description', actualDescription);
+      formData.append('benchmark_case', String(isBenchmarkCase));
       formData.append('mode', detectorMode);
 
       if (selectedFile) {
@@ -358,9 +509,15 @@ export const ReportPage: React.FC = () => {
 
       const data: PotholeAnalysisResponse = await response.json();
       setAnalysisResult(data);
+      setStoredIncidentId(syncIncidentToGodsEye(data));
     } catch (err: unknown) {
-      console.warn('[Report] Backend inference failed, using calibrated benchmark:', err);
-      // Fallback result isolated strictly to DEMO benchmark mode
+      console.warn('[Report] Backend inference failed:', err);
+      if (!isBenchmarkCase) {
+        setReportStep('INPUT');
+        addToast('Analysis unavailable', 'Computer vision could not analyze this report. Your selected coordinates are unchanged; try again when the analysis service is available.', 'error');
+        return;
+      }
+      // Keep the deterministic fallback limited to explicit Quick Test Cases.
       const fallbackResult: PotholeAnalysisResponse = {
         detected: true,
         confidence: 0.964,
@@ -400,18 +557,18 @@ export const ReportPage: React.FC = () => {
           factors: { depth: 31, traffic: 21, persistence: 12 },
           explanations: ['18cm deep crater on primary vehicle wheel path']
         },
-        duplicateCheck: { isDuplicate: true, duplicateProbability: 0.94, matchedIncidentId: 'BNG-PTH-1042', reason: 'Matches existing Bellandur ORR cluster within 15m radius' },
+        duplicateCheck: { isDuplicate: Boolean(PRESET_SAMPLES.find(sample => sample.coords.lat === selectedCoords.lat && sample.coords.lng === selectedCoords.lng)?.expectedDuplicate), duplicateProbability: 0.94, matchedIncidentId: PRESET_SAMPLES.find(sample => sample.coords.lat === selectedCoords.lat && sample.coords.lng === selectedCoords.lng)?.expectedDuplicate || null, reason: 'Preconfigured benchmark expected result.' },
         incident: {
-          id: 'BNG-PTH-1042',
+          id: PRESET_SAMPLES.find(sample => sample.coords.lat === selectedCoords.lat && sample.coords.lng === selectedCoords.lng)?.expectedDuplicate || 'BENCHMARK-REPORT',
           priority: 94,
           severity: 'Critical',
           road: roadName,
           status: 'TRIAGED',
           reportsMerged: 3,
           lastReportedAt: new Date().toISOString(),
-          canonicalLocation: { lat: selectedCoords.lat, lng: selectedCoords.lng, address: landmark, ward: `Ward ${wardNumber} (${wardName})`, zone: 'Mahadevapura' },
-          contractor: 'Star Infratech Pvt Ltd',
-          authority: 'BBMP Major Roads Division'
+          canonicalLocation: { lat: selectedCoords.lat, lng: selectedCoords.lng, address: landmark, ward: locationDetails?.ward || 'Not available', zone: locationDetails?.zone || 'Not available', locality: locationDetails?.locality, city: locationDetails?.city, source: locationDetails?.source || 'Preconfigured example', roadClass: locationDetails?.roadClass, roadReference: locationDetails?.roadReference },
+          contractor: 'Not assigned',
+          authority: `Recommended Department: ${interpretedComplaint.department.acronym}`
         }
       };
       setAnalysisResult(fallbackResult);
@@ -426,9 +583,118 @@ export const ReportPage: React.FC = () => {
   };
 
   const navigateToRoadIntelligence = () => {
-    const targetIncident = incidents.find(i => i.code === 'BNG-PTH-1042') || incidents[0];
-    selectIncidentById(targetIncident.id, 'AI_ANALYSIS');
+    if (storedIncidentId) selectIncidentById(storedIncidentId, 'AI_ANALYSIS');
+    else addToast('Report saved', 'This report is available in the incident map.', 'info');
   };
+
+  const syncIncidentToGodsEye = (data: PotholeAnalysisResponse) => {
+    if (data.duplicateCheck.isDuplicate && data.duplicateCheck.matchedIncidentId) return data.duplicateCheck.matchedIncidentId;
+    try {
+      const incident = addPotholeReport({
+        latitude: data.incident.canonicalLocation.lat,
+        longitude: data.incident.canonicalLocation.lng,
+        coordinates: { lat: data.incident.canonicalLocation.lat, lng: data.incident.canonicalLocation.lng },
+        roadName: data.incident.road,
+        wardName: data.incident.canonicalLocation.ward,
+        zone: data.incident.canonicalLocation.zone as PotholeIncident['zone'],
+        landmark: data.incident.canonicalLocation.address,
+        severity: data.incident.severity.toUpperCase() as PotholeIncident['severity'],
+        severityScore: data.severityEngine.score,
+        riskScore: data.incident.priority,
+        confidence: data.confidence,
+        authorityName: data.incident.authority,
+        canonicalLocation: data.incident.canonicalLocation,
+        images: selectedImage ? { original: selectedImage } : { original: '' },
+        aiMetrics: {
+          depthCm: 0,
+          surfaceAreaSqM: data.damageImpact.totalAreaSqMeters,
+          estimatedVolumeLiters: 0,
+          asphaltDeteriorationIndex: data.severityEngine.score,
+          moistureWaterloggingRisk: 0,
+          vehicleDamageHazard: data.incident.priority,
+          modelConfidence: data.confidence,
+          processingTimeMs: data.inferenceTimeMs,
+          inferenceMode: 'LIVE_EDGE_MODEL'
+        }
+      });
+      return incident.id;
+    } catch (error) {
+      console.warn('[Report] Could not mirror incident into local God\'s Eye state', error);
+      return data.incident.id;
+    }
+  };
+
+  const renderLocationPicker = (mapHeight: string) => (
+    <div className="bg-white brut p-4 space-y-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b-2 border-[#121210] pb-2">
+        <div>
+          <div className="flex items-center gap-2">
+            <MapPin className="w-4 h-4 text-[#2E8C42]" />
+            <span className="font-display text-xs font-black text-[#121210] uppercase tracking-wider">PINPOINT BENGALURU LOCATION</span>
+          </div>
+          <p className="font-body text-[11px] text-[#4A4A46] mt-1">Click anywhere on the map to select the incident location.</p>
+        </div>
+        <div className="flex gap-2">
+          <button type="button" onClick={useCurrentLocation} className="px-2.5 py-1.5 bg-[#CFE8D6] border border-[#121210] text-[10px] font-mono font-bold text-[#121210] hover:bg-white cursor-pointer">Use my current location</button>
+          <button type="button" onClick={() => locationMapRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })} className="px-2.5 py-1.5 bg-white border border-[#121210] text-[10px] font-mono font-bold text-[#121210] hover:bg-[#CFE8D6] cursor-pointer">Select on map</button>
+        </div>
+      </div>
+
+      <div ref={locationMapRef} className={`${mapHeight} border-2 border-[#121210] overflow-hidden relative`}>
+        <BengaluruMap
+          height="100%"
+          isPickerMode={true}
+          pickerCoordinates={selectedCoords}
+          onPickCoordinates={coords => void selectLocation(coords)}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 text-xs bg-[#CFE8D6]/30 p-3 border-2 border-[#121210] font-mono">
+        <div>
+          <span className="text-[#4A4A46] block text-[10px] font-bold uppercase">Latitude</span>
+          <span className="text-[#121210] font-bold">{selectedCoords ? `${selectedCoords.lat.toFixed(6)}° N` : 'Select a point'}</span>
+        </div>
+        <div>
+          <span className="text-[#4A4A46] block text-[10px] font-bold uppercase">Longitude</span>
+          <span className="text-[#121210] font-bold">{selectedCoords ? `${selectedCoords.lng.toFixed(6)}° E` : 'Select a point'}</span>
+        </div>
+        <div>
+          <span className="text-[#4A4A46] block text-[10px] font-bold uppercase">Road</span>
+          <span className="text-[#121210] font-bold">{roadName}</span>
+        </div>
+        <div>
+          <span className="text-[#4A4A46] block text-[10px] font-bold uppercase">Locality</span>
+          <span className="text-[#121210] font-bold">{landmark}</span>
+        </div>
+        <div>
+          <span className="text-[#4A4A46] block text-[10px] font-bold uppercase">Ward</span>
+          <span className="text-[#121210] font-bold">{wardDisplay}</span>
+        </div>
+        <div>
+          <span className="text-[#4A4A46] block text-[10px] font-bold uppercase">Zone</span>
+          <span className="text-[#121210] font-bold">{zoneDisplay}</span>
+        </div>
+        <div className="col-span-2">
+          <span className="text-[#4A4A46] block text-[10px] font-bold uppercase">Source</span>
+          <span className="text-[#121210] font-bold">{locationDetails?.source || 'Not available'}</span>
+        </div>
+        <div className="col-span-2 min-h-4 font-sans text-[11px]" aria-live="polite">
+          {locationStatus === 'loading' && <span className="text-[#4A4A46]">Resolving selected location…</span>}
+          {locationStatus === 'unresolved' && <span className="text-[#4A4A46]">Location selected, but address information could not be resolved. Coordinates are kept.</span>}
+          {locationStatus === 'outside' && <span className="font-bold text-[#C03A3A]">Please select a location within Bengaluru.</span>}
+          {isBenchmarkCase && <span className="text-[#4A4A46]">Quick Test Case · Optional preconfigured example</span>}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderRecommendedDepartment = () => (
+    <div className="bg-white brut p-4">
+      <span className="text-[10px] font-mono font-bold text-[#4A4A46] uppercase block">Recommended Department</span>
+      <div className="font-display text-sm font-black text-[#121210] mt-1">{interpretedComplaint.department.acronym} · {interpretedComplaint.department.name}</div>
+      <p className="font-body text-[11px] text-[#4A4A46] mt-2">Suggested from the issue description. CivicPulse has not submitted this report to a government service.</p>
+    </div>
+  );
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-16 text-left">
@@ -555,9 +821,9 @@ export const ReportPage: React.FC = () => {
                   <div className="flex items-center justify-between border-b-2 border-[#121210] pb-2">
                     <span className="font-display text-xs font-black uppercase text-[#121210] flex items-center gap-1.5">
                       <Sparkles className="w-3.5 h-3.5 text-[#2E8C42]" />
-                      Bengaluru Benchmark Test Cards
+                      Quick Test Cases
                     </span>
-                    <span className="tag bg-[#CFE8D6] font-mono text-[10px] font-bold">1-CLICK TEST</span>
+                    <span className="text-[10px] font-mono text-[#4A4A46]">Optional preconfigured examples</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     {PRESET_SAMPLES.map((sample) => (
@@ -566,7 +832,7 @@ export const ReportPage: React.FC = () => {
                         type="button"
                         onClick={() => handleSelectPreset(sample)}
                         className={`p-2.5 text-left text-xs transition-all border-2 border-[#121210] cursor-pointer
-                          ${roadName === sample.roadName
+                          ${isBenchmarkCase && roadName === sample.roadName
                             ? 'bg-[#CFE8D6] font-bold shadow-[2px_2px_0_#121210]'
                             : 'bg-white hover:bg-[#CFE8D6]/30'
                           }
@@ -705,10 +971,7 @@ export const ReportPage: React.FC = () => {
                       height="100%"
                       isPickerMode={true}
                       pickerCoordinates={selectedCoords}
-                      onPickCoordinates={(coords) => {
-                        setSelectedCoords(coords);
-                        addToast('Coordinates Updated', `${coords.lat.toFixed(4)}°N, ${coords.lng.toFixed(4)}°E`, 'info');
-                      }}
+                      onPickCoordinates={(coords) => void selectLocation(coords)}
                     />
                   </div>
 
@@ -716,13 +979,13 @@ export const ReportPage: React.FC = () => {
                     <div>
                       <span className="text-[#4A4A46] block text-[10px] font-bold uppercase">COORDINATES</span>
                       <span className="text-[#121210] font-bold">
-                        {selectedCoords.lat.toFixed(4)}° N, {selectedCoords.lng.toFixed(4)}° E
+                        {selectedCoords ? `${selectedCoords.lat.toFixed(6)}° N, ${selectedCoords.lng.toFixed(6)}° E` : 'Select a point on the map'}
                       </span>
                     </div>
                     <div>
                       <span className="text-[#4A4A46] block text-[10px] font-bold uppercase">BBMP WARD</span>
                       <span className="text-[#121210] font-bold">
-                        Ward {wardNumber}: {wardName}
+                        {wardDisplay}
                       </span>
                     </div>
                     <div className="col-span-2">
@@ -923,10 +1186,7 @@ export const ReportPage: React.FC = () => {
                       height="100%"
                       isPickerMode={true}
                       pickerCoordinates={selectedCoords}
-                      onPickCoordinates={(coords) => {
-                        setSelectedCoords(coords);
-                        addToast('Coordinates Updated', `${coords.lat.toFixed(4)}°N, ${coords.lng.toFixed(4)}°E`, 'info');
-                      }}
+                      onPickCoordinates={(coords) => void selectLocation(coords)}
                     />
                   </div>
 
@@ -1078,10 +1338,7 @@ export const ReportPage: React.FC = () => {
                       height="100%"
                       isPickerMode={true}
                       pickerCoordinates={selectedCoords}
-                      onPickCoordinates={(coords) => {
-                        setSelectedCoords(coords);
-                        addToast('Coordinates Updated', `${coords.lat.toFixed(4)}°N, ${coords.lng.toFixed(4)}°E`, 'info');
-                      }}
+                      onPickCoordinates={(coords) => void selectLocation(coords)}
                     />
                   </div>
 
@@ -1231,7 +1488,7 @@ export const ReportPage: React.FC = () => {
                   Live Edge CV Sensor
                 </span>
                 <span className="text-[#4A4A46] font-bold">
-                  {selectedCoords.lat.toFixed(4)}°N, {selectedCoords.lng.toFixed(4)}°E
+                  {selectedCoords ? `${selectedCoords.lat.toFixed(6)}°N, ${selectedCoords.lng.toFixed(6)}°E` : 'Select a point'}
                 </span>
               </div>
             </div>

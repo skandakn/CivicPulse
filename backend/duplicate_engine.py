@@ -1,4 +1,5 @@
 import math
+from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 from backend.incident_store import get_all_incidents, MasterIncident
 
@@ -22,18 +23,36 @@ class DuplicateDetectionService:
         lng: Optional[float],
         issue_type: str = "pothole",
         road_hint: Optional[str] = None,
-        image_bytes: Optional[bytes] = None
+        image_bytes: Optional[bytes] = None,
+        include_demo: bool = False
     ) -> Dict[str, Any]:
         incidents = get_all_incidents()
 
-        default_lat = lat if lat is not None else 12.9279
-        default_lng = lng if lng is not None else 77.6833
+        if lat is None or lng is None:
+            return {
+                "isDuplicate": False,
+                "duplicateProbability": 0.0,
+                "matchedIncidentId": None,
+                "reason": "A selected coordinate is required for duplicate detection.",
+                "distanceMeters": None,
+                "canonicalLocation": None,
+                "existingReportsCount": 0,
+                "incidentStatus": None,
+            }
+
+        default_lat = lat
+        default_lng = lng
 
         best_match: Optional[MasterIncident] = None
         highest_prob = 0.0
         best_distance = 999999.0
+        best_segment_match = False
 
         for inc in incidents:
+            if getattr(inc, "isDemo", False) and not include_demo:
+                continue
+            if getattr(inc, "issueType", "pothole") != issue_type:
+                continue
             dist_m = haversine_distance_meters(
                 default_lat, default_lng,
                 inc.canonicalLocation.lat, inc.canonicalLocation.lng
@@ -52,10 +71,19 @@ class DuplicateDetectionService:
                 segment_score = 0.15
 
             issue_score = 0.10 if issue_type == "pothole" else 0.05
-            visual_score = 0.20
+            try:
+                last_reported = datetime.fromisoformat(inc.lastReportedAt.replace("Z", "+00:00"))
+                if last_reported.tzinfo is None:
+                    last_reported = last_reported.replace(tzinfo=timezone.utc)
+                age_days = (datetime.now(timezone.utc) - last_reported).total_seconds() / 86400
+                temporal_score = 0.15 if age_days <= 30 else 0.05 if age_days <= 180 else 0.0
+            except (AttributeError, TypeError, ValueError):
+                temporal_score = 0.0
 
             if spatial_score > 0:
-                prob = min(0.98, (spatial_score * 0.55) + visual_score + segment_score + issue_score)
+                # No visual similarity service is wired into this backend yet;
+                # do not award a fabricated visual match score.
+                prob = min(0.95, (spatial_score * 0.55) + segment_score + issue_score + temporal_score)
             else:
                 prob = 0.0
 
@@ -63,14 +91,18 @@ class DuplicateDetectionService:
                 highest_prob = prob
                 best_match = inc
                 best_distance = dist_m
+                best_segment_match = segment_score > 0
 
         is_duplicate = highest_prob >= 0.70 and best_match is not None
 
         if is_duplicate and best_match:
             prob_pct = int(round(highest_prob * 100))
             reason = (
-                f"{prob_pct}% likely duplicate of {best_match.id} located "
-                f"{int(round(best_distance))}m away on {best_match.road} ({best_match.canonicalLocation.ward})"
+                f"{prob_pct}% potential duplicate of {best_match.id}: selected point is "
+                f"{int(round(best_distance))}m away, with matching road and recent incident context."
+                if best_segment_match else
+                f"{prob_pct}% potential duplicate of {best_match.id}: selected point is "
+                f"{int(round(best_distance))}m from the existing incident."
             )
             return {
                 "isDuplicate": True,
@@ -87,7 +119,7 @@ class DuplicateDetectionService:
             "isDuplicate": False,
             "duplicateProbability": round(highest_prob, 3),
             "matchedIncidentId": None,
-            "reason": "New distinct road defect detected. No matching active incident within 65m corridor.",
+            "reason": "No matching incident met the location, road, issue-type, and recency threshold.",
             "distanceMeters": round(best_distance, 1) if best_match else None,
             "canonicalLocation": None,
             "existingReportsCount": 0,

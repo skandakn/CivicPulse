@@ -8,6 +8,11 @@ class LocationModel(BaseModel):
     address: str
     ward: str
     zone: str
+    locality: Optional[str] = None
+    city: Optional[str] = None
+    source: Optional[str] = None
+    roadClass: Optional[str] = None
+    roadReference: Optional[str] = None
 
 class SupportingReport(BaseModel):
     reportId: str
@@ -17,6 +22,8 @@ class SupportingReport(BaseModel):
     confidence: float
     imageUri: Optional[str] = None
     distanceFromCanonicalM: float = 0.0
+    notes: Optional[str] = None
+    coordinates: Optional[Dict[str, float]] = None
 
 class MasterIncident(BaseModel):
     id: str  # "BNG-PTH-1042"
@@ -34,6 +41,8 @@ class MasterIncident(BaseModel):
     createdAt: str
     updatedAt: str
     lastReportedAt: str
+    issueType: str = "pothole"
+    isDemo: bool = False
 
 _INCIDENTS: Dict[str, MasterIncident] = {}
 
@@ -77,7 +86,9 @@ def init_default_incidents():
         status="Verified",
         createdAt=now_iso,
         updatedAt=now_iso,
-        lastReportedAt=now_iso
+        lastReportedAt=now_iso,
+        issueType="pothole",
+        isDemo=True
     )
 
     _INCIDENTS[i1.id] = i1
@@ -112,7 +123,10 @@ def create_master_incident(
     severity_level: str,
     priority: int,
     initial_report: SupportingReport,
-    initial_image: Optional[str] = None
+    initial_image: Optional[str] = None,
+    issue_type: str = "pothole",
+    is_demo: bool = False,
+    description: Optional[str] = None
 ) -> MasterIncident:
     now_iso = datetime.now(timezone.utc).isoformat()
     inc = MasterIncident(
@@ -130,7 +144,11 @@ def create_master_incident(
         status="Reported",
         createdAt=now_iso,
         updatedAt=now_iso,
-        lastReportedAt=now_iso
+        lastReportedAt=now_iso,
+        issueType=issue_type,
+        isDemo=is_demo
     )
+    if description:
+        initial_report.notes = description
     _INCIDENTS[incident_id] = inc
     return inc

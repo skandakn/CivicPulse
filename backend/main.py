@@ -1,13 +1,25 @@
 import os
+import uuid
+from datetime import datetime, timezone
 from typing import Optional
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, FileResponse
+from pydantic import BaseModel, Field
 
 from ml.preprocessing.image_processor import ImageValidationError
 from ml.inference.pipeline import PotholeAnalysisPipeline
-from backend.incident_store import get_all_incidents, get_incident_by_id
+from backend.incident_store import (
+    LocationModel,
+    SupportingReport,
+    add_supporting_evidence,
+    create_master_incident,
+    get_all_incidents,
+    get_incident_by_id,
+)
+from backend.location_service import resolve_location
+from backend.duplicate_engine import DuplicateDetectionService
 
 app = FastAPI(
     title="CivicPulse Bengaluru - Computer Vision & Incident Intelligence API",
@@ -58,6 +70,141 @@ pipelines = {
     "opencv": PotholeAnalysisPipeline(mode="opencv"),
     "yolo": PotholeAnalysisPipeline(mode="yolo"),
 }
+
+class LocationLookupRequest(BaseModel):
+    latitude: float = Field(..., ge=-90, le=90)
+    longitude: float = Field(..., ge=-180, le=180)
+
+
+class TextReportRequest(LocationLookupRequest):
+    description: str = Field(..., min_length=3, max_length=4000)
+    issueType: str = "pothole"
+    roadName: Optional[str] = None
+    roadClass: Optional[str] = None
+    roadReference: Optional[str] = None
+    locality: Optional[str] = None
+    ward: Optional[str] = None
+    zone: Optional[str] = None
+    city: Optional[str] = None
+    source: Optional[str] = None
+    recommendedDepartment: str = "BBMP"
+    benchmarkCase: bool = False
+
+
+@app.post("/api/location/resolve")
+def resolve_selected_location(request: LocationLookupRequest):
+    """Reverse-geocode one explicit map/GPS selection; never substitutes a preset."""
+    return resolve_location(request.latitude, request.longitude)
+
+
+@app.post("/api/report-text")
+def create_text_or_voice_report(request: TextReportRequest):
+    """Create an in-app report from citizen text/voice without claiming CV ran."""
+    if not request.description.strip():
+        raise HTTPException(status_code=400, detail="A description is required.")
+
+    location = LocationModel(
+        lat=request.latitude,
+        lng=request.longitude,
+        address=request.roadName or request.locality or "Not available",
+        ward=request.ward or "Not available",
+        zone=request.zone or "Not available",
+        locality=request.locality,
+        city=request.city,
+        source=request.source,
+        roadClass=request.roadClass,
+        roadReference=request.roadReference,
+    )
+    duplicate_result = DuplicateDetectionService().check_duplicate(
+        lat=request.latitude,
+        lng=request.longitude,
+        issue_type=request.issueType,
+        road_hint=request.roadName,
+        image_bytes=None,
+        include_demo=request.benchmarkCase,
+    )
+    timestamp = datetime.now(timezone.utc).isoformat()
+    report_entry = SupportingReport(
+        reportId=f"REP-{uuid.uuid4().hex[:8].upper()}",
+        timestamp=timestamp,
+        reporter="Citizen reporter",
+        deviceInfo="CivicPulse web report",
+        confidence=0.0,
+        notes=request.description,
+        coordinates={"lat": request.latitude, "lng": request.longitude},
+    )
+
+    matched = None
+    if duplicate_result["isDuplicate"] and duplicate_result["matchedIncidentId"]:
+        matched = add_supporting_evidence(duplicate_result["matchedIncidentId"], report_entry)
+
+    if matched:
+        incident = matched
+        report_count = len(matched.reports)
+    else:
+        incident_id = f"BLR-RPT-{uuid.uuid4().hex[:8].upper()}"
+        incident = create_master_incident(
+            incident_id=incident_id,
+            location=location,
+            road=request.roadName or "Not available",
+            road_segment_id=request.roadReference or "Not available",
+            authority=f"Recommended Department: {request.recommendedDepartment}",
+            contractor="Not assigned",
+            severity_score=0,
+            severity_level="NOT_ASSESSED",
+            priority=0,
+            initial_report=report_entry,
+            issue_type=request.issueType,
+            is_demo=request.benchmarkCase,
+            description=request.description,
+        )
+        report_count = 1
+        duplicate_result = {
+            **duplicate_result,
+            "isDuplicate": False,
+            "matchedIncidentId": None,
+            "reason": "Text/voice report saved. Computer vision and visual similarity were not run because no image was attached.",
+        }
+
+    return {
+        "detected": False,
+        "confidence": 0.0,
+        "detections": [],
+        "estimatedSeverity": "Not assessed",
+        "damageArea": "Not assessed",
+        "potholeCount": 0,
+        "roadCondition": "Photo not provided; computer vision was not run.",
+        "explanation": "This report contains the citizen's text or voice transcript and selected coordinates. Add a photo to run computer vision.",
+        "imageMetadata": {"width": 0, "height": 0, "sizeBytes": 0, "format": "none"},
+        "damageImpact": {
+            "totalAreaSqMeters": 0,
+            "roadObstructionPct": 0,
+            "twoWheelerRisk": "Not assessed",
+            "busTransitDisruption": "Not assessed",
+            "laneClosureRecommended": False,
+            "repairUrgency": "Not assessed",
+        },
+        "severityEngine": {"score": 0, "level": "NOT_ASSESSED", "factors": {}, "explanations": []},
+        "duplicateCheck": duplicate_result,
+        "incident": {
+            "id": incident.id,
+            "canonicalLocation": incident.canonicalLocation.model_dump(),
+            "priority": incident.priority,
+            "severity": incident.severityLevel,
+            "reportsMerged": report_count,
+            "road": incident.road,
+            "authority": incident.authority,
+            "recommendedDepartment": request.recommendedDepartment,
+            "contractor": "Not assigned",
+            "status": incident.status,
+            "lastReportedAt": incident.lastReportedAt,
+        },
+        "inferenceTimeMs": 0,
+        "modelName": "Text/voice intake; CV not run",
+        "cvNotRun": True,
+        "issueType": request.issueType,
+        "description": request.description,
+    }
 
 @app.get("/api/health")
 def health_check():
@@ -141,12 +288,23 @@ async def analyze_pothole(
     latitude: Optional[float] = Form(None, description="Optional GPS latitude"),
     longitude: Optional[float] = Form(None, description="Optional GPS longitude"),
     road_hint: Optional[str] = Form(None, description="Optional road or landmark name"),
+    locality_hint: Optional[str] = Form(None),
+    ward_hint: Optional[str] = Form(None),
+    zone_hint: Optional[str] = Form(None),
+    city_hint: Optional[str] = Form(None),
+    road_class_hint: Optional[str] = Form(None),
+    road_reference_hint: Optional[str] = Form(None),
+    location_source: Optional[str] = Form(None),
+    description: Optional[str] = Form(None),
+    benchmark_case: bool = Form(False),
     mode: Optional[str] = Form("auto", description="'auto', 'opencv', 'yolo', or 'demo'")
 ):
     try:
-        if latitude is not None and not (-90.0 <= latitude <= 90.0):
+        if latitude is None or longitude is None:
+            raise HTTPException(status_code=400, detail="Select a location before analyzing a report.")
+        if not (-90.0 <= latitude <= 90.0):
             raise HTTPException(status_code=400, detail="Invalid latitude: Must be between -90.0 and 90.0 degrees.")
-        if longitude is not None and not (-180.0 <= longitude <= 180.0):
+        if not (-180.0 <= longitude <= 180.0):
             raise HTTPException(status_code=400, detail="Invalid longitude: Must be between -180.0 and 180.0 degrees.")
 
         image_bytes = await image.read()
@@ -161,8 +319,19 @@ async def analyze_pothole(
             latitude=latitude,
             longitude=longitude,
             road_hint=road_hint,
-            content_type=image.content_type
+            location={
+                "locality": locality_hint,
+                "ward": ward_hint,
+                "zone": zone_hint,
+                "city": city_hint,
+                "roadClass": road_class_hint,
+                "roadReference": road_reference_hint,
+                "source": location_source,
+            },
+            content_type=image.content_type,
+            benchmark_case=benchmark_case
         )
+        result["description"] = description
         result["requestedMode"] = mode
         result["activePipelineMode"] = pipeline_mode
         return JSONResponse(status_code=200, content=result)
@@ -170,6 +339,8 @@ async def analyze_pothole(
     except HTTPException:
         raise
     except ImageValidationError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         import traceback

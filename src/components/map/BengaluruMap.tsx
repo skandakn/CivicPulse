@@ -188,6 +188,13 @@ const CONTRACTOR_COLORS: Record<string, { color: string; bg: string }> = {
   'BBMP In-House Hot Mix Plant': { color: '#10B981', bg: 'rgba(16, 185, 129, 0.25)' }
 };
 
+const escapeHtml = (value: string): string => value
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#39;');
+
 export const BengaluruMap: React.FC<BengaluruMapProps> = ({
   incidents: propIncidents,
   selectedIncidentId,
@@ -227,19 +234,26 @@ export const BengaluruMap: React.FC<BengaluruMapProps> = ({
 
     // Center on central Bengaluru (Vidhana Soudha / MG Road axis)
     const map = L.map(mapContainerRef.current, {
-      center: [12.9550, 77.6350],
+      center: [12.9716, 77.5946],
       zoom: 12,
       zoomControl: false,
-      attributionControl: false
+      attributionControl: true
     });
 
-    // Clean Google Maps Basemap matching Neo-brutalist canvas (No API Key Required)
-    const googleMapsUrl = 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}';
+    const cartoKey = import.meta.env.VITE_CARTO_API_KEY?.trim();
+    const tileUrl = cartoKey
+      ? `https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=${encodeURIComponent(cartoKey)}`
+      : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    const tileAttribution = cartoKey
+      ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+      : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>';
 
-    L.tileLayer(googleMapsUrl, {
+    L.tileLayer(tileUrl, {
       maxZoom: 20,
-      attribution: '© Google Maps'
+      maxNativeZoom: 19,
+      attribution: tileAttribution
     }).addTo(map);
+    map.attributionControl.setPosition('bottomleft');
 
     // Zoom controls at bottom-right
     L.control.zoom({ position: 'bottomright' }).addTo(map);
@@ -296,6 +310,7 @@ export const BengaluruMap: React.FC<BengaluruMapProps> = ({
     if (!map) return;
 
     if (isPickerMode && pickerCoordinates) {
+      map.panTo([pickerCoordinates.lat, pickerCoordinates.lng], { animate: false });
       if (pickerMarkerRef.current) {
         pickerMarkerRef.current.setLatLng([pickerCoordinates.lat, pickerCoordinates.lng]);
       } else {
@@ -399,22 +414,24 @@ export const BengaluruMap: React.FC<BengaluruMapProps> = ({
         const popupHtml = `
           <div style="font-family: system-ui, sans-serif; min-width: 250px; padding: 2px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-              <span style="font-family: monospace; font-size: 11px; color: #94A3B8; font-weight: 700;">${incident.code}</span>
+              <span style="font-family: monospace; font-size: 11px; color: #94A3B8; font-weight: 700;">${escapeHtml(incident.code)}</span>
               <span style="font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 4px; background: ${pulseColor}; color: ${color}; border: 1px solid ${color};">
                 ${mapMode === 'CONTRACTORS' ? (incident.isUnderWarranty ? 'WARRANTY ACTIVE' : 'BBMP O&M') : `${incident.severity} • ${incident.priorityDetails.overallScore}/100`}
               </span>
             </div>
             <div style="font-weight: 800; font-size: 13px; color: #FFFFFF; margin-bottom: 3px; line-height: 1.3;">
-              ${incident.roadName}
+              ${escapeHtml(incident.roadName || 'Not available')}
             </div>
             <div style="font-size: 11px; color: #94A3B8; margin-bottom: 8px;">
-              Ward ${incident.wardNumber}: ${incident.wardName} (${incident.zone})
+              Ward: ${escapeHtml(incident.wardName || 'Not available')} · Zone: ${escapeHtml(incident.zone || 'Not available')}<br/>
+              ${incident.latitude.toFixed(6)}, ${incident.longitude.toFixed(6)}<br/>
+              Source: ${escapeHtml(incident.locationSource || incident.dataSource || 'Not available')}
             </div>
 
             <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 7px; border-radius: 8px; margin-bottom: 10px; font-size: 11px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
               <div>
-                <span style="color: #64748B; font-size: 10px; display: block;">CONTRACTOR</span>
-                <strong style="color: #F8FAFC; font-size: 11px;">${incident.contractorName?.split(' ')[0] || 'BBMP'}</strong>
+                <span style="color: #64748B; font-size: 10px; display: block;">DEPARTMENT</span>
+                <strong style="color: #F8FAFC; font-size: 11px;">${escapeHtml(incident.authorityName || 'Not available')}</strong>
               </div>
               <div>
                 <span style="color: #64748B; font-size: 10px; display: block;">DEPTH & FILL</span>
@@ -589,7 +606,7 @@ export const BengaluruMap: React.FC<BengaluruMapProps> = ({
           <Layers className="w-3.5 h-3.5" />
           <span>MAP LAYER: {mapMode.replace('_', ' ')}</span>
         </div>
-        <div className="text-slate-400">BBMP GIS GRID • CARTOGRAPHY HYPER-RES</div>
+        <div className="text-slate-400">{import.meta.env.VITE_CARTO_API_KEY ? 'CARTO Dark Matter' : 'OpenStreetMap basemap'} · Select a point on the map</div>
       </div>
 
       {/* Fullscreen Toggle Button */}

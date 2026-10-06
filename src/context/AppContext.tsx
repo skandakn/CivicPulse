@@ -50,7 +50,7 @@ interface AppContextType {
   userRole: UserRole;
   setUserRole: (role: UserRole) => void;
   addPotholeReport: (newReport: Partial<PotholeIncident>) => PotholeIncident;
-  mergeDuplicateReport: (masterIncidentId: string, reportNote: string, reporterName: string) => void;
+  mergeDuplicateReport: (masterIncidentId: string, reportNote: string, reporterName: string, evidence?: { imageUrl?: string; coordinates?: { lat: number; lng: number } }) => void;
   verifyRepair: (incidentId: string, verification: RepairVerification) => void;
   upvoteComplaint: (complaintId: string) => void;
   toasts: ToastMessage[];
@@ -171,13 +171,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     addToast('Citizen Upvote Recorded', 'Priority score updated in BBMP algorithmic queue', 'success');
   };
 
-  const mergeDuplicateReport = (masterIncidentId: string, reportNote: string, reporterName: string) => {
+  const mergeDuplicateReport = (masterIncidentId: string, reportNote: string, reporterName: string, evidence?: { imageUrl?: string; coordinates?: { lat: number; lng: number } }) => {
     const newSupport: SupportingReport = {
       reportId: `rep-dup-${Date.now()}`,
       citizenName: reporterName || 'Citizen Commuter',
       timestamp: new Date().toISOString(),
       notes: reportNote || 'Reported identical hazard location',
-      similarityScore: 94
+      similarityScore: undefined,
+      imageUrl: evidence?.imageUrl,
+      coordinates: evidence?.coordinates
     };
 
     setIncidents(prev =>
@@ -256,133 +258,102 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const addPotholeReport = (newReport: Partial<PotholeIncident>): PotholeIncident => {
-    const count = incidents.length + 1;
-    const randomTicket = Math.floor(10000 + Math.random() * 90000);
-    const code = `BNG-PTH-${1042 + count}`;
-    const sahayaTicketNo = `BBMP-SHY-2026-${randomTicket}`;
-    const lat = newReport.coordinates?.lat || newReport.latitude || 12.9298;
-    const lng = newReport.coordinates?.lng || newReport.longitude || 77.6835;
+    const lat = newReport.coordinates?.lat ?? newReport.latitude;
+    const lng = newReport.coordinates?.lng ?? newReport.longitude;
+    if (lat === undefined || lng === undefined || !Number.isFinite(lat) || !Number.isFinite(lng)) {
+      throw new Error('A selected latitude and longitude are required to create an incident.');
+    }
+
+    const timestamp = new Date().toISOString();
+    const reportCode = `BLR-RPT-${Date.now().toString(36).toUpperCase()}`;
+    const locationLabel = newReport.roadName || newReport.canonicalLocation?.address || 'Not available';
+    const severityScore = newReport.severityScore ?? 0;
+    const priorityDetails = newReport.priorityDetails ?? {
+      overallScore: newReport.riskScore ?? severityScore,
+      breakdown: {
+        depthRisk: 0,
+        trafficVolumeImpact: 0,
+        schoolHospitalProximity: 0,
+        monsoonFloodingVulnerability: 0,
+        twoWheelerAccidentHistory: 0,
+        citizenUpvotesWeight: 0
+      },
+      scoreItems: [],
+      confidence: newReport.confidence ?? 0,
+      shortExplanation: 'Priority components are not available for this report.',
+      explanation: ['No additional infrastructure or exposure data was available.'],
+      calculatedAt: timestamp
+    };
 
     const completeIncident: PotholeIncident = {
-      id: `inc-${Date.now()}`,
-      code,
-      reportId: `rep-${Date.now()}`,
+      id: `inc-${crypto.randomUUID()}`,
+      code: reportCode,
+      reportId: `rep-${crypto.randomUUID()}`,
       latitude: lat,
       longitude: lng,
-      roadId: newReport.roadId || 'road-01',
-      roadName: newReport.roadName || 'Outer Ring Road, Bengaluru',
-      wardId: newReport.wardId || 'ward-150',
-      wardName: newReport.wardName || 'Bellandur',
-      wardNumber: newReport.wardNumber || 150,
-      zone: newReport.zone || 'Mahadevapura',
+      roadId: newReport.roadId ?? newReport.roadReference ?? 'not-available',
+      roadName: newReport.roadName || 'Not available',
+      wardId: newReport.wardId ?? 'not-available',
+      wardName: newReport.wardName || 'Not available',
+      wardNumber: newReport.wardNumber ?? 0,
+      zone: newReport.zone ?? 'Not available',
       coordinates: { lat, lng },
-      landmark: newReport.landmark || 'Near main intersection',
-      severity: newReport.severity || 'CRITICAL',
-      severityScore: newReport.severityScore || 94,
-      depthCm: newReport.depthCm || 14.5,
-      surfaceAreaSqM: newReport.surfaceAreaSqM || 1.35,
-      estimatedVolumeLiters: newReport.estimatedVolumeLiters || 32.0,
-      riskScore: newReport.riskScore || 94,
-      confidence: 0.97,
-      status: 'TRIAGED',
-      priorityRank: 1,
-      priorityDetails: newReport.priorityDetails || {
-        overallScore: 94,
-        breakdown: {
-          depthRisk: 92,
-          trafficVolumeImpact: 95,
-          schoolHospitalProximity: 90,
-          monsoonFloodingVulnerability: 94,
-          twoWheelerAccidentHistory: 89,
-          citizenUpvotesWeight: 75
-        },
-        scoreItems: [
-          { factor: 'Visual severity & depth (>14cm)', points: 30, maxPoints: 35, description: '14.5cm depth extracted from camera stereopsis.' },
-          { factor: 'Traffic exposure', points: 21, maxPoints: 25, description: 'High commuter density corridor.' },
-          { factor: 'Report density', points: 15, maxPoints: 20, description: 'Initial verified report.' },
-          { factor: 'Persistence', points: 12, maxPoints: 15, description: 'Active unresolved hazard.' },
-          { factor: 'Road importance', points: 8, maxPoints: 10, description: 'Arterial transit road.' },
-          { factor: 'Sensitive location', points: 5, maxPoints: 5, description: 'Near hospitals and schools.' }
-        ],
-        confidence: 0.97,
-        shortExplanation: 'High-confidence pothole on a high-traffic corridor with immediate damage hazard.',
-        explanation: [
-          'High depth (>14cm) detected via camera depth stereopsis.',
-          'High density traffic corridor in Bengaluru.',
-          'Road project associated with recorded tender under Contractor Warranty.'
-        ],
-        calculatedAt: new Date().toISOString()
-      },
-      reportedAt: new Date().toISOString(),
-      lastUpdatedAt: new Date().toISOString(),
-      contractorId: newReport.contractorId || 'cont-01',
-      contractorName: newReport.contractorName || 'Star Infratech Bengaluru Pvt Ltd',
-      isUnderWarranty: true,
-      authorityId: 'auth-bbmp',
-      authorityName: 'Bruhat Bengaluru Mahanagara Palike (BBMP) - Major Roads',
+      landmark: newReport.landmark || newReport.canonicalLocation?.locality || 'Not available',
+      severity: newReport.severity ?? 'MEDIUM',
+      severityScore,
+      depthCm: newReport.depthCm ?? 0,
+      surfaceAreaSqM: newReport.surfaceAreaSqM ?? 0,
+      estimatedVolumeLiters: newReport.estimatedVolumeLiters ?? 0,
+      riskScore: newReport.riskScore ?? priorityDetails.overallScore,
+      confidence: newReport.confidence ?? 0,
+      status: 'REPORTED',
+      priorityRank: 0,
+      priorityDetails,
+      reportedAt: timestamp,
+      lastUpdatedAt: timestamp,
+      contractorId: newReport.contractorId,
+      contractorName: newReport.contractorName,
+      isUnderWarranty: false,
+      authorityId: newReport.authorityId || 'recommended-department',
+      authorityName: newReport.authorityName || 'Recommended Department: Not available',
       complaintsCount: 1,
       upvotes: 1,
-      sahayaTicketNo,
-      images: newReport.images || {
-        original: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80'
-      },
+      sahayaTicketNo: 'Not submitted',
+      images: newReport.images || { original: '' },
       aiMetrics: newReport.aiMetrics || {
-        depthCm: 14.5,
-        surfaceAreaSqM: 1.35,
-        estimatedVolumeLiters: 32.0,
-        asphaltDeteriorationIndex: 91,
-        moistureWaterloggingRisk: 88,
-        vehicleDamageHazard: 95,
-        modelConfidence: 0.978,
-        processingTimeMs: 35,
-        inferenceMode: 'DEMO_INFERENCE_MODE'
+        depthCm: 0,
+        surfaceAreaSqM: 0,
+        estimatedVolumeLiters: 0,
+        asphaltDeteriorationIndex: 0,
+        moistureWaterloggingRisk: 0,
+        vehicleDamageHazard: 0,
+        modelConfidence: newReport.confidence ?? 0,
+        processingTimeMs: 0,
+        inferenceMode: 'LIVE_EDGE_MODEL'
       },
-      detectedObjects: [
-        { label: 'Surface Crater', confidence: 0.98, bbox: [25, 25, 50, 50], notes: 'High depth entrapment zone' }
-      ],
+      detectedObjects: newReport.detectedObjects || [],
       supportingReports: [],
-      roadHealth: 'Pavement Condition Index: 32/100 (High Deterioration)',
-      trafficExposure: '22,000 PCU/hr • City Arterial Route',
-      nearbySensitivePlaces: ['Local Hospital (0.5 km)', 'School Zone (0.8 km)'],
-      dataSource: 'DEMO_DATA'
+      roadHealth: newReport.roadHealth || 'Not available',
+      trafficExposure: newReport.trafficExposure || 'Not available',
+      nearbySensitivePlaces: newReport.nearbySensitivePlaces || [],
+      dataSource: 'USER_REPORTED',
+      locationSource: newReport.locationSource || newReport.canonicalLocation?.source || 'Not available',
+      roadClass: newReport.roadClass || newReport.canonicalLocation?.roadClass,
+      roadReference: newReport.roadReference || newReport.canonicalLocation?.roadReference,
+      canonicalLocation: newReport.canonicalLocation || {
+        lat,
+        lng,
+        address: locationLabel,
+        ward: 'Not available',
+        zone: 'Not available'
+      },
+      road: locationLabel,
+      authority: newReport.authorityName || 'Recommended Department: Not available',
+      contractor: 'Not assigned',
+      isDemo: false
     };
 
     setIncidents(prev => [completeIncident, ...prev]);
-
-    // create matching complaint
-    const newComplaint: Complaint = {
-      id: `cmp-${Date.now()}`,
-      sahayaTicketNo,
-      incidentId: completeIncident.id,
-      citizenName: 'Citizen Reporter',
-      citizenPhone: '+91 98450 00000',
-      upvotes: 1,
-      status: 'OPEN',
-      filedAt: completeIncident.reportedAt,
-      slaDeadline: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
-      slaBreached: false,
-      history: [
-        {
-          timestamp: completeIncident.reportedAt,
-          action: 'Complaint generated via CivicPulse AI ingestion pipeline',
-          actor: 'CivicPulse Citizen Portal'
-        },
-        {
-          timestamp: completeIncident.reportedAt,
-          action: `AI Classification: ${completeIncident.severity} (Score ${completeIncident.priorityDetails.overallScore}/100)`,
-          actor: 'CivicPulse Neural Model v4.2'
-        }
-      ],
-      draftDetails: {
-        draftId: `DFT-BBMP-2026-${randomTicket}`,
-        status: 'READY_TO_SUBMIT',
-        generatedAt: completeIncident.reportedAt,
-        recommendedAction: 'Emergency cold-mix pothole compaction within 24h as per IRC-SP-100.',
-        slaDeadline: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
-        watermark: 'AI-generated — review before submission.'
-      }
-    };
-    setComplaints(prev => [newComplaint, ...prev]);
 
     return completeIncident;
   };

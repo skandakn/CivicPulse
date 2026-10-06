@@ -28,8 +28,13 @@ class PotholeAnalysisPipeline:
         latitude: Optional[float] = None,
         longitude: Optional[float] = None,
         road_hint: Optional[str] = None,
-        content_type: Optional[str] = None
+        location: Optional[Dict[str, Any]] = None,
+        content_type: Optional[str] = None,
+        benchmark_case: bool = False
     ) -> Dict[str, Any]:
+        if latitude is None or longitude is None:
+            raise ValueError("Select a location in Bengaluru before analyzing a report.")
+
         preprocessed = validate_and_preprocess_image(image_bytes, content_type)
         width = preprocessed["width"]
         height = preprocessed["height"]
@@ -38,8 +43,7 @@ class PotholeAnalysisPipeline:
         effective_lng = longitude if longitude is not None else preprocessed.get("exifLongitude")
 
         if effective_lat is None or effective_lng is None:
-            effective_lat = 12.9279
-            effective_lng = 77.6833
+            raise ValueError("The selected coordinates could not be determined.")
 
         detection_result = self.detector.detect(preprocessed["cleanBytes"])
         damage_impact = analyze_damage_impact(detection_result.detections, width, height)
@@ -49,7 +53,8 @@ class PotholeAnalysisPipeline:
             lng=effective_lng,
             issue_type="pothole",
             road_hint=road_hint,
-            image_bytes=preprocessed["cleanBytes"]
+            image_bytes=preprocessed["cleanBytes"],
+            include_demo=benchmark_case
         )
 
         matched_incident = None
@@ -97,21 +102,28 @@ class PotholeAnalysisPipeline:
             loc = LocationModel(
                 lat=effective_lat,
                 lng=effective_lng,
-                address=road_hint or "Outer Ring Road, Bengaluru",
-                ward="Ward 150 - Bellandur",
-                zone="Mahadevapura"
+                address=road_hint or (location or {}).get("locality") or "Not available",
+                ward=(location or {}).get("ward") or "Not available",
+                zone=(location or {}).get("zone") or "Not available",
+                locality=(location or {}).get("locality"),
+                city=(location or {}).get("city"),
+                source=(location or {}).get("source"),
+                roadClass=(location or {}).get("roadClass"),
+                roadReference=(location or {}).get("roadReference"),
             )
             resolved_incident = create_master_incident(
                 incident_id=incident_id,
                 location=loc,
-                road=road_hint or "Outer Ring Road (State Highway 35 Connector)",
-                road_segment_id=f"ORR-BLNDR-{uuid.uuid4().hex[:4].upper()}",
-                authority="BBMP Mahadevapura Division",
-                contractor="NCC Urban Infrastructure Ltd",
+                road=road_hint or "Not available",
+                road_segment_id=(location or {}).get("roadReference") or "Not available",
+                authority="Recommended Department: BBMP",
+                contractor="Not assigned",
                 severity_score=severity_breakdown.score,
                 severity_level=severity_breakdown.level.upper(),
                 priority=priority_score,
-                initial_report=report_entry
+                initial_report=report_entry,
+                issue_type="pothole",
+                is_demo=benchmark_case
             )
             reports_merged = 1
 
@@ -156,6 +168,8 @@ class PotholeAnalysisPipeline:
                 "status": resolved_incident.status,
                 "lastReportedAt": resolved_incident.lastReportedAt
             },
+            "issueType": "pothole",
+            "cvNotRun": False,
             "inferenceTimeMs": detection_result.inferenceTimeMs,
             "modelName": detection_result.modelName
         }

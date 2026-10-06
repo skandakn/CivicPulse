@@ -1,4 +1,4 @@
-export type SeverityLevel = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+export type SeverityLevel = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'NOT_ASSESSED';
 
 export type IncidentStatus = 
   | 'REPORTED' 
@@ -24,9 +24,10 @@ export type BbmpZone =
   | 'Bommanahalli' 
   | 'RR Nagar' 
   | 'Dasarahalli' 
-  | 'Yelahanka';
+  | 'Yelahanka'
+  | 'Not available';
 
-export type DataSourceTag = 'VERIFIED_OFFICIAL' | 'DEMO_DATA' | 'ESTIMATED';
+export type DataSourceTag = 'VERIFIED_OFFICIAL' | 'DEMO_DATA' | 'ESTIMATED' | 'USER_REPORTED';
 
 export interface GeoLocation {
   lat: number;
@@ -112,6 +113,7 @@ export interface SupportingReport {
   confidence?: number;
   imageUri?: string;
   distanceFromCanonicalM?: number;
+  coordinates?: { lat: number; lng: number };
 }
 
 export interface RepairVerification {
@@ -303,6 +305,9 @@ export interface PotholeIncident {
   dataSource: DataSourceTag;
   repairVerification?: RepairVerification;
   canonicalLocation?: CanonicalLocation;
+  locationSource?: string;
+  roadClass?: string | null;
+  roadReference?: string | null;
   reports?: SupportingReport[];
   imageList?: string[];
   road?: string;
@@ -395,7 +400,7 @@ export interface DamageImpact {
 
 export interface SeverityEngineResult {
   score: number;
-  level: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  level: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' | 'NOT_ASSESSED';
   factors: Record<string, number>;
   explanations: string[];
 }
@@ -414,6 +419,22 @@ export interface CanonicalLocation {
   address: string;
   ward: string;
   zone: string;
+  locality?: string | null;
+  city?: string | null;
+  source?: string | null;
+  roadClass?: string | null;
+  roadReference?: string | null;
+}
+
+export interface ResolvedLocation extends CanonicalLocation {
+  latitude: number;
+  longitude: number;
+  state?: string | null;
+  roadName: string | null;
+  sourceUrl: string | null;
+  confidence: number;
+  isWithinBengaluru: boolean | null;
+  resolved: boolean;
 }
 
 export interface PotholeAnalysisResponse {
@@ -445,11 +466,15 @@ export interface PotholeAnalysisResponse {
     contractor: string;
     status: string;
     lastReportedAt: string;
+    recommendedDepartment?: string;
   };
   inferenceTimeMs: number;
   modelName: string;
   requestedMode?: string;
   activePipelineMode?: string;
+  description?: string | null;
+  cvNotRun?: boolean;
+  issueType?: string;
 }
 
 export type ViewMode = 
