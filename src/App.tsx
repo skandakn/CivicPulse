@@ -110,7 +110,7 @@ const AppContent: React.FC = () => {
 
       {/* Main Content Area */}
       <main
-        className={`flex-1 transition-all duration-200 pt-22 px-3 sm:px-5 lg:px-6 pb-12
+        className={`flex-1 transition-all duration-200 pt-[74px] px-3 sm:px-5 lg:px-6 pb-12
           ${isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'}
         `}
       >

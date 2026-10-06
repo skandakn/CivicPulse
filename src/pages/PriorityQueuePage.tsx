@@ -139,7 +139,7 @@ export const PriorityQueuePage: React.FC = () => {
   }, [activeItem]);
 
   return (
-    <div className="space-y-0 text-left -mx-3 sm:-mx-5 lg:-mx-6 -mt-4">
+    <div className="space-y-0 text-left -mx-3 sm:-mx-5 lg:-mx-6">
       {/* Approva Brutalist Tabs Bar */}
       <div className="px-4 lg:px-6 pt-3 flex gap-0 border-b-[3px] border-[#121210] bg-[#CFE8D6] overflow-x-auto">
         <button
