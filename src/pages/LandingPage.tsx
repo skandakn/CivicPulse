@@ -170,7 +170,7 @@ export const LandingPage: React.FC = () => {
               </div>
 
               {/* Folder Float Interactive Component */}
-              <div className="polka border-2 border-[#121210] bg-[#CFE8D6]/30 overflow-hidden relative">
+              <div className="polka border-2 border-[#121210] bg-[#CFE8D6]/30 overflow-hidden relative min-h-[440px] flex items-end justify-center">
                 <FolderFloat
                   title="Master Evidence Dossier"
                   subtitle="Outer Ring Road · 14 Merged Complaints"

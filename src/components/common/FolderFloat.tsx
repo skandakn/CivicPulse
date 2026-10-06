@@ -5,11 +5,9 @@ import {
   Camera,
   Scale,
   Building2,
-  AlertTriangle,
   Banknote,
   Sparkles,
-  ArrowRight,
-  ShieldCheck
+  ArrowRight
 } from 'lucide-react';
 
 export interface FloatingItem {
@@ -38,74 +36,74 @@ interface FolderFloatProps {
 
 const DEFAULT_ITEMS: FloatingItem[] = [
   {
+    id: 'clause',
+    label: 'Clause 45.2 Notice',
+    icon: <Scale className="w-3.5 h-3.5" />,
+    bgClass: 'bg-[#CFE8D6]',
+    textClass: 'text-[#121210]',
+    rotationRest: -3,
+    rotationHover: -8,
+    xRest: -30,
+    xHover: -85,
+    yRest: -35,
+    yHover: -180,
+    delayMs: 20
+  },
+  {
+    id: 'grievance',
+    label: '14 Reports Merged',
+    icon: <Sparkles className="w-3.5 h-3.5" />,
+    bgClass: 'bg-white',
+    textClass: 'text-[#121210]',
+    rotationRest: 2,
+    rotationHover: 7,
+    xRest: 25,
+    xHover: 85,
+    yRest: -35,
+    yHover: -175,
+    delayMs: 60
+  },
+  {
     id: 'depth',
-    label: 'Stereo Depth: 15.4 cm',
+    label: 'Stereo Depth: 15.4cm',
     icon: <Camera className="w-3.5 h-3.5" />,
     bgClass: 'bg-[#E8A030]',
     textClass: 'text-[#121210]',
-    rotationRest: -4,
+    rotationRest: -6,
     rotationHover: -14,
-    xRest: -60,
-    xHover: -110,
-    yRest: 10,
+    xRest: -50,
+    xHover: -115,
+    yRest: -15,
     yHover: -115,
     delayMs: 0
   },
   {
-    id: 'clause',
-    label: 'Clause 45.2 Zero-Cost Notice',
-    icon: <Scale className="w-3.5 h-3.5" />,
-    bgClass: 'bg-[#CFE8D6]',
-    textClass: 'text-[#121210]',
-    rotationRest: 2,
-    rotationHover: -4,
-    xRest: -20,
-    xHover: -35,
-    yRest: 0,
-    yHover: -145,
-    delayMs: 40
-  },
-  {
-    id: 'grievance',
-    label: '14 Sahaya Grievances Merged',
-    icon: <Sparkles className="w-3.5 h-3.5" />,
-    bgClass: 'bg-white',
-    textClass: 'text-[#121210]',
-    rotationRest: -2,
-    rotationHover: 6,
-    xRest: 25,
-    xHover: 55,
-    yRest: 5,
-    yHover: -140,
-    delayMs: 80
-  },
-  {
     id: 'contractor',
-    label: 'Contractor: Star Infratech (DLP Active)',
+    label: 'Star Infratech (DLP)',
     icon: <Building2 className="w-3.5 h-3.5" />,
     bgClass: 'bg-white',
     textClass: 'text-[#121210]',
-    rotationRest: 3,
+    rotationRest: 5,
     rotationHover: 12,
-    xRest: 50,
-    xHover: 105,
-    yRest: 15,
-    yHover: -95,
-    delayMs: 120
+    xRest: 45,
+    xHover: 110,
+    yRest: -15,
+    yHover: -110,
+    delayMs: 100
   },
   {
     id: 'warranty',
-    label: '₹48,920 Warranty Recovered',
+    label: '₹48,920 Warranty Claim',
     icon: <Banknote className="w-3.5 h-3.5" />,
     bgClass: 'bg-[#2E8C42]',
     textClass: 'text-white',
-    rotationRest: 1,
-    rotationHover: 2,
+    rotationRest: 0,
+    rotationHover: 0,
     xRest: 0,
     xHover: 0,
-    yRest: 20,
+    yRest: -5,
     yHover: -60,
-    delayMs: 150
+    delayMs: 130
   }
 ];
 
@@ -122,12 +120,12 @@ export const FolderFloat: React.FC<FolderFloatProps> = ({
 
   return (
     <div
-      className={`relative select-none flex flex-col items-center justify-end pt-36 pb-4 px-4 ${className}`}
+      className={`relative select-none flex flex-col items-center justify-end min-h-[440px] pt-48 pb-4 px-4 ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Floating Notes / Tags Layer */}
-      <div className="absolute inset-x-0 bottom-24 flex items-center justify-center pointer-events-none">
+      {/* Floating Notes / Tags Layer (Anchored right above the folder mouth) */}
+      <div className="absolute inset-x-0 bottom-[170px] flex items-center justify-center pointer-events-none z-20">
         {items.map((item) => {
           const x = isHovered ? item.xHover : item.xRest;
           const y = isHovered ? item.yHover : item.yRest;
@@ -159,7 +157,7 @@ export const FolderFloat: React.FC<FolderFloatProps> = ({
       {/* The Physical Folder Structure (Neo-Brutalist Boxed Aesthetic) */}
       <div
         onClick={onOpenDossier}
-        className="group relative w-full max-w-[340px] cursor-pointer transition-transform duration-300"
+        className="group relative w-full max-w-[340px] cursor-pointer transition-transform duration-300 z-10"
         style={{
           transform: isHovered ? 'scale(1.02)' : 'scale(1)'
         }}
@@ -176,7 +174,7 @@ export const FolderFloat: React.FC<FolderFloatProps> = ({
           <div
             className="absolute top-2 left-4 right-4 h-12 bg-white border-2 border-[#121210] rounded-t-sm shadow-sm transition-transform duration-300"
             style={{
-              transform: isHovered ? 'translateY(-12px)' : 'translateY(-2px)'
+              transform: isHovered ? 'translateY(-14px)' : 'translateY(-2px)'
             }}
           >
             <div className="h-1.5 w-16 bg-[#CFE8D6] ml-2 mt-1.5 rounded-xs" />
@@ -185,7 +183,7 @@ export const FolderFloat: React.FC<FolderFloatProps> = ({
           <div
             className="absolute top-3 left-6 right-6 h-10 bg-[#FAF9F5] border-2 border-[#121210] rounded-t-sm transition-transform duration-300"
             style={{
-              transform: isHovered ? 'translateY(-18px) rotate(-1deg)' : 'translateY(-4px)'
+              transform: isHovered ? 'translateY(-20px) rotate(-1deg)' : 'translateY(-4px)'
             }}
           />
         </div>
@@ -243,7 +241,7 @@ export const FolderFloat: React.FC<FolderFloatProps> = ({
       </div>
 
       {/* Floating Helper Subtitle */}
-      <div className="mt-3 text-[11px] font-mono text-[#121210]/70 flex items-center gap-1.5">
+      <div className="mt-3 text-[11px] font-mono text-[#121210]/70 flex items-center gap-1.5 z-10">
         <Sparkles className="w-3 h-3 text-[#E8A030]" />
         <span>Hover over folder to float and reveal legal audit evidence</span>
       </div>
