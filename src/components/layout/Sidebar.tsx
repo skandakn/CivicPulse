@@ -6,9 +6,9 @@ import {
   ListOrdered,
   Building2,
   BarChart3,
+  MessageSquare,
   ChevronLeft,
   ChevronRight,
-  Lock,
   LogIn,
   CheckSquare
 } from 'lucide-react';
@@ -41,12 +41,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
     badge?: number | string;
     badgeStyle?: string;
   }[] = [
-    { id: 'PRIORITY_QUEUE', label: 'Hazard Queue', icon: ListOrdered, badge: criticalCount, badgeStyle: 'bg-[#C03A3A] text-white' },
     { id: 'REPORT', label: 'Report Incident', icon: PlusCircle, badge: 'NEW', badgeStyle: 'bg-[#121210] text-white' },
-    { id: 'GODS_EYE', label: 'God’s Eye Map', icon: Eye, badge: incidents.length, badgeStyle: 'bg-[#121210] text-white' },
+    { id: 'GODS_EYE', label: 'Live Map & Heatmap', icon: Eye, badge: incidents.length, badgeStyle: 'bg-[#121210] text-white' },
+    { id: 'ANALYTICS', label: 'Dashboard', icon: BarChart3 },
+    { id: 'COMPLAINTS', label: 'Complaint Tracking', icon: MessageSquare },
+    { id: 'PRIORITY_QUEUE', label: 'Hazard Queue', icon: ListOrdered, badge: criticalCount, badgeStyle: 'bg-[#C03A3A] text-white' },
     { id: 'AI_ANALYSIS', label: 'Vision Lab', icon: Cpu },
     { id: 'CONTRACTORS', label: 'Contractor DLP', icon: Building2 },
-    { id: 'ANALYTICS', label: 'Civic Analytics', icon: BarChart3 }
   ];
 
   return (
