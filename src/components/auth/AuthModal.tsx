@@ -87,11 +87,9 @@ export const AuthModal: React.FC = () => {
   const [keySaved, setKeySaved] = useState(false);
   const [showDemoRoleSelector, setShowDemoRoleSelector] = useState(false);
 
-  if (!isAuthModalOpen) return null;
-
   const handleSelectProfile = (profile: typeof DEMO_PROFILES[0]) => {
     signInMock({
-      id: `usr_${profile.role.toLowerCase()}_${Date.now()}`,
+      id: `usr_${profile.role.toLowerCase()}_demo`,
       fullName: profile.name,
       firstName: profile.name.split(' ')[0],
       email: profile.email,
@@ -161,6 +159,8 @@ export const AuthModal: React.FC = () => {
     addToast('Clerk Key Configured', 'Connecting to Clerk Authentication...', 'info');
     setTimeout(() => setKeySaved(false), 2500);
   };
+
+  if (!isAuthModalOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#121210]/60 backdrop-blur-sm animate-in fade-in duration-200">

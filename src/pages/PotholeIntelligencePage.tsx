@@ -7,8 +7,7 @@ import {
   Sliders,
   AlertTriangle,
   FileCheck,
-  Crosshair,
-  Maximize2
+  Crosshair
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { PotholeIncident } from '../types';

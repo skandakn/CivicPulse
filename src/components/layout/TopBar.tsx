@@ -4,15 +4,11 @@ import {
   Bell,
   MapPin,
   Menu,
-  User,
   CheckCircle2,
   AlertTriangle,
   FileCheck,
   ChevronDown,
   Zap,
-  RotateCcw,
-  LogIn,
-  LogOut,
   Plus
 } from 'lucide-react';
 import { useApp, UserRole } from '../../context/AppContext';

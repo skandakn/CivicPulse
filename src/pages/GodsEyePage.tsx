@@ -14,7 +14,6 @@ import { BengaluruMap } from '../components/map/BengaluruMap';
 import { useApp } from '../context/AppContext';
 import { SeverityLevel, MapMode } from '../types';
 import { CITY_METRICS } from '../data/mockData';
-import { getSeverityColor } from '../utils/formatters';
 
 export const GodsEyePage: React.FC = () => {
   const {

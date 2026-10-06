@@ -11,9 +11,7 @@ import {
   RotateCcw,
   Zap,
   CheckCircle2,
-  AlertTriangle,
-  Clock,
-  Layers
+  Clock
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { CITY_METRICS } from '../data/mockData';

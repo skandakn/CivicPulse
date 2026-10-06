@@ -18,7 +18,6 @@ import {
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { DEMO_INCIDENT_IDS } from '../data/mockData';
-import { getSeverityColor, getStatusBadge } from '../utils/formatters';
 
 const DEMO_STEPS = [
   { key: 'REPORT', label: 'Report Pothole', icon: <MapPin className="w-4 h-4" />, desc: 'Upload image → AI detects pothole' },

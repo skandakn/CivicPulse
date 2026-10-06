@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
-import { Maximize2, Minimize2, Layers, AlertTriangle } from 'lucide-react';
+import { Maximize2, Minimize2, Layers } from 'lucide-react';
 import { PotholeIncident, MapMode } from '../../types';
 import { useApp } from '../../context/AppContext';
 

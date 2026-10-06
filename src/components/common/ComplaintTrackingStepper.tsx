@@ -22,7 +22,7 @@ interface ComplaintTrackingStepperProps {
   className?: string;
 }
 
-export const mapStatusToTrackingStage = (status: string): {
+const mapStatusToTrackingStage = (status: string): {
   stage: TrackingStage;
   stepIndex: number; // 0, 1, 2, 3
   label: string;

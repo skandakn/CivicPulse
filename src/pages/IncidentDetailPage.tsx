@@ -9,11 +9,10 @@ import {
   ArrowLeft,
   Share2,
   GitMerge,
-  ShieldCheck,
-  Check
+  ShieldCheck
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { getSeverityColor, getStatusBadge } from '../utils/formatters';
+import { getStatusBadge } from '../utils/formatters';
 import { BengaluruMap } from '../components/map/BengaluruMap';
 import { PriorityExplainer } from '../components/incident/PriorityExplainer';
 import { ComplaintGenerator } from '../components/incident/ComplaintGenerator';
@@ -51,7 +50,6 @@ export const IncidentDetailPage: React.FC = () => {
   const matchingContractor = contractors.find(c => c.name === selectedIncident.contractorName || c.id === selectedIncident.contractorId);
   const matchingWard = wards.find(w => w.number === selectedIncident.wardNumber);
 
-  const sevColor = getSeverityColor(selectedIncident.severity);
   const statusInfo = getStatusBadge(selectedIncident.status);
 
   const handleShare = () => {

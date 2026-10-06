@@ -5,11 +5,7 @@ import {
   AlertTriangle,
   Search,
   Ban,
-  Briefcase,
-  MapPin,
   FileText,
-  Mail,
-  Phone,
   Award
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';

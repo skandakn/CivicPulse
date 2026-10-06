@@ -2,12 +2,9 @@ import React, { useState } from 'react';
 import {
   BarChart3,
   TrendingUp,
-  TrendingDown,
-  CloudRain,
   ShieldCheck,
   Building2,
   AlertTriangle,
-  Layers,
   CheckCircle2,
   Clock,
   MapPin,

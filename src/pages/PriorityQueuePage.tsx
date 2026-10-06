@@ -1,18 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Flame,
   Clock,
-  ArrowRight,
   GitMerge,
   Archive,
   Inbox,
   AlertTriangle,
   FileText,
-  Building,
   Check,
   X,
   Info,
-  SlidersHorizontal,
   ChevronRight
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
@@ -24,7 +21,6 @@ export const PriorityQueuePage: React.FC = () => {
     selectedIncident,
     setSelectedIncident,
     roads,
-    selectIncidentById,
     addToast
   } = useApp();
 
@@ -34,10 +30,8 @@ export const PriorityQueuePage: React.FC = () => {
   // Sub-filter: ALL | ARTERIAL | CRITICAL | UNDER WARRANTY
   const [subFilter, setSubFilter] = useState<'ALL' | 'ARTERIAL' | 'CRITICAL' | 'WARRANTY'>('ALL');
 
-  // Internal active incident in queue (defaults to selected or first item)
-  const [activeItem, setActiveItem] = useState<PotholeIncident>(
-    selectedIncident || filteredIncidents[0]
-  );
+  // Active incident in queue (derived directly from selected or first item)
+  const activeItem = selectedIncident || filteredIncidents[0];
 
   // Big stamp drop state: label ('APPROVED' | 'REJECTED' | 'NEEDS DETAIL'), color
   const [currentStamp, setCurrentStamp] = useState<{ label: string; color: string; time: string } | null>(null);
@@ -61,15 +55,6 @@ export const PriorityQueuePage: React.FC = () => {
     '2026-10-06 08:30:15Z  ─          ─                                 cursor blinking …▌'
   ]);
 
-  // Keep activeItem synced if selectedIncident changes outside
-  useEffect(() => {
-    if (selectedIncident) {
-      setActiveItem(selectedIncident);
-    } else if (filteredIncidents.length > 0) {
-      setActiveItem(filteredIncidents[0]);
-    }
-  }, [selectedIncident, filteredIncidents]);
-
   // Filter items
   const displayItems = filteredIncidents.filter((inc) => {
     const { category } = getRoadInfo(inc);
@@ -88,7 +73,7 @@ export const PriorityQueuePage: React.FC = () => {
   const activeCost = activeItem ? getEstimatedCost(activeItem) : 48920;
 
   // Handle dropping stamp
-  const triggerStamp = (label: 'APPROVED' | 'REJECTED' | 'NEEDS DETAIL', color: string) => {
+  const triggerStamp = useCallback((label: 'APPROVED' | 'REJECTED' | 'NEEDS DETAIL', color: string) => {
     setCurrentStamp({
       label,
       color,
@@ -118,7 +103,7 @@ export const PriorityQueuePage: React.FC = () => {
         'warning'
       );
     }
-  };
+  }, [activeItem, addToast]);
 
   // Keyboard shortcuts matching Approva spec: Cmd+Enter (Approve), Cmd+Backspace (Reject), Cmd+D (Needs Detail)
   useEffect(() => {
@@ -136,7 +121,7 @@ export const PriorityQueuePage: React.FC = () => {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeItem]);
+  }, [triggerStamp]);
 
   return (
     <div className="space-y-0 text-left -mx-3 sm:-mx-5 lg:-mx-6">
@@ -238,7 +223,6 @@ export const PriorityQueuePage: React.FC = () => {
                   <article
                     key={inc.id}
                     onClick={() => {
-                      setActiveItem(inc);
                       setSelectedIncident(inc);
                       setCurrentStamp(null);
                     }}

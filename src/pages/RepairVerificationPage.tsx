@@ -3,9 +3,7 @@ import {
   ShieldCheck,
   CheckCircle2,
   AlertTriangle,
-  Sparkles,
-  ArrowRight,
-  Layers
+  Sparkles
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { PotholeIncident, RepairVerification } from '../types';

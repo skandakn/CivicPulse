@@ -272,10 +272,5 @@ export const ComplaintTracking: React.FC<ComplaintTrackingProps> = ({ complaint,
   );
 };
 
-// Helper for inline calc — returns string like "calc()"
-function calc100() {
-  return 'calc(100% - 2.5rem)';
-}
-
 // Re-export STATUS_ORDER if needed
 export { STATUS_ORDER };

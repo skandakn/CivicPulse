@@ -219,7 +219,8 @@ export const ReportPage: React.FC = () => {
       setVoiceText(result.text);
       applyInterpretedData(result.text);
       addToast('Transcript Ready', `Confidence: ${(result.confidence * 100).toFixed(0)}%`, 'success');
-    } catch (err: any) {
+    } catch (err: unknown) {
+      console.warn('[Report] Audio transcription failed, using verified sample:', err);
       const fallback = DEMO_VOICE_SAMPLES[0].transcript;
       setVoiceText(fallback);
       applyInterpretedData(fallback);
@@ -345,7 +346,8 @@ export const ReportPage: React.FC = () => {
 
       const data: PotholeAnalysisResponse = await response.json();
       setAnalysisResult(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      console.warn('[Report] Backend inference failed, using calibrated benchmark:', err);
       // Fallback result isolated strictly to DEMO benchmark mode
       const fallbackResult: PotholeAnalysisResponse = {
         detected: true,
