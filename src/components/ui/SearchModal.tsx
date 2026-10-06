@@ -70,34 +70,34 @@ export const SearchModal: React.FC = () => {
   return (
     <div
       onClick={closeModal}
-      className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-[#17191c]/60 backdrop-blur-sm animate-in fade-in"
+      className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-[#121210]/60 backdrop-blur-sm animate-in fade-in"
     >
       <div
-        className="w-full max-w-2xl bg-white rounded-2xl shadow-xl overflow-hidden animate-in zoom-in-95 duration-150"
+        className="w-full max-w-2xl bg-white brut shadow-[8px_8px_0_#121210] overflow-hidden animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Input Bar */}
-        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-[#17191c]/8 bg-[#fafafb]">
-          <Search className="w-5 h-5 text-[#17191c] flex-shrink-0" />
+        <div className="flex items-center gap-3 px-4 py-3.5 border-b-2 border-[#121210] bg-[#CFE8D6]">
+          <Search className="w-5 h-5 text-[#121210] flex-shrink-0" />
           <input
             ref={inputRef}
             type="text"
             value={term}
             onChange={(e) => setTerm(e.target.value)}
             placeholder="Search vendor, PO#, requester, ward, or contractor..."
-            className="flex-1 bg-transparent text-sm font-mono font-bold text-[#17191c] placeholder-[#777b86] outline-none"
+            className="flex-1 bg-transparent text-sm font-mono font-bold text-[#121210] placeholder-[#4A4A46] outline-none"
           />
           {term && (
             <button
               onClick={() => setTerm('')}
-              className="p-1 text-[#17191c] hover:bg-white cursor-pointer"
+              className="p-1 text-[#121210] hover:bg-white cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
           )}
           <button
             onClick={closeModal}
-            className="px-2 py-1 text-[11px] font-mono font-bold text-[#17191c] bg-white border border-[#17191c] cursor-pointer"
+            className="px-2 py-1 text-[11px] font-mono font-bold text-[#121210] bg-white border border-[#121210] cursor-pointer"
           >
             ESC
           </button>
@@ -107,13 +107,13 @@ export const SearchModal: React.FC = () => {
         <div className="max-h-[60vh] overflow-y-auto p-4 space-y-4 text-left">
           {!term && (
             <div className="py-8 text-center text-xs">
-              <p className="font-mono font-bold text-[#17191c] mb-2 uppercase">INDEXED QUICK SUGGESTIONS</p>
+              <p className="font-mono font-bold text-[#121210] mb-2 uppercase">INDEXED QUICK SUGGESTIONS</p>
               <div className="flex flex-wrap justify-center gap-2 max-w-md mx-auto">
                 {['Outer Ring Road', 'Silk Board', 'Star Infratech', 'Ward 150', 'BLR-POT-2026-0842', 'BBMP-SHY-2026'].map(tag => (
                   <button
                     key={tag}
                     onClick={() => setTerm(tag)}
-                    className="tag bg-[#fafafb] text-[#17191c] hover:bg-[#17191c] hover:text-white font-mono text-xs cursor-pointer transition-colors"
+                    className="tag bg-[#CFE8D6] text-[#121210] hover:bg-[#121210] hover:text-[#CFE8D6] font-mono text-xs cursor-pointer transition-colors"
                   >
                     {tag}
                   </button>
@@ -123,7 +123,7 @@ export const SearchModal: React.FC = () => {
           )}
 
           {term && !hasResults && (
-            <div className="py-10 text-center text-[#777b86] text-xs font-mono">
+            <div className="py-10 text-center text-[#4A4A46] text-xs font-mono">
               No matching intelligence entities found for "{term}". Try searching by road name or ward number.
             </div>
           )}
@@ -131,7 +131,7 @@ export const SearchModal: React.FC = () => {
           {/* Matched Incidents */}
           {matchedIncidents.length > 0 && (
             <div>
-              <div className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#17191c] mb-2 flex items-center gap-1.5">
+              <div className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#121210] mb-2 flex items-center gap-1.5">
                 <AlertTriangle className="w-3.5 h-3.5 text-[#C03A3A]" />
                 Pothole Hazard Queue ({matchedIncidents.length})
               </div>
@@ -143,19 +143,19 @@ export const SearchModal: React.FC = () => {
                       selectIncidentById(inc.id, 'INCIDENT_DETAIL');
                       closeModal();
                     }}
-                    className="p-3 bg-white hover:bg-[#fafafb] border border-[#17191c]/15 flex items-center justify-between cursor-pointer group transition-all"
+                    className="p-3 bg-white hover:bg-[#CFE8D6] border-2 border-[#121210] flex items-center justify-between cursor-pointer group transition-all"
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-bold text-[#17191c]">{inc.code}</span>
-                        <span className={`tag font-mono text-[10px] font-bold ${inc.severity === 'CRITICAL' ? 'bg-[#C03A3A] text-white' : 'bg-[#E8A030] text-[#17191c]'}`}>
+                        <span className="font-mono text-xs font-bold text-[#121210]">{inc.code}</span>
+                        <span className={`tag font-mono text-[10px] font-bold ${inc.severity === 'CRITICAL' ? 'bg-[#C03A3A] text-white' : 'bg-[#E8A030] text-[#121210]'}`}>
                           {inc.severity} · {inc.priorityDetails.overallScore}/100
                         </span>
                       </div>
-                      <div className="font-display text-xs font-bold text-[#17191c] mt-0.5">{inc.roadName}</div>
-                      <div className="text-[11px] text-[#777b86] font-mono">{inc.landmark} · Ward {inc.wardNumber} ({inc.wardName})</div>
+                      <div className="font-display text-xs font-bold text-[#121210] mt-0.5">{inc.roadName}</div>
+                      <div className="text-[11px] text-[#4A4A46] font-mono">{inc.landmark} · Ward {inc.wardNumber} ({inc.wardName})</div>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-[#17191c] group-hover:translate-x-1 transition-all" />
+                    <ArrowRight className="w-4 h-4 text-[#121210] group-hover:translate-x-1 transition-all" />
                   </div>
                 ))}
               </div>
@@ -165,7 +165,7 @@ export const SearchModal: React.FC = () => {
           {/* Matched Roads */}
           {matchedRoads.length > 0 && (
             <div>
-              <div className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#17191c] mb-2 flex items-center gap-1.5">
+              <div className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#121210] mb-2 flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5 text-[#2E8C42]" />
                 Bengaluru Road Corridors ({matchedRoads.length})
               </div>
@@ -177,15 +177,15 @@ export const SearchModal: React.FC = () => {
                       setCurrentView('GODS_EYE');
                       closeModal();
                     }}
-                    className="p-3 bg-white hover:bg-[#fafafb] border border-[#17191c]/15 flex items-center justify-between cursor-pointer group transition-all"
+                    className="p-3 bg-white hover:bg-[#CFE8D6] border-2 border-[#121210] flex items-center justify-between cursor-pointer group transition-all"
                   >
                     <div>
-                      <div className="font-display text-xs font-bold text-[#17191c]">{road.name}</div>
-                      <div className="text-[11px] text-[#777b86] font-mono">
+                      <div className="font-display text-xs font-bold text-[#121210]">{road.name}</div>
+                      <div className="text-[11px] text-[#4A4A46] font-mono">
                         {road.category} · {road.lengthKm} km · Active Potholes: {road.activePotholesCount}
                       </div>
                     </div>
-                    <span className="tag bg-[#17191c] text-white font-mono text-[10px] font-bold">
+                    <span className="tag bg-[#121210] text-[#CFE8D6] font-mono text-[10px] font-bold">
                       View on Map
                     </span>
                   </div>
@@ -197,7 +197,7 @@ export const SearchModal: React.FC = () => {
           {/* Matched Contractors */}
           {matchedContractors.length > 0 && (
             <div>
-              <div className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#17191c] mb-2 flex items-center gap-1.5">
+              <div className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#121210] mb-2 flex items-center gap-1.5">
                 <Building2 className="w-3.5 h-3.5 text-[#E8A030]" />
                 Contractors & Tender Intelligence ({matchedContractors.length})
               </div>
@@ -209,11 +209,11 @@ export const SearchModal: React.FC = () => {
                       setCurrentView('CONTRACTORS');
                       closeModal();
                     }}
-                    className="p-3 bg-white hover:bg-[#fafafb] border border-[#17191c]/15 flex items-center justify-between cursor-pointer group transition-all"
+                    className="p-3 bg-white hover:bg-[#CFE8D6] border-2 border-[#121210] flex items-center justify-between cursor-pointer group transition-all"
                   >
                     <div>
-                      <div className="font-display text-xs font-bold text-[#17191c]">{c.name}</div>
-                      <div className="text-[11px] text-[#777b86] font-mono">
+                      <div className="font-display text-xs font-bold text-[#121210]">{c.name}</div>
+                      <div className="text-[11px] text-[#4A4A46] font-mono">
                         {c.registrationNumber} · Quality: {c.qualityScore}/100 · Defect Rate: {c.warrantyDefectRate}%
                       </div>
                     </div>
@@ -229,7 +229,7 @@ export const SearchModal: React.FC = () => {
           {/* Matched Complaints */}
           {matchedComplaints.length > 0 && (
             <div>
-              <div className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#17191c] mb-2 flex items-center gap-1.5">
+              <div className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#121210] mb-2 flex items-center gap-1.5">
                 <FileText className="w-3.5 h-3.5 text-[#2E8C42]" />
                 BBMP Sahaya Grievances ({matchedComplaints.length})
               </div>
@@ -241,15 +241,15 @@ export const SearchModal: React.FC = () => {
                       setCurrentView('COMPLAINTS');
                       closeModal();
                     }}
-                    className="p-3 bg-white hover:bg-[#fafafb] border border-[#17191c]/15 flex items-center justify-between cursor-pointer group transition-all"
+                    className="p-3 bg-white hover:bg-[#CFE8D6] border-2 border-[#121210] flex items-center justify-between cursor-pointer group transition-all"
                   >
                     <div>
-                      <div className="font-mono text-xs font-bold text-[#17191c]">{cmp.sahayaTicketNo}</div>
-                      <div className="text-[11px] text-[#777b86] font-mono">
+                      <div className="font-mono text-xs font-bold text-[#121210]">{cmp.sahayaTicketNo}</div>
+                      <div className="text-[11px] text-[#4A4A46] font-mono">
                         Citizen: {cmp.citizenName} · Status: {cmp.status} · Upvotes: {cmp.upvotes}
                       </div>
                     </div>
-                    <span className="tag bg-[#E8A030] text-[#17191c] font-mono text-[10px] font-bold">
+                    <span className="tag bg-[#E8A030] text-[#121210] font-mono text-[10px] font-bold">
                       Track SLA
                     </span>
                   </div>
@@ -260,7 +260,7 @@ export const SearchModal: React.FC = () => {
         </div>
 
         {/* Footer info */}
-        <div className="px-4 py-2.5 bg-[#fafafb] border-t-2 border-[#17191c] flex items-center justify-between text-[11px] text-[#777b86] font-mono">
+        <div className="px-4 py-2.5 bg-[#CFE8D6]/40 border-t-2 border-[#121210] flex items-center justify-between text-[11px] text-[#4A4A46] font-mono">
           <span>Search indexed across 198 BBMP Wards & Realtime Ledger</span>
           <span>Press ESC to exit</span>
         </div>

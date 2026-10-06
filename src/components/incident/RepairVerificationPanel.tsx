@@ -55,12 +55,12 @@ const MetricBar: React.FC<{ label: string; score: number; delay?: string }> = ({
   return (
     <div className="space-y-1">
       <div className="flex justify-between text-xs font-mono font-bold">
-        <span className="text-[#17191c]">{label}</span>
+        <span className="text-[#121210]">{label}</span>
         <span className={score >= 80 ? 'text-[#2E8C42]' : score >= 60 ? 'text-[#E8A030]' : 'text-[#C03A3A]'}>
           {score} / 100
         </span>
       </div>
-      <div className="w-full bg-white border border-[#17191c] h-2.5 overflow-hidden p-0.5">
+      <div className="w-full bg-white border border-[#121210] h-2.5 overflow-hidden p-0.5">
         <div
           className={`h-full transition-all duration-700 ${color}`}
           style={{ width: `${score}%` }}
@@ -118,20 +118,20 @@ export const RepairVerificationPanel: React.FC<RepairVerificationPanelProps> = (
   };
 
   return (
-    <div className="bg-white rounded-2xl overflow-hidden">
+    <div className="bg-white brut overflow-hidden">
       {/* Header */}
-      <div className="p-4 border-b border-[#17191c]/8 flex items-center justify-between bg-[#fafafb]">
+      <div className="p-4 border-b-2 border-[#121210] flex items-center justify-between bg-[#CFE8D6]/30">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-white border border-[#17191c]/15 flex items-center justify-center">
-            <ScanLine className="w-4 h-4 text-[#17191c]" />
+          <div className="w-9 h-9 bg-white border-2 border-[#121210] flex items-center justify-center">
+            <ScanLine className="w-4 h-4 text-[#121210]" />
           </div>
           <div>
-            <h3 className="font-display text-sm font-black text-[#17191c] uppercase">Repair Verification</h3>
-            <p className="text-[11px] text-[#777b86] font-mono">AI Computer Vision before/after audit</p>
+            <h3 className="font-display text-sm font-black text-[#121210] uppercase">Repair Verification</h3>
+            <p className="text-[11px] text-[#4A4A46] font-mono">AI Computer Vision before/after audit</p>
           </div>
         </div>
         {isDemo && result && (
-          <span className="tag bg-[#E8A030] text-[#17191c] font-mono text-[9px] font-bold flex items-center gap-1">
+          <span className="tag bg-[#E8A030] text-[#121210] font-mono text-[9px] font-bold flex items-center gap-1">
             <FlaskConical className="w-2.5 h-2.5" />
             DEMO MODE
           </span>
@@ -142,7 +142,7 @@ export const RepairVerificationPanel: React.FC<RepairVerificationPanelProps> = (
         {/* Before / After image comparison */}
         <div className="grid grid-cols-2 gap-3">
           <div
-            className={`relative border-2 cursor-pointer transition-all ${showBefore ? 'border-[#C03A3A] shadow-sm' : 'border-[#17191c] opacity-70'}`}
+            className={`relative border-2 cursor-pointer transition-all ${showBefore ? 'border-[#C03A3A] shadow-[2px_2px_0_#121210]' : 'border-[#121210] opacity-70'}`}
             onClick={() => setShowBefore(true)}
           >
             <img
@@ -151,14 +151,14 @@ export const RepairVerificationPanel: React.FC<RepairVerificationPanelProps> = (
               className="w-full h-32 object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-2">
-              <span className="text-[10px] font-mono font-bold text-white bg-[#C03A3A] px-1.5 py-0.5 border border-[#17191c]">
+              <span className="text-[10px] font-mono font-bold text-white bg-[#C03A3A] px-1.5 py-0.5 border border-[#121210]">
                 BEFORE
               </span>
             </div>
           </div>
 
           <div
-            className={`relative border-2 cursor-pointer transition-all ${!showBefore ? 'border-[#2E8C42] shadow-sm' : 'border-[#17191c] opacity-70'}`}
+            className={`relative border-2 cursor-pointer transition-all ${!showBefore ? 'border-[#2E8C42] shadow-[2px_2px_0_#121210]' : 'border-[#121210] opacity-70'}`}
             onClick={() => setShowBefore(false)}
           >
             <img
@@ -167,13 +167,13 @@ export const RepairVerificationPanel: React.FC<RepairVerificationPanelProps> = (
               className={`w-full h-32 object-cover ${!incident.images.repaired ? 'filter grayscale' : ''}`}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-2">
-              <span className="text-[10px] font-mono font-bold text-white bg-[#2E8C42] px-1.5 py-0.5 border border-[#17191c]">
+              <span className="text-[10px] font-mono font-bold text-white bg-[#2E8C42] px-1.5 py-0.5 border border-[#121210]">
                 AFTER
               </span>
             </div>
             {!incident.images.repaired && (
-              <div className="absolute inset-0 bg-[#fafafb]/80 flex items-center justify-center">
-                <span className="text-[10px] font-mono font-bold text-[#17191c]">Not yet repaired</span>
+              <div className="absolute inset-0 bg-[#CFE8D6]/80 flex items-center justify-center">
+                <span className="text-[10px] font-mono font-bold text-[#121210]">Not yet repaired</span>
               </div>
             )}
           </div>
@@ -181,11 +181,11 @@ export const RepairVerificationPanel: React.FC<RepairVerificationPanelProps> = (
 
         {/* Pipeline progress */}
         {stage !== 'IDLE' && stage !== 'DONE' && (
-          <div className="p-3 bg-[#fafafb] border border-[#17191c]/15 flex items-center gap-3 text-xs">
-            <Loader2 className="w-4 h-4 text-[#17191c] animate-spin flex-shrink-0" />
+          <div className="p-3 bg-[#CFE8D6] border-2 border-[#121210] flex items-center gap-3 text-xs">
+            <Loader2 className="w-4 h-4 text-[#121210] animate-spin flex-shrink-0" />
             <div>
-              <div className="font-mono text-[#17191c] font-bold">{stageLabels[stage]}</div>
-              <div className="text-[10px] text-[#777b86] font-mono">
+              <div className="font-mono text-[#121210] font-bold">{stageLabels[stage]}</div>
+              <div className="text-[10px] text-[#4A4A46] font-mono">
                 {stage === 'COMPARING' ? 'SSIM · Edge Detection · Depth Delta Analysis' :
                  stage === 'SCORING' ? 'Compaction · Thermal Density · Surface Smoothness' :
                  'CV Neural Pipeline v4.2 — demo adapter active'}
@@ -198,28 +198,28 @@ export const RepairVerificationPanel: React.FC<RepairVerificationPanelProps> = (
         {result && stage === 'DONE' && (
           <div className="space-y-4 animate-in fade-in duration-300">
             {/* Big verdict */}
-            <div className={`p-4 border border-[#17191c]/15 text-center space-y-1 ${
+            <div className={`p-4 border-2 border-[#121210] text-center space-y-1 ${
               isApproved
-                ? 'bg-[#fafafb] shadow-sm'
-                : 'bg-[#C03A3A]/10 shadow-sm'
+                ? 'bg-[#CFE8D6] shadow-[4px_4px_0_#121210]'
+                : 'bg-[#C03A3A]/10 shadow-[4px_4px_0_#121210]'
             }`}>
               {isApproved ? (
                 <ShieldCheck className="w-8 h-8 text-[#2E8C42] mx-auto" />
               ) : (
                 <ShieldAlert className="w-8 h-8 text-[#C03A3A] mx-auto" />
               )}
-              <div className="font-display text-3xl font-black text-[#17191c]">
+              <div className="font-display text-3xl font-black text-[#121210]">
                 {pct}%
               </div>
-              <div className="text-xs font-mono text-[#777b86]">Repair verification confidence</div>
+              <div className="text-xs font-mono text-[#4A4A46]">Repair verification confidence</div>
               <div className={`font-display text-sm font-black uppercase ${isApproved ? 'text-[#2E8C42]' : 'text-[#C03A3A]'}`}>
                 {isApproved ? '✓ AI VERIFIED' : '✗ POSSIBLE UNRESOLVED DAMAGE'}
               </div>
             </div>
 
             {/* Metric bars */}
-            <div className="space-y-3 p-4 bg-[#fafafb] border border-[#17191c]/15">
-              <div className="flex items-center gap-2 text-[10px] font-mono font-bold text-[#17191c] uppercase tracking-wider mb-1">
+            <div className="space-y-3 p-4 bg-[#CFE8D6]/20 border-2 border-[#121210]">
+              <div className="flex items-center gap-2 text-[10px] font-mono font-bold text-[#121210] uppercase tracking-wider mb-1">
                 <BarChart3 className="w-3.5 h-3.5 text-[#2E8C42]" />
                 <span>CV Analysis Metrics</span>
               </div>
@@ -231,19 +231,19 @@ export const RepairVerificationPanel: React.FC<RepairVerificationPanelProps> = (
             </div>
 
             {/* Notes */}
-            <div className="p-3 bg-white border border-[#17191c]/15 text-xs">
-              <div className="text-[10px] font-mono font-bold text-[#777b86] mb-1">AUDITOR NOTES</div>
-              <p className="font-body text-[#17191c] leading-relaxed">{result.notes}</p>
-              <div className="mt-2 flex items-center gap-2 text-[10px] font-mono text-[#777b86]">
+            <div className="p-3 bg-white border-2 border-[#121210] text-xs">
+              <div className="text-[10px] font-mono font-bold text-[#4A4A46] mb-1">AUDITOR NOTES</div>
+              <p className="font-body text-[#121210] leading-relaxed">{result.notes}</p>
+              <div className="mt-2 flex items-center gap-2 text-[10px] font-mono text-[#4A4A46]">
                 <Cpu className="w-3 h-3 text-[#2E8C42]" />
                 <span>{result.verifiedBy.replace('_', ' ')} · {formatDateTime(result.repairedAt)}</span>
               </div>
             </div>
 
             {!isApproved && (
-              <div className="p-3 bg-[#E8A030]/20 border border-[#17191c]/15 flex items-start gap-2 text-xs">
-                <AlertTriangle className="w-3.5 h-3.5 text-[#17191c] flex-shrink-0 mt-0.5" />
-                <div className="font-body text-[#17191c]">
+              <div className="p-3 bg-[#E8A030]/20 border-2 border-[#121210] flex items-start gap-2 text-xs">
+                <AlertTriangle className="w-3.5 h-3.5 text-[#121210] flex-shrink-0 mt-0.5" />
+                <div className="font-body text-[#121210]">
                   <strong>Rework notice generated.</strong> Contractor must re-inspect and repair within 48 hours or face penalty escalation.
                 </div>
               </div>
@@ -254,24 +254,24 @@ export const RepairVerificationPanel: React.FC<RepairVerificationPanelProps> = (
         {/* Existing verification (pre-loaded) */}
         {result && stage === 'IDLE' && (
           <div className="space-y-4">
-            <div className={`p-4 border border-[#17191c]/15 text-center space-y-1 ${
+            <div className={`p-4 border-2 border-[#121210] text-center space-y-1 ${
               isApproved
-                ? 'bg-[#fafafb] shadow-sm'
-                : 'bg-[#C03A3A]/10 shadow-sm'
+                ? 'bg-[#CFE8D6] shadow-[4px_4px_0_#121210]'
+                : 'bg-[#C03A3A]/10 shadow-[4px_4px_0_#121210]'
             }`}>
               {isApproved ? (
                 <ShieldCheck className="w-8 h-8 text-[#2E8C42] mx-auto" />
               ) : (
                 <ShieldAlert className="w-8 h-8 text-[#C03A3A] mx-auto" />
               )}
-              <div className="font-display text-3xl font-black text-[#17191c]">{pct}%</div>
-              <div className="text-xs font-mono text-[#777b86]">Repair verification confidence</div>
+              <div className="font-display text-3xl font-black text-[#121210]">{pct}%</div>
+              <div className="text-xs font-mono text-[#4A4A46]">Repair verification confidence</div>
               <div className={`font-display text-sm font-black uppercase ${isApproved ? 'text-[#2E8C42]' : 'text-[#C03A3A]'}`}>
                 {isApproved ? '✓ AI VERIFIED' : '✗ POSSIBLE UNRESOLVED DAMAGE'}
               </div>
             </div>
 
-            <div className="space-y-3 p-4 bg-[#fafafb] border border-[#17191c]/15">
+            <div className="space-y-3 p-4 bg-[#CFE8D6]/20 border-2 border-[#121210]">
               <MetricBar label="Surface Smoothness" score={result.surfaceSmoothnessScore} />
               <MetricBar label="Thermal Density" score={result.thermalDensityScore} />
               <MetricBar label="Structural Similarity" score={result.structuralSimilarityScore ?? 0} />
@@ -279,9 +279,9 @@ export const RepairVerificationPanel: React.FC<RepairVerificationPanelProps> = (
               <MetricBar label="Compaction Score" score={result.compactionScore ?? 0} />
             </div>
 
-            <div className="p-3 bg-white border border-[#17191c]/15 text-xs">
-              <div className="text-[10px] font-mono font-bold text-[#777b86] mb-1">AUDITOR NOTES</div>
-              <p className="font-body text-[#17191c]">{result.notes}</p>
+            <div className="p-3 bg-white border-2 border-[#121210] text-xs">
+              <div className="text-[10px] font-mono font-bold text-[#4A4A46] mb-1">AUDITOR NOTES</div>
+              <p className="font-body text-[#121210]">{result.notes}</p>
             </div>
           </div>
         )}
@@ -290,9 +290,9 @@ export const RepairVerificationPanel: React.FC<RepairVerificationPanelProps> = (
         {stage === 'IDLE' && !result && (
           <div className="space-y-3">
             {!isRepaired && (
-              <div className="p-3 bg-[#E8A030]/20 border border-[#17191c]/15 flex items-start gap-2 text-xs">
-                <AlertTriangle className="w-3.5 h-3.5 text-[#17191c] flex-shrink-0 mt-0.5" />
-                <span className="font-body text-[#17191c]">
+              <div className="p-3 bg-[#E8A030]/20 border-2 border-[#121210] flex items-start gap-2 text-xs">
+                <AlertTriangle className="w-3.5 h-3.5 text-[#121210] flex-shrink-0 mt-0.5" />
+                <span className="font-body text-[#121210]">
                   Repair verification is available once contractor submits post-repair photo.
                   Status: <strong>{incident.status.replace('_', ' ')}</strong>
                 </span>
@@ -301,12 +301,12 @@ export const RepairVerificationPanel: React.FC<RepairVerificationPanelProps> = (
             <button
               onClick={runVerification}
               disabled={stage !== 'IDLE'}
-              className="w-full py-3 bg-[#17191c] text-white hover:bg-[#2E8C42] hover:text-white rounded-2xl font-display font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 btn-press transition-all cursor-pointer"
+              className="w-full py-3 bg-[#121210] text-[#CFE8D6] hover:bg-[#2E8C42] hover:text-white brut font-display font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 btn-press transition-all cursor-pointer"
             >
               <ScanLine className="w-4 h-4" />
               <span>Run CV Repair Verification</span>
             </button>
-            <p className="text-center text-[10px] text-[#777b86] font-mono">
+            <p className="text-center text-[10px] text-[#4A4A46] font-mono">
               Demo adapter active — uses image comparison simulation
             </p>
           </div>
@@ -315,7 +315,7 @@ export const RepairVerificationPanel: React.FC<RepairVerificationPanelProps> = (
         {stage === 'DONE' && (
           <button
             onClick={() => { setResult(null); setStage('IDLE'); }}
-            className="w-full text-center text-xs text-[#17191c] hover:underline font-mono font-bold cursor-pointer"
+            className="w-full text-center text-xs text-[#121210] hover:underline font-mono font-bold cursor-pointer"
           >
             ← Run new verification
           </button>

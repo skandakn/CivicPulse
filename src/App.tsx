@@ -96,7 +96,7 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#ffffff] text-[#17191c] flex flex-col font-body selection:bg-[#fbe1d1] selection:text-[#5d2a1a]">
+    <div className="min-h-screen bg-[#CFE8D6] grid-paper text-[#121210] flex flex-col font-body selection:bg-[#E8A030]/40 selection:text-[#121210]">
       {/* Sidebar Component */}
       <Sidebar
         isCollapsed={isSidebarCollapsed}
@@ -113,11 +113,11 @@ const AppContent: React.FC = () => {
 
       {/* Main Content Area */}
       <main
-        className={`flex-1 transition-all duration-200 pt-[74px] px-3 sm:px-6 lg:px-8 pb-16
+        className={`flex-1 transition-all duration-200 pt-[74px] px-3 sm:px-5 lg:px-6 pb-12
           ${isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'}
         `}
       >
-        <div className="w-full max-w-[1360px] mx-auto">
+        <div className="w-full">
           {renderActiveView()}
         </div>
       </main>
@@ -128,24 +128,25 @@ const AppContent: React.FC = () => {
       <AuthModal />
       <ToastContainer />
 
-      {/* Steep Editorial Footer */}
+      {/* Brutalist Footer */}
       <footer
-        className={`border-t border-[#17191c]/8 bg-[#ffffff] py-6 px-6 text-xs text-[#777b86] font-body transition-all duration-200
+        className={`border-t-[3px] border-[#121210] bg-[#CFE8D6] py-5 px-6 text-xs text-[#121210] font-mono transition-all duration-200
           ${isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'}
         `}
       >
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#17191c]"></span>
-            <span className="font-serif text-base text-[#17191c]">CivicPulse <em className="italic">Bengaluru</em></span>
-            <span className="text-[#a3a6af]">·</span>
-            <span className="text-[#777b86] text-xs">Editorial Civic Approval & Hazard Intelligence Ledger</span>
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 font-bold">
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 bg-[#2E8C42] border border-[#121210]"></span>
+            <span className="font-display font-extrabold text-sm text-[#121210]">CIVICPULSE BENGALURU</span>
+            <span className="text-[#121210]/40">·</span>
+            <span className="text-[#121210]/70 text-[11px]">AI-Powered Civic Approval Operations Ledger</span>
           </div>
 
-          <div className="flex items-center gap-3 text-xs flex-wrap justify-center">
-            <span className="pill-btn-peach text-xs">BBMP Sahaya 2.0</span>
-            <span className="px-3 py-1 rounded-full bg-[#f2f2f3] text-[#17191c] font-medium">IRC:SP:100 Audited</span>
-            <span className="px-3 py-1 rounded-full bg-[#f2f2f3] text-[#17191c] font-medium">Karnataka PWD DLP</span>
+          <div className="flex items-center gap-3 text-[11px] text-[#121210]/70 flex-wrap justify-center">
+            <span className="tag bg-white py-0.5 px-2">CLERK AUTH</span>
+            <span className="tag bg-white py-0.5 px-2">BBMP SAHAYA 2.0</span>
+            <span className="tag bg-[#2E8C42] text-white py-0.5 px-2">IRC-SP-100 AUDITED</span>
+            <span className="tag bg-[#E8A030] text-[#121210] py-0.5 px-2">KARNATAKA PWD DLP</span>
           </div>
         </div>
       </footer>

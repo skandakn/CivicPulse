@@ -97,7 +97,7 @@ export const ComplaintTrackingStepper: React.FC<ComplaintTrackingStepperProps> =
 
   if (compact) {
     return (
-      <div className={`p-3 bg-white rounded-full ${className}`}>
+      <div className={`p-3 bg-white brut-sm ${className}`}>
         <div className="flex items-center justify-between gap-1">
           {stages.map((st, idx) => {
             const isCompleted = idx < stepIndex;
@@ -107,12 +107,12 @@ export const ComplaintTrackingStepper: React.FC<ComplaintTrackingStepperProps> =
               <React.Fragment key={st.key}>
                 <div className="flex items-center gap-2">
                   <div
-                    className={`w-6 h-6 border border-[#17191c]/15 flex items-center justify-center text-[10px] font-mono font-black transition-all
+                    className={`w-6 h-6 border-2 border-[#121210] flex items-center justify-center text-[10px] font-mono font-black transition-all
                       ${isCompleted
                         ? 'bg-[#2E8C42] text-white'
                         : isCurrent
-                        ? 'bg-[#E8A030] text-[#17191c]'
-                        : 'bg-white text-[#777b86]'
+                        ? 'bg-[#E8A030] text-[#121210]'
+                        : 'bg-white text-[#4A4A46]'
                       }
                     `}
                   >
@@ -120,7 +120,7 @@ export const ComplaintTrackingStepper: React.FC<ComplaintTrackingStepperProps> =
                   </div>
                   <span
                     className={`text-xs font-mono font-bold ${
-                      isCurrent ? 'text-[#17191c] underline' : isCompleted ? 'text-[#17191c]' : 'text-[#777b86]'
+                      isCurrent ? 'text-[#121210] underline' : isCompleted ? 'text-[#121210]' : 'text-[#4A4A46]'
                     }`}
                   >
                     {st.title}
@@ -129,7 +129,7 @@ export const ComplaintTrackingStepper: React.FC<ComplaintTrackingStepperProps> =
                 {idx < stages.length - 1 && (
                   <div
                     className={`flex-1 h-0.5 mx-2 transition-all ${
-                      idx < stepIndex ? 'bg-[#2E8C42]' : 'bg-[#17191c]'
+                      idx < stepIndex ? 'bg-[#2E8C42]' : 'bg-[#121210]'
                     }`}
                   />
                 )}
@@ -142,12 +142,12 @@ export const ComplaintTrackingStepper: React.FC<ComplaintTrackingStepperProps> =
   }
 
   return (
-    <div className={`p-5 bg-white rounded-2xl text-left ${className}`}>
+    <div className={`p-5 bg-white brut text-left ${className}`}>
       {/* Header Info */}
-      <div className="flex items-center justify-between pb-3 border-b border-[#17191c]/8 mb-4">
+      <div className="flex items-center justify-between pb-3 border-b-2 border-[#121210] mb-4">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-[#2E8C42] border border-[#17191c]" />
-          <span className="font-display text-xs font-black uppercase tracking-wider text-[#17191c]">
+          <div className="w-3 h-3 bg-[#2E8C42] border border-[#121210]" />
+          <span className="font-display text-xs font-black uppercase tracking-wider text-[#121210]">
             Lifecycle Pipeline Tracking
           </span>
         </div>
@@ -157,7 +157,7 @@ export const ComplaintTrackingStepper: React.FC<ComplaintTrackingStepperProps> =
             SLA ESCALATED
           </span>
         ) : (
-          <span className="tag bg-[#fafafb] text-[#17191c] font-mono text-[10px] font-black">
+          <span className="tag bg-[#CFE8D6] text-[#121210] font-mono text-[10px] font-black">
             SLA WITHIN COMPLIANCE
           </span>
         )}
@@ -173,44 +173,44 @@ export const ComplaintTrackingStepper: React.FC<ComplaintTrackingStepperProps> =
           return (
             <div
               key={st.key}
-              className={`p-4 border border-[#17191c]/15 transition-all flex flex-col justify-between relative
+              className={`p-4 border-2 border-[#121210] transition-all flex flex-col justify-between relative
                 ${isCompleted
-                  ? 'bg-[#fafafb] shadow-sm'
+                  ? 'bg-[#CFE8D6]/40 shadow-[2px_2px_0_#121210]'
                   : isCurrent
-                  ? 'bg-white shadow-sm ring-2 ring-[#17191c]'
-                  : 'bg-[#fafafb]/10 opacity-70'
+                  ? 'bg-white shadow-[4px_4px_0_#121210] ring-2 ring-[#121210]'
+                  : 'bg-[#CFE8D6]/10 opacity-70'
                 }
               `}
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] font-mono uppercase font-black tracking-wider text-[#777b86]">
+                  <span className="text-[10px] font-mono uppercase font-black tracking-wider text-[#4A4A46]">
                     Stage 0{idx + 1}
                   </span>
                   <div
-                    className={`w-7 h-7 border border-[#17191c]/15 flex items-center justify-center transition-all ${
+                    className={`w-7 h-7 border-2 border-[#121210] flex items-center justify-center transition-all ${
                       isCompleted
                         ? 'bg-[#2E8C42] text-white'
                         : isCurrent
-                        ? 'bg-[#E8A030] text-[#17191c]'
-                        : 'bg-white text-[#777b86]'
+                        ? 'bg-[#E8A030] text-[#121210]'
+                        : 'bg-white text-[#4A4A46]'
                     }`}
                   >
                     {isCompleted ? <CheckCircle2 className="w-4 h-4 text-white" /> : <Icon className="w-3.5 h-3.5" />}
                   </div>
                 </div>
 
-                <div className="font-display font-black text-sm text-[#17191c]">{st.title}</div>
-                <div className="text-[11px] font-mono font-bold text-[#17191c] mt-0.5 truncate">{st.subtitle}</div>
-                <p className="font-body text-[11px] text-[#777b86] mt-2 leading-relaxed">
+                <div className="font-display font-black text-sm text-[#121210]">{st.title}</div>
+                <div className="text-[11px] font-mono font-bold text-[#121210] mt-0.5 truncate">{st.subtitle}</div>
+                <p className="font-body text-[11px] text-[#4A4A46] mt-2 leading-relaxed">
                   {st.description}
                 </p>
               </div>
 
               {/* Status pill at bottom */}
-              <div className="mt-3 pt-2.5 border-t border-[#17191c]">
+              <div className="mt-3 pt-2.5 border-t border-[#121210]">
                 <span className={`text-[10px] font-mono font-black uppercase ${
-                  isCompleted ? 'text-[#2E8C42]' : isCurrent ? 'text-[#17191c] font-black' : 'text-[#777b86]'
+                  isCompleted ? 'text-[#2E8C42]' : isCurrent ? 'text-[#121210] font-black' : 'text-[#4A4A46]'
                 }`}>
                   {isCompleted ? '✓ Completed' : isCurrent ? '● Active Now' : '○ Pending'}
                 </span>

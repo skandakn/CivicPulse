@@ -124,46 +124,46 @@ export const PriorityQueuePage: React.FC = () => {
   }, [triggerStamp]);
 
   return (
-    <div className="space-y-0 text-left -mx-3 sm:-mx-6 lg:-mx-8">
-      {/* Steep Pill Tabs Bar */}
-      <div className="px-4 lg:px-8 pt-3 pb-3 flex gap-2 border-b border-[#17191c]/8 bg-[#ffffff] overflow-x-auto">
+    <div className="space-y-0 text-left -mx-3 sm:-mx-5 lg:-mx-6">
+      {/* Approva Brutalist Tabs Bar */}
+      <div className="px-4 lg:px-6 pt-3 flex gap-0 border-b-[3px] border-[#121210] bg-[#CFE8D6] overflow-x-auto">
         <button
           onClick={() => setActiveTab('INBOX')}
-          className={`font-sans text-xs px-4 py-2 rounded-full cursor-pointer transition-colors flex items-center gap-2 shrink-0 ${
-            activeTab === 'INBOX' ? 'bg-[#17191c] text-white font-medium' : 'text-[#777b86] hover:text-[#17191c] hover:bg-[#f2f2f3]'
+          className={`font-display font-extrabold text-sm sm:text-base px-6 py-2.5 border-[3px] border-[#121210] border-b-0 -mb-[3px] cursor-pointer transition-colors flex items-center gap-2 shrink-0 ${
+            activeTab === 'INBOX' ? 'tab-active' : 'bg-white text-[#121210] hover:bg-zinc-50'
           }`}
         >
-          <Inbox className="w-3.5 h-3.5" />
+          <Inbox className="w-4 h-4 stroke-[2.5]" />
           <span>Hazard Inbox</span>
         </button>
 
         <button
           onClick={() => setActiveTab('ESCALATIONS')}
-          className={`font-sans text-xs px-4 py-2 rounded-full cursor-pointer transition-colors flex items-center gap-2 shrink-0 ${
-            activeTab === 'ESCALATIONS' ? 'bg-[#17191c] text-white font-medium' : 'text-[#777b86] hover:text-[#17191c] hover:bg-[#f2f2f3]'
+          className={`font-display font-extrabold text-sm sm:text-base px-6 py-2.5 border-[3px] border-[#121210] border-l-0 border-b-0 -mb-[3px] cursor-pointer transition-colors flex items-center gap-2 shrink-0 ${
+            activeTab === 'ESCALATIONS' ? 'tab-active' : 'bg-white text-[#121210] hover:bg-zinc-50'
           }`}
         >
-          <Flame className="w-3.5 h-3.5 text-[#5d2a1a]" />
+          <Flame className="w-4 h-4 stroke-[2.5] text-[#C03A3A]" />
           <span>Escalations (3)</span>
         </button>
 
         <button
           onClick={() => setActiveTab('HISTORY')}
-          className={`font-sans text-xs px-4 py-2 rounded-full cursor-pointer transition-colors flex items-center gap-2 shrink-0 ${
-            activeTab === 'HISTORY' ? 'bg-[#17191c] text-white font-medium' : 'text-[#777b86] hover:text-[#17191c] hover:bg-[#f2f2f3]'
+          className={`font-display font-extrabold text-sm sm:text-base px-6 py-2.5 border-[3px] border-[#121210] border-l-0 border-b-0 -mb-[3px] cursor-pointer transition-colors flex items-center gap-2 shrink-0 ${
+            activeTab === 'HISTORY' ? 'tab-active' : 'bg-white text-[#121210] hover:bg-zinc-50'
           }`}
         >
-          <Archive className="w-3.5 h-3.5" />
+          <Archive className="w-4 h-4 stroke-[2.5]" />
           <span>Audit History</span>
         </button>
 
         <button
           onClick={() => setActiveTab('WORKFLOW')}
-          className={`font-sans text-xs px-4 py-2 rounded-full cursor-pointer transition-colors flex items-center gap-2 shrink-0 ${
-            activeTab === 'WORKFLOW' ? 'bg-[#17191c] text-white font-medium' : 'text-[#777b86] hover:text-[#17191c] hover:bg-[#f2f2f3]'
+          className={`font-display font-extrabold text-sm sm:text-base px-6 py-2.5 border-[3px] border-[#121210] border-l-0 border-b-0 -mb-[3px] cursor-pointer transition-colors flex items-center gap-2 shrink-0 ${
+            activeTab === 'WORKFLOW' ? 'tab-active' : 'bg-white text-[#121210] hover:bg-zinc-50'
           }`}
         >
-          <GitMerge className="w-3.5 h-3.5" />
+          <GitMerge className="w-4 h-4 stroke-[2.5]" />
           <span>Workflow Builder</span>
         </button>
       </div>
@@ -171,31 +171,50 @@ export const PriorityQueuePage: React.FC = () => {
       {/* Main Tab Views */}
       {activeTab === 'INBOX' && (
         <div className="flex flex-col xl:flex-row min-h-[calc(100vh-140px)]">
-          {/* LEFT COLUMN: Request Queue (40% width) */}
-          <section className="w-full xl:w-[40%] border-b xl:border-b-0 xl:border-r border-[#17191c]/8 p-4 sm:p-6 space-y-4 bg-[#fafafb] overflow-y-auto max-h-[calc(100vh-140px)]">
+          {/* LEFT COLUMN: Request Queue (42% width) */}
+          <section className="w-full xl:w-[42%] border-b-[3px] xl:border-b-0 xl:border-r-[3px] border-[#121210] p-4 sm:p-5 space-y-4 bg-[#CFE8D6] overflow-y-auto max-h-[calc(100vh-140px)]">
             {/* Filter pills & sort status */}
-            <div className="flex items-center justify-between text-xs font-sans">
+            <div className="flex items-center justify-between text-xs font-mono font-bold">
               <div className="flex gap-1.5 flex-wrap">
-                {(['ALL', 'ARTERIAL', 'CRITICAL', 'WARRANTY'] as const).map((filter) => (
-                  <button
-                    key={filter}
-                    onClick={() => setSubFilter(filter)}
-                    className={`px-3 py-1 rounded-full text-xs cursor-pointer transition-colors ${
-                      subFilter === filter
-                        ? 'bg-[#17191c] text-white font-medium'
-                        : 'bg-[#f2f2f3] text-[#777b86] hover:text-[#17191c]'
-                    }`}
-                  >
-                    {filter === 'ALL' ? 'All' : filter === 'ARTERIAL' ? 'Arterial' : filter === 'CRITICAL' ? 'Critical' : 'DLP Warranty'}
-                  </button>
-                ))}
+                <button
+                  onClick={() => setSubFilter('ALL')}
+                  className={`px-2.5 py-1 border-2 border-[#121210] transition-colors cursor-pointer ${
+                    subFilter === 'ALL' ? 'bg-[#121210] text-white' : 'bg-white text-[#121210]'
+                  }`}
+                >
+                  ALL
+                </button>
+                <button
+                  onClick={() => setSubFilter('ARTERIAL')}
+                  className={`px-2.5 py-1 border-2 border-[#121210] transition-colors cursor-pointer ${
+                    subFilter === 'ARTERIAL' ? 'bg-[#121210] text-white' : 'bg-white text-[#121210]'
+                  }`}
+                >
+                  ARTERIAL
+                </button>
+                <button
+                  onClick={() => setSubFilter('CRITICAL')}
+                  className={`px-2.5 py-1 border-2 border-[#121210] transition-colors cursor-pointer ${
+                    subFilter === 'CRITICAL' ? 'bg-[#121210] text-white' : 'bg-white text-[#121210]'
+                  }`}
+                >
+                  CRITICAL
+                </button>
+                <button
+                  onClick={() => setSubFilter('WARRANTY')}
+                  className={`px-2.5 py-1 border-2 border-[#121210] transition-colors cursor-pointer ${
+                    subFilter === 'WARRANTY' ? 'bg-[#121210] text-white' : 'bg-white text-[#121210]'
+                  }`}
+                >
+                  DLP WARRANTY
+                </button>
               </div>
-              <span className="text-[11px] text-[#a3a6af] uppercase tracking-wider hidden sm:inline">Sort: Risk ↓</span>
+              <span className="text-[#121210]/60 hidden sm:inline">SORT: RISK SCORE ↓</span>
             </div>
 
             {/* Request Cards Stream */}
-            <div className="space-y-3.5">
-              {displayItems.map((inc) => {
+            <div className="space-y-4">
+              {displayItems.map((inc, index) => {
                 const cost = getEstimatedCost(inc);
                 const isSelected = activeItem?.id === inc.id;
                 const isEscalated = inc.severity === 'CRITICAL';
@@ -207,67 +226,64 @@ export const PriorityQueuePage: React.FC = () => {
                       setSelectedIncident(inc);
                       setCurrentStamp(null);
                     }}
-                    className={`p-5 rounded-[20px] relative cursor-pointer select-none transition-all ${
+                    className={`brut-card p-4 relative cursor-pointer select-none transition-all ${
                       isSelected
-                        ? 'bg-white ring-1 ring-[#17191c] shadow-[0_12px_24px_-4px_rgba(0,0,0,0.08)]'
-                        : 'bg-white hover:bg-[#fafafb] border border-[#17191c]/6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.04)]'
+                        ? 'ring-3 ring-[#121210] translate-x-1 -translate-y-1 bg-[#FFFFFF]'
+                        : 'bg-[#FFFFFF] hover:bg-[#F9FCFA]'
                     }`}
                   >
                     {/* Top ID Badge */}
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <span
-                        className={`text-[11px] font-sans px-2.5 py-0.5 rounded-full ${
-                          isEscalated
-                            ? 'bg-[#fbe1d1] text-[#5d2a1a] font-medium'
-                            : 'bg-[#f2f2f3] text-[#777b86]'
-                        }`}
-                      >
-                        WO-2026-{inc.code.replace('BLR-', '')}
-                      </span>
-                      <span className="text-[11px] font-sans text-[#a3a6af]">
-                        Ward {inc.wardNumber}
-                      </span>
-                    </div>
+                    <span
+                      className={`absolute -top-2.5 -left-2 px-2 py-0.5 text-[10px] font-mono font-bold border-2 border-[#121210] ${
+                        isEscalated
+                          ? 'bg-[#C03A3A] text-white'
+                          : index === 0
+                          ? 'bg-[#E8A030] text-[#121210]'
+                          : 'bg-white text-[#121210]'
+                      }`}
+                    >
+                      {isEscalated ? `⚠ WO-2026-${inc.code.replace('BLR-', '')}` : `WO-2026-${inc.code.replace('BLR-', '')}`}
+                    </span>
 
                     {/* Title + Amount */}
-                    <div className="flex justify-between items-start gap-3">
+                    <div className="flex justify-between items-start gap-2 pt-1">
                       <div className="min-w-0 flex-1">
-                        <div className="font-serif text-lg leading-tight text-[#17191c] font-normal truncate">
+                        <div className="font-display font-extrabold text-lg sm:text-xl leading-tight text-[#121210] truncate">
                           {inc.roadName}
                         </div>
-                        <div className="text-xs text-[#777b86] mt-1 truncate">
+                        <div className="text-xs text-[#121210]/70 mt-0.5 font-body truncate">
                           {inc.landmark} · {inc.depthCm}cm depth · {inc.surfaceAreaSqM}m² area
                         </div>
                       </div>
                       <div className="text-right shrink-0">
-                        <div className="font-sans font-medium text-lg text-[#17191c]">
+                        <div className="font-mono font-bold text-xl sm:text-2xl text-[#121210]">
                           ₹{cost.toLocaleString('en-IN')}.00
                         </div>
-                        <div className="text-[10px] font-sans text-[#a3a6af]">
-                          PWD Tender
+                        <div className="text-[10px] font-mono text-[#121210]/60 font-bold">
+                          INR · PWD TENDER
                         </div>
                       </div>
                     </div>
 
-                    {/* Steep Tags */}
+                    {/* Approva Brutalist Tags */}
                     {(() => {
                       const { category, surfaceType } = getRoadInfo(inc);
                       return (
-                        <div className="flex items-center gap-1.5 mt-3 flex-wrap">
-                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-sans bg-[#f2f2f3] text-[#777b86]">{category}</span>
-                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-sans bg-[#f2f2f3] text-[#777b86]">{surfaceType}</span>
+                        <div className="flex items-center gap-2 mt-3 flex-wrap">
+                          <span className="tag bg-[#CFE8D6]">{category}</span>
+                          <span className="tag bg-white">{surfaceType}</span>
                           {inc.isUnderWarranty && (
-                            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-sans bg-[#fbe1d1] text-[#5d2a1a] font-medium">DLP Warranty</span>
+                            <span className="tag bg-[#2E8C42] text-white">DLP WARRANTY</span>
                           )}
                           {isEscalated ? (
-                            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-sans bg-[#fbe1d1] text-[#5d2a1a] font-medium flex items-center gap-1">
-                              <Flame className="w-3 h-3 text-[#5d2a1a]" />
-                              Escalated
+                            <span className="tag bg-[#C03A3A] text-white">
+                              <Flame className="w-3 h-3 stroke-[2.5]" />
+                              ESCALATED
                             </span>
                           ) : (
-                            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-sans bg-[#f2f2f3] text-[#777b86] flex items-center gap-1">
-                              <Clock className="w-3 h-3 text-[#a3a6af]" />
-                              24h SLA
+                            <span className="tag bg-[#E8A030] text-[#121210]">
+                              <Clock className="w-3 h-3 stroke-[2.5]" />
+                              24H SLA
                             </span>
                           )}
                         </div>
@@ -275,30 +291,33 @@ export const PriorityQueuePage: React.FC = () => {
                     })()}
 
                     {/* Submitter Info + Stepper Dots */}
-                    <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#17191c]/6">
+                    <div className="flex items-center justify-between mt-4 pt-3 border-t-2 border-[#121210]/15">
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-[#f2f2f3] text-[#17191c] flex items-center justify-center font-sans font-medium text-[10px]">
+                        <div className="w-7 h-7 border-2 border-[#121210] bg-[#CFE8D6] flex items-center justify-center font-display font-extrabold text-xs text-[#121210]">
                           {inc.wardNumber % 2 === 0 ? 'DP' : 'LA'}
                         </div>
                         <div className="text-xs leading-tight">
-                          <span className="font-sans font-medium text-[#17191c]">
+                          <span className="font-display font-bold text-[#121210]">
                             {inc.wardNumber % 2 === 0 ? 'Devin Park' : 'Lena Akhtar'}
                           </span>
-                          <span className="text-[11px] text-[#a3a6af] ml-1.5">
-                            Ward {inc.wardNumber}
+                          <br />
+                          <span className="font-mono text-[10px] text-[#121210]/60">
+                            WARD {inc.wardNumber} · {inc.zone.toUpperCase()}
                           </span>
                         </div>
                       </div>
 
                       {/* Approval chain status pipeline dots */}
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-[#17191c]"></span>
-                        <span className="w-3 h-px bg-[#17191c]/20"></span>
-                        <span className="w-2 h-2 rounded-full bg-[#17191c]"></span>
-                        <span className="w-3 h-px bg-[#17191c]/20"></span>
-                        <span className={`w-2 h-2 rounded-full ${isEscalated ? 'bg-[#5d2a1a]' : 'bg-[#a3a6af]'}`}></span>
-                        <span className="w-3 h-px bg-[#17191c]/20"></span>
-                        <span className="w-2 h-2 rounded-full bg-[#ececec]"></span>
+                      <div className="flex items-center">
+                        <span className="chain-node bg-[#2E8C42] text-white">✓</span>
+                        <span className="chain-line"></span>
+                        <span className="chain-node bg-[#2E8C42] text-white">✓</span>
+                        <span className="chain-line"></span>
+                        <span className={`chain-node ${isEscalated ? 'bg-[#C03A3A] text-white' : 'bg-[#E8A030] text-[#121210]'}`}>
+                          {isEscalated ? '!' : 'M'}
+                        </span>
+                        <span className="chain-line"></span>
+                        <span className="chain-node bg-white text-[#121210]/40">·</span>
                       </div>
                     </div>
                   </article>
@@ -308,11 +327,11 @@ export const PriorityQueuePage: React.FC = () => {
           </section>
 
           {/* RIGHT COLUMN: Document Pane + Action Rail */}
-          <section className="flex-1 p-4 sm:p-8 overflow-y-auto bg-[#ffffff]">
+          <section className="flex-1 p-4 sm:p-6 overflow-y-auto grid-paper bg-[#CFE8D6]">
             {activeItem && (
               <div className="document-layout flex flex-col xl:flex-row gap-5 items-start">
                 {/* Municipal Work Order / PO Document */}
-                <div id="invoice" className="flex-1 w-full bg-white rounded-[24px] border border-[#17191c]/8 p-6 sm:p-9 relative overflow-hidden min-h-[580px] shadow-[0_20px_25px_-5px_rgba(0,0,0,0.06),0_8px_10px_-6px_rgba(0,0,0,0.04)]">
+                <div id="invoice" className="flex-1 w-full bg-white brut-lg p-6 sm:p-8 relative overflow-hidden min-h-[580px]">
                   {/* Dynamic Big Stamp Watermark Drop Target */}
                   {currentStamp && (
                     <div className="absolute top-12 right-12 z-20 pointer-events-none">
@@ -326,169 +345,143 @@ export const PriorityQueuePage: React.FC = () => {
                   )}
 
                   {/* Header */}
-                  <div className="flex flex-col sm:flex-row justify-between items-start border-b border-[#17191c]/10 pb-6 gap-4">
+                  <div className="flex flex-col sm:flex-row justify-between items-start border-b-[3px] border-[#121210] pb-5 gap-4">
                     <div>
-                      <div className="font-serif text-2xl sm:text-3xl font-normal text-[#17191c] tracking-[-0.015em]">
-                        Municipal Work Order
+                      <div className="font-display font-extrabold text-2xl sm:text-3xl text-[#121210] tracking-tight">
+                        MUNICIPAL WORK ORDER
                       </div>
-                      <div className="text-xs font-normal text-[#777b86] mt-1.5 flex items-center gap-2">
-                        <span className="font-mono text-[#17191c] bg-[#f2f2f3] px-2 py-0.5 rounded-full">
-                          WO-2026-{activeItem.code.replace('BLR-', '')}
-                        </span>
-                        <span>·</span>
-                        <span>Issued 06 Oct 2026</span>
-                        <span>·</span>
-                        <span className="text-[#17191c] font-medium">PWD Sanction</span>
+                      <div className="font-mono text-xs font-bold text-[#121210]/70 mt-1">
+                        WO-2026-{activeItem.code.replace('BLR-', '')} · ISSUED 06 OCT 2026 · PWD SANCTION
                       </div>
                     </div>
                     <div className="sm:text-right">
-                      <div className="text-[11px] font-medium tracking-wider text-[#979799] uppercase">
-                        Jurisdiction & Bill To
+                      <div className="font-mono text-[10px] font-bold text-[#121210]/60 tracking-wider">
+                        BILL TO / JURISDICTION
                       </div>
-                      <div className="font-serif text-base text-[#17191c] mt-0.5">
+                      <div className="font-display font-extrabold text-[#121210] text-sm sm:text-base">
                         Bruhat Bengaluru Mahanagara Palike
                       </div>
-                      <div className="text-xs text-[#777b86] mt-0.5">
-                        Ward {activeItem.wardNumber} ({activeItem.wardName}) · {activeItem.zone} Zone
+                      <div className="font-mono text-[10px] text-[#121210]/60">
+                        WARD {activeItem.wardNumber} ({activeItem.wardName}) · {activeItem.zone} ZONE
                       </div>
                     </div>
                   </div>
 
                   {/* Metadata Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-6 p-5 rounded-[20px] bg-[#fafafb] border border-[#17191c]/5">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
                     <div>
-                      <div className="text-[11px] font-medium tracking-wider text-[#979799] uppercase">
-                        Assigned Contractor
+                      <div className="font-mono text-[10px] font-bold text-[#121210]/60 tracking-widest uppercase">
+                        ASSIGNED CONTRACTOR
                       </div>
-                      <div className="text-sm font-medium text-[#17191c] mt-1">
+                      <div className="font-display font-extrabold text-base sm:text-lg text-[#121210] leading-tight mt-0.5">
                         {activeItem.contractorName || 'Star Infratech Pvt Ltd'}
                       </div>
-                      <div className="text-xs text-[#777b86] mt-0.5 font-mono">
-                        PWD-ID #4420 · Rating: 4.2 / 5.0
+                      <div className="text-xs font-mono text-[#121210]/70 mt-0.5">
+                        PWD-ID #4420 · RATING: 4.2/5.0
                       </div>
                     </div>
 
                     <div>
-                      <div className="text-[11px] font-medium tracking-wider text-[#979799] uppercase">
-                        Hazard Specification
+                      <div className="font-mono text-[10px] font-bold text-[#121210]/60 tracking-widest uppercase">
+                        HAZARD SPECIFICATION
                       </div>
-                      <div className="text-sm font-medium text-[#17191c] mt-1">
+                      <div className="font-display font-extrabold text-base sm:text-lg text-[#121210] leading-tight mt-0.5">
                         {activeItem.severity} · {getRoadInfo(activeItem).surfaceType}
                       </div>
-                      <div className="text-xs text-[#777b86] mt-0.5 font-mono">
-                        Depth: {activeItem.depthCm}cm · Area: {activeItem.surfaceAreaSqM}m²
+                      <div className="text-xs font-mono text-[#121210]/70 mt-0.5">
+                        DEPTH: {activeItem.depthCm}cm · AREA: {activeItem.surfaceAreaSqM}m²
                       </div>
                     </div>
 
                     <div>
-                      <div className="text-[11px] font-medium tracking-wider text-[#979799] uppercase">
-                        SLA Mandate Due
+                      <div className="font-mono text-[10px] font-bold text-[#121210]/60 tracking-widest uppercase">
+                        SLA MANDATE DUE
                       </div>
-                      <div className="text-sm font-medium text-[#17191c] mt-1">
-                        08 Oct 2026 (48h)
+                      <div className="font-display font-extrabold text-base sm:text-lg text-[#121210] leading-tight mt-0.5">
+                        08 OCT 2026 (48H)
                       </div>
-                      <div className="text-xs text-[#777b86] mt-0.5">
-                        Emergency Transit Corridor
+                      <div className="text-xs font-mono text-[#121210]/70 mt-0.5">
+                        EMERGENCY TRANSIT CORRIDOR
                       </div>
-                    </div>
-                  </div>
-
-                  {/* Steep Signature: Editorial Accent Peach Card for Defect Liability & Audit Warranty */}
-                  <div className="steep-peach-card p-5 my-6 rounded-[20px] border border-[#5d2a1a]/15">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="text-[11px] font-semibold tracking-wider text-[#5d2a1a]/70 uppercase">
-                          Clause 45.2 · Statutory Defect Liability Protocol
-                        </div>
-                        <div className="font-serif text-lg font-normal text-[#5d2a1a] mt-1">
-                          Zero-Downtime Guarantee Active
-                        </div>
-                        <div className="text-xs text-[#5d2a1a]/85 mt-1 leading-relaxed max-w-xl">
-                          Contractor Star Infratech is bound to a 24-month defect liability period under BBMP Quality Act. Any post-resurfacing deformation triggers automatic bond forfeiture.
-                        </div>
-                      </div>
-                      <span className="text-[11px] font-mono font-medium px-2.5 py-1 rounded-full bg-[#ffffff]/60 text-[#5d2a1a] border border-[#5d2a1a]/20">
-                        AUDITED
-                      </span>
                     </div>
                   </div>
 
                   {/* Line Items PO Table */}
-                  <table className="w-full mt-6 text-sm">
+                  <table className="w-full mt-6 font-mono text-sm">
                     <thead>
-                      <tr className="border-b border-[#17191c]/10 text-[#777b86]">
-                        <th className="text-left py-3 text-xs font-medium tracking-wide">
-                          Description (IRC-SP-100 Spec)
+                      <tr className="border-y-[3px] border-[#121210]">
+                        <th className="text-left py-2 font-bold text-xs tracking-widest text-[#121210]">
+                          DESCRIPTION (IRC-SP-100 SPEC)
                         </th>
-                        <th className="text-right py-3 text-xs font-medium tracking-wide w-16">
-                          Qty
+                        <th className="text-right py-2 font-bold text-xs tracking-widest text-[#121210] w-14 sm:w-16">
+                          QTY
                         </th>
-                        <th className="text-right py-3 text-xs font-medium tracking-wide w-28">
-                          Unit Rate
+                        <th className="text-right py-2 font-bold text-xs tracking-widest text-[#121210] w-24 sm:w-28">
+                          UNIT
                         </th>
-                        <th className="text-right py-3 text-xs font-medium tracking-wide w-32">
-                          Amount
+                        <th className="text-right py-2 font-bold text-xs tracking-widest text-[#121210] w-28 sm:w-32">
+                          AMOUNT
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#17191c]/5 text-[#17191c]">
+                    <tbody className="divide-y divide-[#121210]/20">
                       <tr>
-                        <td className="py-3 text-xs leading-relaxed">
+                        <td className="py-2.5">
                           Bituminous Concrete Hot-Mix (Grading II, 50mm compacted)
                         </td>
-                        <td className="text-right font-mono text-xs">{Math.max(1, Math.round(activeItem.surfaceAreaSqM * 1.5))}</td>
-                        <td className="text-right font-mono text-xs text-[#777b86]">₹12,400.00</td>
-                        <td className="text-right font-mono text-xs font-medium">
+                        <td className="text-right font-bold">{Math.max(1, Math.round(activeItem.surfaceAreaSqM * 1.5))}</td>
+                        <td className="text-right text-xs">₹12,400.00</td>
+                        <td className="text-right font-bold">
                           ₹{(Math.max(1, Math.round(activeItem.surfaceAreaSqM * 1.5)) * 12400).toLocaleString('en-IN')}.00
                         </td>
                       </tr>
                       <tr>
-                        <td className="py-3 text-xs leading-relaxed">
+                        <td className="py-2.5">
                           Tack coat application with rapid bitumen emulsion (RS-1)
                         </td>
-                        <td className="text-right font-mono text-xs">{activeItem.depthCm > 8 ? 2 : 1}</td>
-                        <td className="text-right font-mono text-xs text-[#777b86]">₹3,450.00</td>
-                        <td className="text-right font-mono text-xs font-medium">
+                        <td className="text-right font-bold">{activeItem.depthCm > 8 ? 2 : 1}</td>
+                        <td className="text-right text-xs">₹3,450.00</td>
+                        <td className="text-right font-bold">
                           ₹{((activeItem.depthCm > 8 ? 2 : 1) * 3450).toLocaleString('en-IN')}.00
                         </td>
                       </tr>
                       <tr>
-                        <td className="py-3 text-xs leading-relaxed">
+                        <td className="py-2.5">
                           Pneumatic roller compaction & cold milling crew
                         </td>
-                        <td className="text-right font-mono text-xs">1</td>
-                        <td className="text-right font-mono text-xs text-[#777b86]">₹14,800.00</td>
-                        <td className="text-right font-mono text-xs font-medium">₹14,800.00</td>
+                        <td className="text-right font-bold">1</td>
+                        <td className="text-right text-xs">₹14,800.00</td>
+                        <td className="text-right font-bold">₹14,800.00</td>
                       </tr>
                       <tr>
-                        <td className="py-3 text-xs leading-relaxed">
+                        <td className="py-2.5">
                           Traffic diversion barriers & IRC retro-reflective beacons
                         </td>
-                        <td className="text-right font-mono text-xs">1</td>
-                        <td className="text-right font-mono text-xs text-[#777b86]">₹4,200.00</td>
-                        <td className="text-right font-mono text-xs font-medium">₹4,200.00</td>
+                        <td className="text-right font-bold">1</td>
+                        <td className="text-right text-xs">₹4,200.00</td>
+                        <td className="text-right font-bold">₹4,200.00</td>
                       </tr>
                     </tbody>
-                    <tfoot className="border-t border-[#17191c]/10">
+                    <tfoot>
                       <tr>
-                        <td colSpan={3} className="text-right py-2 text-xs text-[#777b86]">
+                        <td colSpan={3} className="text-right py-2 text-xs text-[#121210]/70">
                           Subtotal (Base Work Order Estimate)
                         </td>
-                        <td className="text-right font-mono text-xs text-[#17191c]">
+                        <td className="text-right font-bold text-sm">
                           ₹{(activeCost - 3200).toLocaleString('en-IN')}.00
                         </td>
                       </tr>
                       <tr>
-                        <td colSpan={3} className="text-right py-1 text-xs text-[#777b86]">
+                        <td colSpan={3} className="text-right py-1 text-xs text-[#121210]/70">
                           GST / Infrastructure Cess (18%)
                         </td>
-                        <td className="text-right font-mono text-xs text-[#17191c]">₹3,200.00</td>
+                        <td className="text-right font-bold text-sm">₹3,200.00</td>
                       </tr>
-                      <tr className="border-t border-[#17191c]/10">
-                        <td colSpan={3} className="text-right py-3 font-serif text-base text-[#17191c]">
-                          Total Sanction Amount (INR)
+                      <tr className="border-t-[3px] border-[#121210]">
+                        <td colSpan={3} className="text-right py-2 font-display font-extrabold text-base text-[#121210]">
+                          TOTAL SANCTION AMOUNT (INR)
                         </td>
-                        <td className="text-right font-mono font-medium text-xl sm:text-2xl text-[#17191c]">
+                        <td className="text-right font-mono font-extrabold text-xl sm:text-2xl text-[#121210]">
                           ₹{activeCost.toLocaleString('en-IN')}.00
                         </td>
                       </tr>
@@ -496,60 +489,54 @@ export const PriorityQueuePage: React.FC = () => {
                   </table>
 
                   {/* Approval Chain Stepper */}
-                  <div className="mt-8 border-t border-[#17191c]/10 pt-5">
-                    <div className="text-[11px] font-medium tracking-wider text-[#979799] uppercase mb-3">
-                      Approval Chain · PWD Audit Protocol
+                  <div className="mt-8 border-t-[3px] border-[#121210] pt-4">
+                    <div className="font-mono text-[10px] font-bold text-[#121210]/60 tracking-widest uppercase mb-3">
+                      APPROVAL CHAIN · PWD AUDIT PROTOCOL
                     </div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <div className="rounded-full bg-[#f2f2f3] px-3.5 py-1.5 text-xs text-[#17191c] flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#17191c]"></span>
-                        <span className="font-medium">Citizen Submitter</span>
-                        <span className="text-[10px] text-[#777b86]">08:11</span>
+                      <div className="brut-sm bg-[#2E8C42] text-white px-3 py-2 text-xs">
+                        <div className="font-display font-extrabold">Citizen Submitter</div>
+                        <div className="font-mono text-[10px] opacity-80">Reported · 08:11</div>
                       </div>
-                      <ChevronRight className="w-3.5 h-3.5 text-[#979799]" />
-                      <div className="rounded-full bg-[#f2f2f3] px-3.5 py-1.5 text-xs text-[#17191c] flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#17191c]"></span>
-                        <span className="font-medium">Ward Engg ✓</span>
-                        <span className="text-[10px] text-[#777b86]">08:18</span>
+                      <ChevronRight className="w-4 h-4 text-[#121210]" />
+                      <div className="brut-sm bg-[#2E8C42] text-white px-3 py-2 text-xs">
+                        <div className="font-display font-extrabold">Ward Engg ✓</div>
+                        <div className="font-mono text-[10px] opacity-80">Verified · 08:18</div>
                       </div>
-                      <ChevronRight className="w-3.5 h-3.5 text-[#979799]" />
-                      <div className="rounded-full bg-[#f2f2f3] px-3.5 py-1.5 text-xs text-[#17191c] flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#17191c]"></span>
-                        <span className="font-medium">Exec Engg ✓</span>
-                        <span className="text-[10px] text-[#777b86]">08:24</span>
+                      <ChevronRight className="w-4 h-4 text-[#121210]" />
+                      <div className="brut-sm bg-[#2E8C42] text-white px-3 py-2 text-xs">
+                        <div className="font-display font-extrabold">Exec Engg ✓</div>
+                        <div className="font-mono text-[10px] opacity-80">Tender · 08:24</div>
                       </div>
-                      <ChevronRight className="w-3.5 h-3.5 text-[#979799]" />
-                      <div className="rounded-full bg-[#fbe1d1] px-3.5 py-1.5 text-xs text-[#5d2a1a] flex items-center gap-2 font-medium">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#5d2a1a] animate-pulse"></span>
-                        <span>You (Chief Auditor)</span>
-                        <span className="text-[10px] text-[#5d2a1a]/70 font-normal">Pending</span>
+                      <ChevronRight className="w-4 h-4 text-[#121210]" />
+                      <div className="brut-sm bg-[#E8A030] text-[#121210] px-3 py-2 text-xs">
+                        <div className="font-display font-extrabold">YOU (Chief Auditor)</div>
+                        <div className="font-mono text-[10px] font-bold">Action Pending</div>
                       </div>
-                      <ChevronRight className="w-3.5 h-3.5 text-[#979799]/40" />
-                      <div className="rounded-full border border-dashed border-[#17191c]/20 px-3.5 py-1.5 text-xs text-[#979799] flex items-center gap-2">
-                        <span>Zonal Commissioner</span>
-                        <span className="text-[10px]">≥ ₹50k</span>
+                      <ChevronRight className="w-4 h-4 text-[#121210]/40" />
+                      <div className="border-2 border-dashed border-[#121210]/40 px-3 py-2 text-xs opacity-60">
+                        <div className="font-display font-bold">Zonal Commissioner</div>
+                        <div className="font-mono text-[10px]">Cond. ≥ ₹50k</div>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Right Action Rail ("DECIDE") */}
-                <div className="document-actions w-full xl:w-52 shrink-0 sticky top-4 space-y-4">
-                  <div className="text-[11px] font-semibold tracking-wider text-[#979799] uppercase">
-                    Decide
+                <div className="document-actions w-full xl:w-48 shrink-0 sticky top-4 space-y-4">
+                  <div className="font-mono text-[10px] font-bold tracking-widest text-[#121210]/60 uppercase">
+                    DECIDE
                   </div>
 
                   {/* APPROVE Button */}
                   <button
                     id="btn-approve"
-                    onClick={() => triggerStamp('APPROVED', '#17191c')}
-                    className="w-full bg-[#17191c] text-[#ffffff] hover:bg-black rounded-full py-3.5 px-4 flex flex-col items-center justify-center gap-1 transition-all shadow-[0_4px_16px_rgba(23,25,28,0.15)] cursor-pointer"
+                    onClick={() => triggerStamp('APPROVED', '#2E8C42')}
+                    className="stamp-btn w-full bg-[#2E8C42] text-white hover:bg-[#257335]"
                   >
-                    <div className="flex items-center gap-2 font-medium text-sm">
-                      <Check className="w-4 h-4 stroke-[2.5]" />
-                      <span>Approve</span>
-                    </div>
-                    <span className="text-[10px] text-[#ffffff]/60 font-mono">
+                    <Check className="w-7 h-7 stroke-[3]" />
+                    <span className="text-sm">APPROVE</span>
+                    <span className="font-mono text-[10px] opacity-80 normal-case tracking-normal font-normal">
                       ⌘ + ↵
                     </span>
                   </button>
@@ -557,14 +544,12 @@ export const PriorityQueuePage: React.FC = () => {
                   {/* REJECT Button */}
                   <button
                     id="btn-reject"
-                    onClick={() => triggerStamp('REJECTED', '#5d2a1a')}
-                    className="w-full border border-[#17191c]/20 bg-transparent text-[#17191c] hover:bg-[#fafafb] hover:border-[#17191c] rounded-full py-3 px-4 flex flex-col items-center justify-center gap-1 transition-all cursor-pointer"
+                    onClick={() => triggerStamp('REJECTED', '#C03A3A')}
+                    className="stamp-btn w-full bg-[#C03A3A] text-white hover:bg-[#a62e2e]"
                   >
-                    <div className="flex items-center gap-2 font-medium text-sm text-[#5d2a1a]">
-                      <X className="w-4 h-4 stroke-[2.5]" />
-                      <span>Reject</span>
-                    </div>
-                    <span className="text-[10px] text-[#777b86] font-mono">
+                    <X className="w-7 h-7 stroke-[3]" />
+                    <span className="text-sm">REJECT</span>
+                    <span className="font-mono text-[10px] opacity-80 normal-case tracking-normal font-normal">
                       ⌘ + ⌫
                     </span>
                   </button>
@@ -572,120 +557,117 @@ export const PriorityQueuePage: React.FC = () => {
                   {/* NEEDS DETAIL Button */}
                   <button
                     id="btn-detail"
-                    onClick={() => triggerStamp('NEEDS DETAIL', '#777b86')}
-                    className="w-full bg-[#f2f2f3] text-[#17191c] hover:bg-[#e8e8ea] rounded-full py-3 px-4 flex flex-col items-center justify-center gap-1 transition-all cursor-pointer"
+                    onClick={() => triggerStamp('NEEDS DETAIL', '#E8A030')}
+                    className="stamp-btn w-full bg-[#E8A030] text-[#121210] hover:bg-[#d69022]"
                   >
-                    <div className="flex items-center gap-2 font-medium text-sm">
-                      <Info className="w-4 h-4 stroke-[2]" />
-                      <span>Request Detail</span>
-                    </div>
-                    <span className="text-[10px] text-[#777b86] font-mono">
+                    <Info className="w-7 h-7 stroke-[3]" />
+                    <span className="text-sm">NEEDS DETAIL</span>
+                    <span className="font-mono text-[10px] opacity-80 normal-case tracking-normal font-normal">
                       ⌘ + D
                     </span>
                   </button>
 
                   {/* Policy Check Card */}
-                  <div className="rounded-[20px] bg-[#f2f2f3] p-4">
-                    <div className="text-[11px] font-semibold tracking-wider text-[#979799] uppercase pb-2 mb-2 border-b border-[#17191c]/8">
-                      Policy Checks
+                  <div className="brut bg-white p-3.5 mt-4">
+                    <div className="font-mono text-[10px] font-bold tracking-widest text-[#121210]/60 uppercase border-b-2 border-[#121210]/20 pb-1 mb-2">
+                      POLICY CHECK
                     </div>
-                    <div className="text-xs flex justify-between py-1 text-[#17191c]">
-                      <span className="text-[#777b86]">IRC-SP-100</span>
-                      <span className="font-medium">Passed</span>
+                    <div className="text-xs font-mono flex justify-between py-1">
+                      <span>IRC-SP-100</span>
+                      <span className="text-[#2E8C42] font-extrabold">PASS</span>
                     </div>
-                    <div className="text-xs flex justify-between py-1 text-[#17191c]">
-                      <span className="text-[#777b86]">Budget (PWD)</span>
-                      <span className="font-medium">62% Allocated</span>
+                    <div className="text-xs font-mono flex justify-between py-1">
+                      <span>Budget · PWD</span>
+                      <span className="text-[#2E8C42] font-extrabold">62%</span>
                     </div>
-                    <div className="text-xs flex justify-between py-1 text-[#17191c]">
-                      <span className="text-[#777b86]">Contractor DLP</span>
-                      <span className="font-medium text-[#5d2a1a]">Active (24mo)</span>
+                    <div className="text-xs font-mono flex justify-between py-1">
+                      <span>Contractor DLP</span>
+                      <span className="text-[#2E8C42] font-extrabold">ACTIVE</span>
                     </div>
-                    <div className="text-xs flex justify-between py-1 text-[#17191c]">
-                      <span className="text-[#777b86]">SLA Risk</span>
-                      <span className="font-medium text-[#17191c]">High (24h)</span>
+                    <div className="text-xs font-mono flex justify-between py-1">
+                      <span>SLA Risk</span>
+                      <span className="text-[#E8A030] font-extrabold">HIGH (24H)</span>
                     </div>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* AUDIT LOG matching Steep Style */}
-            <div className="mt-8 rounded-[24px] bg-[#17191c] text-[#f2f2f3] p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
-                <div className="font-serif text-lg font-normal flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-[#fbe1d1]" />
-                  <span>Audit Trail</span>
-                  <span className="text-xs font-sans text-white/50 italic ml-1">ledger snapshot</span>
+            {/* AUDIT LOG matching Approva */}
+            <div className="mt-6 brut bg-[#121210] text-[#FFFFFF] p-5">
+              <div className="flex items-center justify-between mb-3 border-b border-white/20 pb-2">
+                <div className="font-display font-extrabold text-base sm:text-lg flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-white" />
+                  <span>AUDIT LOG</span>
                 </div>
-                <span className="text-[11px] font-mono text-white/50">
-                  Immutable · BBMP PWD Ledger
+                <span className="font-mono text-[10px] text-white/60">
+                  IMMUTABLE · BBMP PWD LEDGER
                 </span>
               </div>
-              <pre className="font-mono text-xs leading-6 whitespace-pre-wrap text-[#f2f2f3]/90 overflow-x-auto">
+              <pre className="font-mono text-xs leading-6 whitespace-pre-wrap text-white/90 overflow-x-auto">
                 {auditLogs.join('\n')}
               </pre>
             </div>
 
             {/* RECENTLY STAMPED MINI TABLE */}
-            <div className="mt-8 rounded-[24px] bg-white border border-[#17191c]/8 overflow-hidden shadow-sm">
-              <div className="flex items-center justify-between p-5 border-b border-[#17191c]/8 bg-white">
-                <div className="font-serif text-lg font-normal flex items-center gap-2 text-[#17191c]">
-                  <Archive className="w-4 h-4 text-[#777b86]" />
-                  <span>Recently Stamped Work Orders</span>
+            <div className="mt-6 brut bg-white overflow-hidden">
+              <div className="flex items-center justify-between p-4 border-b-[3px] border-[#121210] bg-white">
+                <div className="font-display font-extrabold text-base sm:text-lg flex items-center gap-2 text-[#121210]">
+                  <Archive className="w-5 h-5" />
+                  <span>RECENTLY STAMPED WORK ORDERS</span>
                 </div>
                 <button
                   onClick={() => setActiveTab('HISTORY')}
-                  className="text-xs text-[#17191c] hover:text-[#5d2a1a] transition-colors cursor-pointer"
+                  className="text-xs font-mono font-bold underline cursor-pointer text-[#121210]"
                 >
-                  View All Dispatches →
+                  VIEW ALL DISPATCHES →
                 </button>
               </div>
               <div className="overflow-x-auto">
-                <table className="history-table w-full text-sm">
-                  <thead className="bg-[#fafafb] text-[#777b86]">
-                    <tr className="border-b border-[#17191c]/8">
-                      <th className="text-left p-3.5 text-xs font-medium tracking-wide">WO ID</th>
-                      <th className="text-left p-3.5 text-xs font-medium tracking-wide">Road / Corridor</th>
-                      <th className="text-right p-3.5 text-xs font-medium tracking-wide">Amount</th>
-                      <th className="text-left p-3.5 text-xs font-medium tracking-wide">Actor</th>
-                      <th className="text-left p-3.5 text-xs font-medium tracking-wide">Timestamp</th>
-                      <th className="text-right p-3.5 text-xs font-medium tracking-wide">Status</th>
+                <table className="history-table w-full font-mono text-sm">
+                  <thead className="bg-[#CFE8D6]">
+                    <tr className="border-b-[3px] border-[#121210]">
+                      <th className="text-left p-3 text-xs tracking-widest text-[#121210]">WO ID</th>
+                      <th className="text-left p-3 text-xs tracking-widest text-[#121210]">ROAD / CORRIDOR</th>
+                      <th className="text-right p-3 text-xs tracking-widest text-[#121210]">AMOUNT</th>
+                      <th className="text-left p-3 text-xs tracking-widest text-[#121210]">ACTOR</th>
+                      <th className="text-left p-3 text-xs tracking-widest text-[#121210]">TIMESTAMP</th>
+                      <th className="text-right p-3 text-xs tracking-widest text-[#121210]">STATUS</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#17191c]/5 text-[#17191c]">
-                    <tr className="hover:bg-[#fafafb] transition-colors">
-                      <td className="p-3.5 font-mono text-xs font-medium text-[#17191c]">WO-2026-0412</td>
-                      <td className="p-3.5 text-xs">100ft Road Indiranagar</td>
-                      <td className="text-right p-3.5 font-mono text-xs font-medium">₹18,440.00</td>
-                      <td className="p-3.5 text-xs text-[#777b86]">M. Vossberg</td>
-                      <td className="p-3.5 text-xs text-[#777b86]">06 Oct · 08:21</td>
-                      <td className="text-right p-3.5">
-                        <span className="inline-block text-[11px] font-mono font-medium px-2.5 py-0.5 rounded-full bg-[#f2f2f3] text-[#17191c]">
+                  <tbody className="divide-y divide-[#121210]/20">
+                    <tr>
+                      <td className="p-3 font-bold">WO-2026-0412</td>
+                      <td className="p-3">100ft Road Indiranagar</td>
+                      <td className="text-right p-3 font-bold">₹18,440.00</td>
+                      <td className="p-3">M. Vossberg</td>
+                      <td className="p-3 text-[#121210]/70">06 OCT · 08:21</td>
+                      <td className="text-right p-3">
+                        <span className="stamp text-[#2E8C42] text-[10px]" style={{ transform: 'rotate(-2deg)' }}>
                           APPROVED
                         </span>
                       </td>
                     </tr>
-                    <tr className="hover:bg-[#fafafb] transition-colors">
-                      <td className="p-3.5 font-mono text-xs font-medium text-[#17191c]">WO-2026-0417</td>
-                      <td className="p-3.5 text-xs">Mysore Road Flyover Ramp</td>
-                      <td className="text-right p-3.5 font-mono text-xs font-medium">₹82,250.00</td>
-                      <td className="p-3.5 text-xs text-[#777b86]">R. Sato</td>
-                      <td className="p-3.5 text-xs text-[#777b86]">05 Oct · 17:04</td>
-                      <td className="text-right p-3.5">
-                        <span className="inline-block text-[11px] font-mono font-medium px-2.5 py-0.5 rounded-full bg-[#fbe1d1] text-[#5d2a1a]">
+                    <tr>
+                      <td className="p-3 font-bold">WO-2026-0417</td>
+                      <td className="p-3">Mysore Road Flyover Ramp</td>
+                      <td className="text-right p-3 font-bold">₹82,250.00</td>
+                      <td className="p-3">R. Sato</td>
+                      <td className="p-3 text-[#121210]/70">05 OCT · 17:04</td>
+                      <td className="text-right p-3">
+                        <span className="stamp text-[#C03A3A] text-[10px]" style={{ transform: 'rotate(2deg)' }}>
                           REJECTED
                         </span>
                       </td>
                     </tr>
-                    <tr className="hover:bg-[#fafafb] transition-colors">
-                      <td className="p-3.5 font-mono text-xs font-medium text-[#17191c]">WO-2026-0408</td>
-                      <td className="p-3.5 text-xs">Sarjapur Main Road Junction</td>
-                      <td className="text-right p-3.5 font-mono text-xs font-medium">₹24,482.00</td>
-                      <td className="p-3.5 text-xs text-[#777b86]">A. Klein</td>
-                      <td className="p-3.5 text-xs text-[#777b86]">05 Oct · 14:48</td>
-                      <td className="text-right p-3.5">
-                        <span className="inline-block text-[11px] font-mono font-medium px-2.5 py-0.5 rounded-full bg-[#f2f2f3] text-[#777b86]">
+                    <tr>
+                      <td className="p-3 font-bold">WO-2026-0408</td>
+                      <td className="p-3">Sarjapur Main Road Junction</td>
+                      <td className="text-right p-3 font-bold">₹24,482.00</td>
+                      <td className="p-3">A. Klein</td>
+                      <td className="p-3 text-[#121210]/70">05 OCT · 14:48</td>
+                      <td className="text-right p-3">
+                        <span className="stamp text-[#E8A030] text-[10px]" style={{ transform: 'rotate(-2deg)' }}>
                           NEEDS DETAIL
                         </span>
                       </td>
@@ -698,111 +680,96 @@ export const PriorityQueuePage: React.FC = () => {
         </div>
       )}
 
-      {/* ESCALATIONS TAB matching Steep */}
+      {/* ESCALATIONS TAB matching Approva */}
       {activeTab === 'ESCALATIONS' && (
-        <div className="p-6 sm:p-8 space-y-6 max-w-[1200px] mx-auto">
-          <div className="rounded-[24px] bg-[#fafafb] border border-[#17191c]/8 p-6 sm:p-8">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 border-b border-[#17191c]/8 gap-3">
-              <div>
-                <div className="font-serif text-2xl sm:text-3xl font-normal text-[#17191c] flex items-center gap-2">
-                  <AlertTriangle className="w-6 h-6 text-[#5d2a1a] stroke-[1.5]" />
-                  <span>Escalation Queue <em className="italic font-normal">· 3 Past SLA</em></span>
+        <div className="p-6 space-y-6">
+          <div className="brut overflow-hidden stripes-amber p-1.5">
+            <div className="bg-[#CFE8D6] p-5">
+              <div className="flex items-center justify-between mb-4">
+                <div className="font-display font-extrabold text-xl flex items-center gap-2 text-[#121210]">
+                  <AlertTriangle className="w-6 h-6 text-[#C03A3A] stroke-[2.5]" />
+                  <span>ESCALATION QUEUE · 3 PAST SLA</span>
                 </div>
-                <div className="text-xs text-[#777b86] mt-1">
-                  Automatic ministerial escalation to Zonal Commissioner triggered at +24h past SLA deadline
-                </div>
+                <span className="font-mono text-xs font-bold text-[#121210]/60">
+                  AUTO-ESCALATES TO ZONAL COMMISSIONER AT +24H
+                </span>
               </div>
-              <span className="font-mono text-xs text-[#5d2a1a] bg-[#fbe1d1] px-3 py-1 rounded-full font-medium">
-                SLA BREACH THRESHOLD
-              </span>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-6">
-              <div className="steep-card bg-white p-5 rounded-[24px] border border-[#17191c]/8 shadow-sm flex flex-col justify-between">
-                <div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div className="brut bg-white p-4 border-[#C03A3A]">
                   <div className="flex justify-between items-start">
-                    <span className="text-[11px] font-mono font-medium px-2.5 py-1 rounded-full bg-[#fbe1d1] text-[#5d2a1a]">
-                      +52h past SLA
-                    </span>
-                    <Flame className="w-4 h-4 text-[#5d2a1a]" />
+                    <span className="tag bg-[#C03A3A] text-white">+52H PAST SLA</span>
+                    <Flame className="w-5 h-5 text-[#C03A3A]" />
                   </div>
-                  <div className="font-serif text-lg font-normal text-[#17191c] mt-4">
+                  <div className="font-display font-extrabold text-lg mt-3 text-[#121210]">
                     Outer Ring Road (Bellandur)
                   </div>
-                  <div className="font-mono font-medium text-2xl text-[#17191c] mt-1">
+                  <div className="font-mono font-extrabold text-2xl mt-1 text-[#121210]">
                     ₹48,920.00
                   </div>
-                  <div className="text-xs text-[#777b86] mt-1">
+                  <div className="text-xs font-mono text-[#121210]/60 mt-1">
                     Stuck at: Executive Engineer Tenders
                   </div>
+                  <button
+                    onClick={() => {
+                      setActiveTab('INBOX');
+                      addToast('Loaded Critical Escalation', 'Outer Ring Road Bellandur dossier opened in inbox', 'error');
+                    }}
+                    className="mt-4 w-full py-1.5 brut-sm bg-[#C03A3A] text-white font-display font-bold text-xs hover:bg-black transition-colors cursor-pointer"
+                  >
+                    TAKE DECISION NOW →
+                  </button>
                 </div>
-                <button
-                  onClick={() => {
-                    setActiveTab('INBOX');
-                    addToast('Loaded Critical Escalation', 'Outer Ring Road Bellandur dossier opened in inbox', 'error');
-                  }}
-                  className="mt-6 w-full py-2.5 bg-[#17191c] text-white rounded-full text-xs font-medium hover:bg-black transition-colors cursor-pointer"
-                >
-                  Take Decision Now →
-                </button>
-              </div>
 
-              <div className="steep-card bg-white p-5 rounded-[24px] border border-[#17191c]/8 shadow-sm flex flex-col justify-between">
-                <div>
+                <div className="brut bg-white p-4 border-[#E8A030]">
                   <div className="flex justify-between items-start">
-                    <span className="text-[11px] font-mono font-medium px-2.5 py-1 rounded-full bg-[#f2f2f3] text-[#17191c]">
-                      +18h past SLA
-                    </span>
-                    <AlertTriangle className="w-4 h-4 text-[#777b86]" />
+                    <span className="tag bg-[#E8A030] text-[#121210]">+18H PAST SLA</span>
+                    <AlertTriangle className="w-5 h-5 text-[#E8A030]" />
                   </div>
-                  <div className="font-serif text-lg font-normal text-[#17191c] mt-4">
+                  <div className="font-display font-extrabold text-lg mt-3 text-[#121210]">
                     Bannerghatta Road (Meenakshi)
                   </div>
-                  <div className="font-mono font-medium text-2xl text-[#17191c] mt-1">
+                  <div className="font-mono font-extrabold text-2xl mt-1 text-[#121210]">
                     ₹31,200.00
                   </div>
-                  <div className="text-xs text-[#777b86] mt-1">
+                  <div className="text-xs font-mono text-[#121210]/60 mt-1">
                     Stuck at: Quality Auditor Lab Core
                   </div>
+                  <button
+                    onClick={() => {
+                      setActiveTab('INBOX');
+                      addToast('Loaded Escalation', 'Bannerghatta Road dossier opened in inbox', 'warning');
+                    }}
+                    className="mt-4 w-full py-1.5 brut-sm bg-[#E8A030] text-[#121210] font-display font-bold text-xs hover:bg-black hover:text-white transition-colors cursor-pointer"
+                  >
+                    TAKE DECISION NOW →
+                  </button>
                 </div>
-                <button
-                  onClick={() => {
-                    setActiveTab('INBOX');
-                    addToast('Loaded Escalation', 'Bannerghatta Road dossier opened in inbox', 'warning');
-                  }}
-                  className="mt-6 w-full py-2.5 bg-[#17191c] text-white rounded-full text-xs font-medium hover:bg-black transition-colors cursor-pointer"
-                >
-                  Take Decision Now →
-                </button>
-              </div>
 
-              <div className="steep-card bg-white p-5 rounded-[24px] border border-[#17191c]/8 shadow-sm flex flex-col justify-between">
-                <div>
+                <div className="brut bg-white p-4 border-[#C03A3A]">
                   <div className="flex justify-between items-start">
-                    <span className="text-[11px] font-mono font-medium px-2.5 py-1 rounded-full bg-[#fbe1d1] text-[#5d2a1a]">
-                      +71h past SLA
-                    </span>
-                    <Flame className="w-4 h-4 text-[#5d2a1a]" />
+                    <span className="tag bg-[#C03A3A] text-white">+71H PAST SLA</span>
+                    <Flame className="w-5 h-5 text-[#C03A3A]" />
                   </div>
-                  <div className="font-serif text-lg font-normal text-[#17191c] mt-4">
+                  <div className="font-display font-extrabold text-lg mt-3 text-[#121210]">
                     Old Madras Road (Swami Vivekananda)
                   </div>
-                  <div className="font-mono font-medium text-2xl text-[#17191c] mt-1">
+                  <div className="font-mono font-extrabold text-2xl mt-1 text-[#121210]">
                     ₹61,440.00
                   </div>
-                  <div className="text-xs text-[#777b86] mt-1">
+                  <div className="text-xs font-mono text-[#121210]/60 mt-1">
                     Stuck at: Zonal Commissioner Sanction
                   </div>
+                  <button
+                    onClick={() => {
+                      setActiveTab('INBOX');
+                      addToast('Loaded Critical Escalation', 'Old Madras Road dossier opened in inbox', 'error');
+                    }}
+                    className="mt-4 w-full py-1.5 brut-sm bg-[#C03A3A] text-white font-display font-bold text-xs hover:bg-black transition-colors cursor-pointer"
+                  >
+                    TAKE DECISION NOW →
+                  </button>
                 </div>
-                <button
-                  onClick={() => {
-                    setActiveTab('INBOX');
-                    addToast('Loaded Critical Escalation', 'Old Madras Road dossier opened in inbox', 'error');
-                  }}
-                  className="mt-6 w-full py-2.5 bg-[#17191c] text-white rounded-full text-xs font-medium hover:bg-black transition-colors cursor-pointer"
-                >
-                  Take Decision Now →
-                </button>
               </div>
             </div>
           </div>
@@ -811,91 +778,89 @@ export const PriorityQueuePage: React.FC = () => {
 
       {/* HISTORY TAB */}
       {activeTab === 'HISTORY' && (
-        <div className="p-6 sm:p-8 max-w-[1200px] mx-auto">
-          <div className="rounded-[24px] bg-white border border-[#17191c]/8 p-6 sm:p-8 shadow-sm">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-[#17191c]/8 pb-5 mb-5 gap-3">
+        <div className="p-6">
+          <div className="brut bg-white p-6">
+            <div className="flex items-center justify-between border-b-[3px] border-[#121210] pb-4 mb-4">
               <div>
-                <h2 className="font-serif text-2xl sm:text-3xl font-normal text-[#17191c]">
-                  Municipal Audit & Dispatch <em className="italic">History</em>
+                <h2 className="font-display font-extrabold text-2xl text-[#121210]">
+                  MUNICIPAL AUDIT & DISPATCH HISTORY
                 </h2>
-                <p className="text-xs text-[#777b86] mt-1">
+                <p className="font-mono text-xs text-[#121210]/60 mt-0.5">
                   Complete immutable ledger of 2,481 approved, rejected, and clarified road repair work orders.
                 </p>
               </div>
-              <span className="font-mono text-xs font-medium px-3 py-1 rounded-full bg-[#f2f2f3] text-[#17191c]">
-                2,481 Total Audits
-              </span>
+              <span className="tag bg-[#CFE8D6]">2,481 TOTAL AUDITS</span>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="history-table w-full text-sm">
-                <thead className="bg-[#fafafb] text-[#777b86]">
-                  <tr className="border-b border-[#17191c]/8">
-                    <th className="text-left p-3.5 text-xs font-medium tracking-wide">WO ID</th>
-                    <th className="text-left p-3.5 text-xs font-medium tracking-wide">Road / Corridor</th>
-                    <th className="text-right p-3.5 text-xs font-medium tracking-wide">Amount (INR)</th>
-                    <th className="text-left p-3.5 text-xs font-medium tracking-wide">Inspector / Auditor</th>
-                    <th className="text-left p-3.5 text-xs font-medium tracking-wide">Timestamp</th>
-                    <th className="text-right p-3.5 text-xs font-medium tracking-wide">Stamped Decision</th>
+              <table className="history-table w-full font-mono text-sm">
+                <thead className="bg-[#CFE8D6]">
+                  <tr className="border-b-[3px] border-[#121210]">
+                    <th className="text-left p-3 text-xs tracking-widest text-[#121210]">WO ID</th>
+                    <th className="text-left p-3 text-xs tracking-widest text-[#121210]">ROAD / CORRIDOR</th>
+                    <th className="text-right p-3 text-xs tracking-widest text-[#121210]">AMOUNT (INR)</th>
+                    <th className="text-left p-3 text-xs tracking-widest text-[#121210]">INSPECTOR / AUDITOR</th>
+                    <th className="text-left p-3 text-xs tracking-widest text-[#121210]">TIMESTAMP</th>
+                    <th className="text-right p-3 text-xs tracking-widest text-[#121210]">STAMPED DECISION</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#17191c]/5 text-[#17191c]">
-                  <tr className="hover:bg-[#fafafb] transition-colors">
-                    <td className="p-3.5 font-mono text-xs font-medium">WO-2026-0418</td>
-                    <td className="p-3.5 text-xs font-serif text-base">Outer Ring Road (Bellandur)</td>
-                    <td className="text-right p-3.5 font-mono text-xs font-medium">₹48,920.00</td>
-                    <td className="p-3.5 text-xs text-[#777b86]">Chief Auditor Mara</td>
-                    <td className="p-3.5 text-xs text-[#777b86]">06 Oct · 08:30</td>
-                    <td className="text-right p-3.5">
-                      <span className="inline-block text-[11px] font-mono font-medium px-2.5 py-0.5 rounded-full bg-[#f2f2f3] text-[#17191c]">
+                <tbody className="divide-y divide-[#121210]/20">
+                  <tr>
+                    <td className="p-3 font-bold">WO-2026-0418</td>
+                    <td className="p-3 font-display font-bold">Outer Ring Road (Bellandur)</td>
+                    <td className="text-right p-3 font-bold">₹48,920.00</td>
+                    <td className="p-3">Chief Auditor Mara</td>
+                    <td className="p-3 text-[#121210]/70">06 OCT · 08:30</td>
+                    <td className="text-right p-3">
+                      <span className="stamp text-[#2E8C42] text-[10px]" style={{ transform: 'rotate(-2deg)' }}>
                         APPROVED
                       </span>
                     </td>
                   </tr>
-                  <tr className="hover:bg-[#fafafb] transition-colors">
-                    <td className="p-3.5 font-mono text-xs font-medium">WO-2026-0416</td>
-                    <td className="p-3.5 text-xs font-serif text-base">100ft Road Indiranagar</td>
-                    <td className="text-right p-3.5 font-mono text-xs font-medium">₹18,440.00</td>
-                    <td className="p-3.5 text-xs text-[#777b86]">Ward Engg A. Klein</td>
-                    <td className="p-3.5 text-xs text-[#777b86]">06 Oct · 08:14</td>
-                    <td className="text-right p-3.5">
-                      <span className="inline-block text-[11px] font-mono font-medium px-2.5 py-0.5 rounded-full bg-[#f2f2f3] text-[#17191c]">
+                  <tr>
+                    <td className="p-3 font-bold">WO-2026-0416</td>
+                    <td className="p-3 font-display font-bold">100ft Road Indiranagar</td>
+                    <td className="text-right p-3 font-bold">₹18,440.00</td>
+                    <td className="p-3">Ward Engg A. Klein</td>
+                    <td className="p-3 text-[#121210]/70">06 OCT · 08:14</td>
+                    <td className="text-right p-3">
+                      <span className="stamp text-[#2E8C42] text-[10px]" style={{ transform: 'rotate(1deg)' }}>
                         APPROVED
                       </span>
                     </td>
                   </tr>
-                  <tr className="hover:bg-[#fafafb] transition-colors">
-                    <td className="p-3.5 font-mono text-xs font-medium">WO-2026-0412</td>
-                    <td className="p-3.5 text-xs font-serif text-base">Mysore Road Flyover Ramp</td>
-                    <td className="text-right p-3.5 font-mono text-xs font-medium">₹82,250.00</td>
-                    <td className="p-3.5 text-xs text-[#777b86]">Auditor R. Sato</td>
-                    <td className="p-3.5 text-xs text-[#777b86]">05 Oct · 17:04</td>
-                    <td className="text-right p-3.5">
-                      <span className="inline-block text-[11px] font-mono font-medium px-2.5 py-0.5 rounded-full bg-[#fbe1d1] text-[#5d2a1a]">
+                  <tr>
+                    <td className="p-3 font-bold">WO-2026-0412</td>
+                    <td className="p-3 font-display font-bold">Mysore Road Flyover Ramp</td>
+                    <td className="text-right p-3 font-bold">₹82,250.00</td>
+                    <td className="p-3">Auditor R. Sato</td>
+                    <td className="p-3 text-[#121210]/70">05 OCT · 17:04</td>
+                    <td className="text-right p-3">
+                      <span className="stamp text-[#C03A3A] text-[10px]" style={{ transform: 'rotate(-3deg)' }}>
                         REJECTED
                       </span>
                     </td>
                   </tr>
-                  <tr className="hover:bg-[#fafafb] transition-colors">
-                    <td className="p-3.5 font-mono text-xs font-medium">WO-2026-0409</td>
-                    <td className="p-3.5 text-xs font-serif text-base">Hosur Road (Silk Board)</td>
-                    <td className="text-right p-3.5 font-mono text-xs font-medium">₹36,120.00</td>
-                    <td className="p-3.5 text-xs text-[#777b86]">Chief Auditor Mara</td>
-                    <td className="p-3.5 text-xs text-[#777b86]">05 Oct · 15:32</td>
-                    <td className="text-right p-3.5">
-                      <span className="inline-block text-[11px] font-mono font-medium px-2.5 py-0.5 rounded-full bg-[#f2f2f3] text-[#17191c]">
+                  <tr>
+                    <td className="p-3 font-bold">WO-2026-0409</td>
+                    <td className="p-3 font-display font-bold">Hosur Road (Silk Board)</td>
+                    <td className="text-right p-3 font-bold">₹36,120.00</td>
+                    <td className="p-3">Chief Auditor Mara</td>
+                    <td className="p-3 text-[#121210]/70">05 OCT · 15:32</td>
+                    <td className="text-right p-3">
+                      <span className="stamp text-[#2E8C42] text-[10px]" style={{ transform: 'rotate(2deg)' }}>
                         APPROVED
                       </span>
                     </td>
                   </tr>
-                  <tr className="hover:bg-[#fafafb] transition-colors">
-                    <td className="p-3.5 font-mono text-xs font-medium">WO-2026-0408</td>
-                    <td className="p-3.5 text-xs font-serif text-base">Sarjapur Main Road</td>
-                    <td className="text-right p-3.5 font-mono text-xs font-medium">₹24,482.00</td>
-                    <td className="p-3.5 text-xs text-[#777b86]">Exec Engg Devin</td>
-                    <td className="p-3.5 text-xs text-[#777b86]">05 Oct · 14:48</td>
-                    <td className="text-right p-3.5">
-                      <span className="inline-block text-[11px] font-mono font-medium px-2.5 py-0.5 rounded-full bg-[#f2f2f3] text-[#777b86]">
+                  <tr>
+                    <td className="p-3 font-bold">WO-2026-0408</td>
+                    <td className="p-3 font-display font-bold">Sarjapur Main Road</td>
+                    <td className="text-right p-3 font-bold">₹24,482.00</td>
+                    <td className="p-3">Exec Engg Devin</td>
+                    <td className="p-3 text-[#121210]/70">05 OCT · 14:48</td>
+                    <td className="text-right p-3">
+                      <span className="stamp text-[#E8A030] text-[10px]" style={{ transform: 'rotate(-2deg)' }}>
                         NEEDS DETAIL
                       </span>
                     </td>
@@ -907,92 +872,96 @@ export const PriorityQueuePage: React.FC = () => {
         </div>
       )}
 
-      {/* WORKFLOW BUILDER TAB matching Steep */}
+      {/* WORKFLOW BUILDER TAB matching Approva */}
       {activeTab === 'WORKFLOW' && (
-        <div className="p-6 sm:p-8 max-w-[1200px] mx-auto">
-          <div className="rounded-[24px] bg-white border border-[#17191c]/8 overflow-hidden shadow-sm">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 sm:p-8 border-b border-[#17191c]/8 gap-4">
+        <div className="p-6">
+          <div className="brut bg-white overflow-hidden">
+            <div className="flex items-center justify-between p-5 border-b-[3px] border-[#121210]">
               <div>
-                <div className="font-serif text-2xl font-normal flex items-center gap-2 text-[#17191c]">
-                  <GitMerge className="w-5 h-5 text-[#777b86]" />
-                  <span>Workflow Protocol <em className="italic">— Arterial High-Hazard ≥ 80</em></span>
+                <div className="font-display font-extrabold text-xl flex items-center gap-2 text-[#121210]">
+                  <GitMerge className="w-5 h-5" />
+                  <span>WORKFLOW BUILDER — "Arterial Road High-Hazard ≥ Score 80"</span>
                 </div>
-                <div className="text-xs text-[#777b86] mt-1">
-                  Drag stages to reorder · 4 active stages governing 142 live Bengaluru repair requests
+                <div className="text-xs font-mono text-[#121210]/60 mt-1">
+                  Drag stages to reorder · 4 active stages · governing 142 live Bengaluru repair requests
                 </div>
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={() => addToast('Stage Created', 'Added conditional stage to civic approval pipeline', 'info')}
-                  className="px-4 py-2 text-xs font-medium rounded-full bg-[#f2f2f3] hover:bg-[#e8e8ea] text-[#17191c] transition-colors cursor-pointer"
+                  className="brut-sm bg-white px-3.5 py-1.5 text-xs font-display font-extrabold hover:bg-zinc-100 cursor-pointer"
                 >
-                  + Add Stage
+                  + STAGE
                 </button>
                 <button
                   onClick={() => addToast('Workflow Published', 'New PWD sanction protocol synced to all zonal engineers', 'success')}
-                  className="px-4 py-2 text-xs font-medium rounded-full bg-[#17191c] text-white hover:bg-black transition-colors cursor-pointer"
+                  className="brut-sm bg-[#2E8C42] text-white px-3.5 py-1.5 text-xs font-display font-extrabold hover:bg-black cursor-pointer"
                 >
-                  Publish Protocol
+                  PUBLISH
                 </button>
               </div>
             </div>
 
-            <div className="p-8 sm:p-12 bg-[#fafafb]">
-              <div className="flex items-center gap-3 flex-wrap">
-                <div className="bg-white rounded-[20px] p-5 border border-[#17191c]/8 shadow-sm cursor-grab min-w-[160px]">
-                  <div className="text-[10px] font-semibold text-[#979799] uppercase">TRIGGER</div>
-                  <div className="font-medium text-sm text-[#17191c] mt-1">Citizen Report</div>
-                  <div className="text-[11px] text-[#777b86] mt-0.5">AI Conf &gt; 80%</div>
+            <div className="polka p-8 bg-[#CFE8D6]/30">
+              <div className="flex items-center gap-2 flex-wrap">
+                <div className="brut bg-[#CFE8D6] px-5 py-4 cursor-grab">
+                  <div className="font-mono text-[10px] font-bold text-[#121210]/60 uppercase">TRIGGER</div>
+                  <div className="font-display font-extrabold text-[#121210]">Citizen Pothole Report</div>
+                  <div className="text-[10px] font-mono text-[#121210]/60 mt-0.5">AI Verified &gt; 80%</div>
                 </div>
 
-                <div className="flex items-center text-[#777b86]">
-                  <ChevronRight className="w-4 h-4" />
+                <div className="flex items-center">
+                  <div className="w-6 h-1 bg-[#121210]"></div>
+                  <div className="w-0 h-0" style={{ borderTop: '6px solid transparent', borderBottom: '6px solid transparent', borderLeft: '8px solid #121210' }}></div>
                 </div>
 
-                <div className="bg-white rounded-[20px] p-5 border border-[#17191c]/8 shadow-sm cursor-grab min-w-[160px]">
-                  <div className="text-[10px] font-semibold text-[#979799] uppercase">STAGE 1 · WARD</div>
-                  <div className="font-medium text-sm text-[#17191c] mt-1">Junior Engineer</div>
-                  <div className="text-[11px] text-[#777b86] mt-0.5">SLA: 24h</div>
+                <div className="brut bg-white px-5 py-4 cursor-grab">
+                  <div className="font-mono text-[10px] font-bold text-[#121210]/60 uppercase">STAGE 1 · WARD</div>
+                  <div className="font-display font-extrabold text-[#121210]">Ward Junior Engineer</div>
+                  <div className="text-[10px] font-mono text-[#121210]/60 mt-0.5">SLA: 24h</div>
                 </div>
 
-                <div className="flex items-center text-[#777b86]">
-                  <ChevronRight className="w-4 h-4" />
+                <div className="flex items-center">
+                  <div className="w-6 h-1 bg-[#121210]"></div>
+                  <div className="w-0 h-0" style={{ borderTop: '6px solid transparent', borderBottom: '6px solid transparent', borderLeft: '8px solid #121210' }}></div>
                 </div>
 
-                <div className="bg-white rounded-[20px] p-5 border border-[#17191c]/8 shadow-sm cursor-grab min-w-[160px]">
-                  <div className="text-[10px] font-semibold text-[#979799] uppercase">STAGE 2 · TENDER</div>
-                  <div className="font-medium text-sm text-[#17191c] mt-1">Executive Engineer</div>
-                  <div className="text-[11px] text-[#777b86] mt-0.5">SLA: 48h · KTPP</div>
+                <div className="brut bg-white px-5 py-4 cursor-grab">
+                  <div className="font-mono text-[10px] font-bold text-[#121210]/60 uppercase">STAGE 2 · TENDER</div>
+                  <div className="font-display font-extrabold text-[#121210]">Executive Engineer (EE)</div>
+                  <div className="text-[10px] font-mono text-[#121210]/60 mt-0.5">SLA: 48h · KTPP Act</div>
                 </div>
 
-                <div className="flex items-center text-[#777b86]">
-                  <ChevronRight className="w-4 h-4" />
+                <div className="flex items-center">
+                  <div className="w-6 h-1 bg-[#121210]"></div>
+                  <div className="w-0 h-0" style={{ borderTop: '6px solid transparent', borderBottom: '6px solid transparent', borderLeft: '8px solid #121210' }}></div>
                 </div>
 
-                <div className="bg-[#fbe1d1] rounded-[20px] p-5 border border-[#5d2a1a]/15 shadow-sm cursor-grab min-w-[160px]">
-                  <div className="text-[10px] font-semibold text-[#5d2a1a]/70 uppercase">STAGE 3 · AUDIT</div>
-                  <div className="font-serif text-base text-[#5d2a1a] mt-1">Chief Auditor</div>
-                  <div className="text-[11px] text-[#5d2a1a]/85 mt-0.5">IRC-SP-100 Active</div>
+                <div className="brut bg-[#E8A030] px-5 py-4 cursor-grab">
+                  <div className="font-mono text-[10px] font-bold text-[#121210]/80 uppercase">STAGE 3 · AUDIT</div>
+                  <div className="font-display font-extrabold text-[#121210]">Chief Quality Auditor</div>
+                  <div className="text-[10px] font-mono text-[#121210] font-bold mt-0.5">SLA: 72h · IRC-SP-100</div>
                 </div>
 
-                <div className="flex items-center text-[#777b86]">
-                  <ChevronRight className="w-4 h-4" />
+                <div className="flex items-center">
+                  <div className="w-6 h-1 bg-[#121210]"></div>
+                  <div className="w-0 h-0" style={{ borderTop: '6px solid transparent', borderBottom: '6px solid transparent', borderLeft: '8px solid #121210' }}></div>
                 </div>
 
-                <div className="bg-white rounded-[20px] p-5 border border-dashed border-[#17191c]/20 cursor-grab min-w-[160px]">
-                  <div className="text-[10px] font-semibold text-[#979799] uppercase">STAGE 4 · COND.</div>
-                  <div className="font-medium text-sm text-[#17191c] mt-1">Zonal Comm.</div>
-                  <div className="text-[11px] text-[#777b86] mt-0.5">Sanction ≥ ₹50k</div>
+                <div className="brut bg-white px-5 py-4 cursor-grab border-dashed">
+                  <div className="font-mono text-[10px] font-bold text-[#121210]/60 uppercase">STAGE 4 · COND.</div>
+                  <div className="font-display font-extrabold text-[#121210]">Zonal Comm. (≥ ₹50k)</div>
+                  <div className="text-[10px] font-mono text-[#121210]/60 mt-0.5">Financial Sanction</div>
                 </div>
 
-                <div className="flex items-center text-[#777b86]">
-                  <ChevronRight className="w-4 h-4" />
+                <div className="flex items-center">
+                  <div className="w-6 h-1 bg-[#121210]"></div>
+                  <div className="w-0 h-0" style={{ borderTop: '6px solid transparent', borderBottom: '6px solid transparent', borderLeft: '8px solid #2E8C42' }}></div>
                 </div>
 
-                <div className="bg-[#17191c] text-white rounded-[20px] p-5 shadow-sm min-w-[160px]">
-                  <div className="text-[10px] font-semibold text-white/60 uppercase">OUTCOME</div>
-                  <div className="font-medium text-sm mt-1">Dispatch & Pay</div>
-                  <div className="text-[11px] text-white/70 mt-0.5">Ledger Committed</div>
+                <div className="brut bg-[#2E8C42] text-white px-5 py-4">
+                  <div className="font-mono text-[10px] font-bold opacity-80 uppercase">OUTCOME</div>
+                  <div className="font-display font-extrabold">Dispatch Work Order & Pay</div>
                 </div>
               </div>
             </div>

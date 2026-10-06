@@ -36,8 +36,8 @@ const DEPARTMENT_METADATA: Record<MunicipalDepartment, {
     fullName: 'Bruhat Bengaluru Mahanagara Palike',
     division: 'Major Roads & Infrastructure Division',
     icon: Building2,
-    tagBg: 'bg-[#fafafb]',
-    tagColor: 'text-[#17191c]',
+    tagBg: 'bg-[#CFE8D6]',
+    tagColor: 'text-[#121210]',
     defaultNodal: 'Sri B. S. Prahlad, Chief Engineer (Roads)',
     defaultReason: 'Classified as Arterial / Sub-Arterial road under BBMP DLP Warranty'
   },
@@ -46,8 +46,8 @@ const DEPARTMENT_METADATA: Record<MunicipalDepartment, {
     fullName: 'Bangalore Metro Rail Corporation Limited',
     division: 'Namma Metro Infrastructure & Alignment',
     icon: Train,
-    tagBg: 'bg-[#fafafb]',
-    tagColor: 'text-[#17191c]',
+    tagBg: 'bg-[#CFE8D6]',
+    tagColor: 'text-[#121210]',
     defaultNodal: 'Sri V. Ravichandran, GM Infrastructure',
     defaultReason: 'Metro Phase 2A/2B alignment corridor under BMRCL maintenance covenant'
   },
@@ -56,8 +56,8 @@ const DEPARTMENT_METADATA: Record<MunicipalDepartment, {
     fullName: 'Bangalore Water Supply and Sewerage Board',
     division: 'Water Supply Pipeline & Drainage Restorations',
     icon: Droplets,
-    tagBg: 'bg-[#fafafb]',
-    tagColor: 'text-[#17191c]',
+    tagBg: 'bg-[#CFE8D6]',
+    tagColor: 'text-[#121210]',
     defaultNodal: 'Sri R. Manjunath, SE Water Supply Infrastructure',
     defaultReason: 'Defect induced by pipeline trenching or sewerage cut-and-cover work'
   },
@@ -67,7 +67,7 @@ const DEPARTMENT_METADATA: Record<MunicipalDepartment, {
     division: 'Underground Cable Trenching & Utility Restorations',
     icon: Zap,
     tagBg: 'bg-[#E8A030]',
-    tagColor: 'text-[#17191c]',
+    tagColor: 'text-[#121210]',
     defaultNodal: 'Sri T. Narayana, SE Electrical Infrastructure',
     defaultReason: 'Underground HT/LT power cable laying work requiring road reinstatement'
   },
@@ -102,12 +102,12 @@ export const DepartmentRoutingBadge: React.FC<DepartmentRoutingBadgeProps> = ({
 
   if (compact) {
     return (
-      <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 bg-white rounded-full ${className}`}>
-        <Icon className="w-3.5 h-3.5 text-[#17191c]" />
-        <span className="font-mono text-xs font-black text-[#17191c]">
+      <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 bg-white brut-sm ${className}`}>
+        <Icon className="w-3.5 h-3.5 text-[#121210]" />
+        <span className="font-mono text-xs font-black text-[#121210]">
           {meta.name}
         </span>
-        <span className="text-[10px] text-[#777b86] font-mono">
+        <span className="text-[10px] text-[#4A4A46] font-mono">
           · {meta.division.split('&')[0]}
         </span>
       </div>
@@ -115,11 +115,11 @@ export const DepartmentRoutingBadge: React.FC<DepartmentRoutingBadgeProps> = ({
   }
 
   return (
-    <div className={`p-4 bg-white rounded-2xl text-left ${className}`}>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#17191c]/8">
+    <div className={`p-4 bg-white brut text-left ${className}`}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b-2 border-[#121210]">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#fafafb] border border-[#17191c]/15 flex items-center justify-center">
-            <Icon className="w-5 h-5 text-[#17191c]" />
+          <div className="w-10 h-10 bg-[#CFE8D6] border-2 border-[#121210] flex items-center justify-center">
+            <Icon className="w-5 h-5 text-[#121210]" />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -130,31 +130,31 @@ export const DepartmentRoutingBadge: React.FC<DepartmentRoutingBadgeProps> = ({
                 OFFICIAL JURISDICTION
               </span>
             </div>
-            <div className="font-display text-sm font-black text-[#17191c] mt-1">
+            <div className="font-display text-sm font-black text-[#121210] mt-1">
               {meta.fullName}
             </div>
             {roadName && (
-              <div className="text-[11px] text-[#777b86] font-mono mt-0.5">
-                Corridor: <span className="font-bold text-[#17191c]">{roadName}</span>
+              <div className="text-[11px] text-[#4A4A46] font-mono mt-0.5">
+                Corridor: <span className="font-bold text-[#121210]">{roadName}</span>
               </div>
             )}
           </div>
         </div>
 
         <div className="text-right font-mono text-xs">
-          <span className="text-[#777b86] text-[10px] font-bold uppercase block">MUNICIPAL DESK</span>
-          <span className="text-[#17191c] font-black">{meta.division}</span>
+          <span className="text-[#4A4A46] text-[10px] font-bold uppercase block">MUNICIPAL DESK</span>
+          <span className="text-[#121210] font-black">{meta.division}</span>
         </div>
       </div>
 
       {/* Nodal Officer & Routing Justification */}
       <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-        <div className="p-3 bg-[#fafafb] border border-[#17191c]/15 space-y-1">
-          <div className="flex items-center gap-1.5 text-[#777b86] text-[10px] font-mono font-bold uppercase">
+        <div className="p-3 bg-[#CFE8D6]/30 border-2 border-[#121210] space-y-1">
+          <div className="flex items-center gap-1.5 text-[#4A4A46] text-[10px] font-mono font-bold uppercase">
             <UserCheck className="w-3.5 h-3.5 text-[#2E8C42]" />
             <span>DESIGNATED NODAL OFFICER</span>
           </div>
-          <div className="text-[#17191c] font-bold">
+          <div className="text-[#121210] font-bold">
             {nodalOfficer || meta.defaultNodal}
           </div>
           {contactNumber && (
@@ -164,12 +164,12 @@ export const DepartmentRoutingBadge: React.FC<DepartmentRoutingBadgeProps> = ({
           )}
         </div>
 
-        <div className="p-3 bg-[#fafafb] border border-[#17191c]/15 space-y-1">
-          <div className="flex items-center gap-1.5 text-[#777b86] text-[10px] font-mono font-bold uppercase">
+        <div className="p-3 bg-[#CFE8D6]/30 border-2 border-[#121210] space-y-1">
+          <div className="flex items-center gap-1.5 text-[#4A4A46] text-[10px] font-mono font-bold uppercase">
             <ShieldAlert className="w-3.5 h-3.5 text-[#E8A030]" />
             <span>AUTOMATED ROUTING RATIONALE</span>
           </div>
-          <div className="font-body text-[#17191c] text-[11px] leading-relaxed">
+          <div className="font-body text-[#121210] text-[11px] leading-relaxed">
             {routingReason || meta.defaultReason}
           </div>
         </div>

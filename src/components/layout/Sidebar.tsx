@@ -62,32 +62,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
         />
       )}
 
-      {/* Steep Editorial Sidebar */}
+      {/* Approva Brutalist Sidebar */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-[#fafafb] border-r border-[#17191c]/8 transition-all duration-200
+        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-[#CFE8D6] border-r-[3px] border-[#121210] transition-all duration-200
           ${isCollapsed ? 'w-20' : 'w-64'}
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
-        {/* Brand Header */}
-        <div className="h-[74px] flex items-center justify-between px-5 border-b border-[#17191c]/8 bg-[#fafafb]">
+        {/* Brand Stamp Header */}
+        <div className="h-[74px] flex items-center justify-between px-4 border-b-[3px] border-[#121210] bg-[#CFE8D6]">
           <div
             onClick={() => {
               setCurrentView('PRIORITY_QUEUE');
               setIsMobileOpen(false);
             }}
-            className="flex items-center gap-3 cursor-pointer group select-none"
+            className="flex items-center gap-2.5 cursor-pointer group select-none"
           >
-            <div className="w-8 h-8 rounded-full bg-[#17191c] flex items-center justify-center text-white shrink-0">
-              <CheckSquare className="w-4 h-4 stroke-[2]" />
+            <div className="w-10 h-10 bg-[#2E8C42] brut-sm flex items-center justify-center text-white shrink-0 group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform">
+              <CheckSquare className="w-6 h-6 stroke-[2.5]" />
             </div>
             {!isCollapsed && (
               <div>
-                <div className="font-serif text-lg leading-tight text-[#17191c] font-normal tracking-[-0.015em]">
-                  CivicPulse
+                <div className="font-display font-extrabold text-lg leading-tight text-[#121210] tracking-tight">
+                  CIVICPULSE
                 </div>
-                <div className="text-[11px] font-sans text-[#777b86]">
-                  editorial ops
+                <div className="text-[10px] font-mono tracking-widest text-[#121210]/70 font-bold">
+                  v2.4 · CIVIC OPS
                 </div>
               </div>
             )}
@@ -95,7 +95,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="hidden lg:flex w-7 h-7 rounded-full bg-[#f2f2f3] hover:bg-[#ececec] text-[#777b86] hover:text-[#17191c] items-center justify-center transition-colors cursor-pointer"
+            className="hidden lg:flex p-1.5 brut-sm bg-white hover:bg-[#121210] hover:text-white transition-colors cursor-pointer"
             title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
           >
             {isCollapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
@@ -104,13 +104,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Section Label */}
         {!isCollapsed && (
-          <div className="text-[11px] font-sans text-[#a3a6af] uppercase tracking-wider pt-5 px-5 pb-1">
-            Workspace · Approver
+          <div className="text-[10px] font-mono tracking-widest text-[#121210]/60 font-bold pt-4 px-4 pb-1">
+            WORKSPACE · APPROVER
           </div>
         )}
 
-        {/* Navigation list with Steep pill items */}
-        <nav className="flex-1 py-3 px-3 space-y-1.5 overflow-y-auto">
+        {/* Navigation list */}
+        <nav className="flex-1 py-2 px-3 space-y-2 overflow-y-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentView === item.id;
@@ -122,31 +122,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   setCurrentView(item.id);
                   setIsMobileOpen(false);
                 }}
-                className={`w-full flex items-center transition-all cursor-pointer font-sans text-sm rounded-full
+                className={`w-full flex items-center transition-all cursor-pointer font-display font-bold text-sm
                   ${isCollapsed ? 'justify-center p-2.5' : 'justify-between px-3.5 py-2.5'}
                   ${isActive
-                    ? 'bg-[#17191c] text-white font-medium shadow-sm'
-                    : 'text-[#777b86] hover:text-[#17191c] hover:bg-[#f2f2f3]'
+                    ? 'brut bg-[#E8A030] text-[#121210]'
+                    : 'brut bg-white text-[#121210] hover:bg-[#EAF5ED]'
                   }
                 `}
                 title={isCollapsed ? item.label : undefined}
               >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <Icon className="w-4 h-4 shrink-0 stroke-[2]" />
+                  <Icon className="w-4.5 h-4.5 shrink-0 stroke-[2.5]" />
                   {!isCollapsed && (
-                    <span className="truncate text-xs font-normal">{item.label}</span>
+                    <span className="truncate tracking-normal text-[13px]">{item.label}</span>
                   )}
                 </div>
 
                 {!isCollapsed && item.badge !== undefined && (
                   <span
-                    className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
-                      isActive
-                        ? 'bg-white/20 text-white'
-                        : item.id === 'PRIORITY_QUEUE'
-                        ? 'bg-[#fbe1d1] text-[#5d2a1a]'
-                        : 'bg-[#f2f2f3] text-[#777b86]'
-                    }`}
+                    className={`font-mono text-[11px] font-bold px-2 py-0.5 border border-[#121210] ${item.badgeStyle || 'bg-[#121210] text-white'}`}
                   >
                     {item.badge}
                   </span>
@@ -156,37 +150,37 @@ export const Sidebar: React.FC<SidebarProps> = ({
           })}
         </nav>
 
-        {/* Bottom Dispatched Today Widget */}
-        <div className="p-4 border-t border-[#17191c]/8 bg-[#fafafb]">
+        {/* Approva Stamped / Dispatched Today Widget */}
+        <div className="p-3 border-t-[3px] border-[#121210] bg-[#CFE8D6]">
           {!isCollapsed ? (
             <div className="space-y-3">
-              <div className="rounded-2xl bg-[#f2f2f3] p-3.5 border border-[#17191c]/5">
-                <div className="text-[10px] font-sans text-[#777b86] uppercase tracking-wider mb-1">
-                  Today · Audited / Dispatched
+              <div className="brut bg-white p-3">
+                <div className="text-[10px] font-mono tracking-widest text-[#121210]/60 font-bold mb-1">
+                  TODAY · AUDITED / DISPATCHED
                 </div>
-                <div className="flex items-baseline gap-2">
-                  <div className="font-serif text-2xl text-[#17191c]">47</div>
-                  <div className="text-xs font-sans text-[#777b86]">of 59 pending</div>
+                <div className="flex items-end gap-2">
+                  <div className="font-mono font-bold text-2xl text-[#121210]">47</div>
+                  <div className="text-xs font-mono text-[#121210]/70 mb-0.5">of 59 pending</div>
                 </div>
-                <div className="mt-2.5 h-1.5 rounded-full overflow-hidden bg-white flex">
-                  <div className="bg-[#17191c] w-[65%]" title="Approved"></div>
-                  <div className="bg-[#5d2a1a] w-[15%]" title="Rejected"></div>
-                  <div className="bg-[#fbe1d1] w-[20%]" title="Pending Detail"></div>
+                <div className="mt-2 h-2.5 border-2 border-[#121210] flex overflow-hidden bg-white">
+                  <div className="bg-[#2E8C42] w-[65%]" title="Approved"></div>
+                  <div className="bg-[#C03A3A] w-[15%]" title="Rejected"></div>
+                  <div className="bg-[#E8A030] w-[15%]" title="Pending Detail"></div>
                 </div>
               </div>
 
-              {/* User Presence Card */}
-              <div className="rounded-2xl bg-white p-3 flex items-center justify-between border border-[#17191c]/8 shadow-xs">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-7 h-7 rounded-full bg-[#17191c] text-white flex items-center justify-center font-sans font-medium text-xs shrink-0">
-                    {user?.firstName ? user.firstName.charAt(0) : 'M'}
+              {/* User Stamp Pill */}
+              <div className="brut bg-white p-2.5 flex items-center justify-between">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-8 h-8 border-2 border-[#121210] bg-[#CFE8D6] flex items-center justify-center font-display font-bold text-xs shrink-0">
+                    {user?.firstName ? user.firstName.charAt(0) : 'IN'}
                   </div>
                   <div className="truncate">
-                    <div className="text-xs font-medium text-[#17191c] truncate">
+                    <div className="text-xs font-bold font-display truncate leading-tight">
                       {user?.fullName || user?.firstName || 'Mara Vossberg'}
                     </div>
-                    <div className="text-[10px] text-[#777b86] truncate">
-                      {isDemoBypass ? 'Chief Auditor (Demo)' : 'Chief Commissioner'}
+                    <div className="text-[9px] font-mono text-[#121210]/60 truncate font-bold">
+                      {isDemoBypass ? 'CHIEF AUDITOR · DEMO' : 'CHIEF COMMISSIONER'}
                     </div>
                   </div>
                 </div>
@@ -194,17 +188,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {!isSignedIn && (
                   <button
                     onClick={openSignIn}
-                    className="w-6 h-6 rounded-full bg-[#f2f2f3] hover:bg-[#ececec] flex items-center justify-center text-[#17191c] cursor-pointer transition-colors"
+                    className="p-1 brut-sm bg-[#2E8C42] text-white hover:bg-black cursor-pointer"
                     title="Sign In"
                   >
-                    <LogIn className="w-3 h-3" />
+                    <LogIn className="w-3.5 h-3.5" />
                   </button>
                 )}
               </div>
             </div>
           ) : (
             <div className="flex justify-center p-1">
-              <div className="w-2.5 h-2.5 rounded-full bg-[#2e7d32]" title="System Operational" />
+              <div className="w-4 h-4 bg-[#2E8C42] border-2 border-[#121210]" title="System Operational" />
             </div>
           )}
         </div>
