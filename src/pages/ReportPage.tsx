@@ -52,45 +52,57 @@ const PRESET_SAMPLES: PresetSample[] = [
     wardNumber: 150,
     landmark: 'Near EcoSpace skywalk bus stop, center lane',
     coords: { lat: 12.9279, lng: 77.6833 },
-    imageUrl: '/sample_data/images/bellandur_outer_ring_road_severe.jpg',
+    imageUrl: '/sample_data/images/real/bellandur_orr_central.jpg',
     expectedDuplicate: 'BNG-PTH-1042',
     potholeCount: 3
   },
   {
     id: 'indiranagar-100ft',
-    title: 'Indiranagar 100ft Road - Single Deep Crater',
+    title: 'Indiranagar 100ft Road - Corridor Cluster',
     roadName: '100 Feet Road, Near CMH Hospital',
     wardName: 'Indiranagar',
     wardNumber: 80,
     landmark: 'Near CMH Hospital Junction, right lane',
     coords: { lat: 12.9784, lng: 77.6408 },
-    imageUrl: '/sample_data/images/indiranagar_100ft_road_cluster.jpg',
+    imageUrl: '/sample_data/images/real/indiranagar_100ft_road.jpg',
     expectedDuplicate: 'BNG-PTH-1088',
     potholeCount: 1
   },
   {
     id: 'whitefield-itpl',
-    title: 'Waterlogged Pothole - Whitefield ITPL',
-    roadName: 'ITPL Main Road, Pattandur Agrahara',
+    title: 'Kundalahalli Metro Flyover - Whitefield Corridor',
+    roadName: 'ITPL Main Road / Kundalahalli',
     wardName: 'Whitefield',
     wardNumber: 84,
-    landmark: 'Near ITPL Gate 2 & metro pillar 421',
+    landmark: 'Near Kundalahalli Metro flyover pier 42',
     coords: { lat: 12.9866, lng: 77.7381 },
-    imageUrl: '/sample_data/images/whitefield_itpl_critical.jpg',
+    imageUrl: '/sample_data/images/real/whitefield_kundalahalli_flyover.jpg',
     expectedDuplicate: 'BNG-PTH-1102',
     potholeCount: 2
   },
   {
-    id: 'indoor-hackathon',
-    title: 'Indoor Hackathon Road Surface Test Card',
-    roadName: 'Bengaluru Innovation Lab Floor',
+    id: 'silkboard-junction',
+    title: 'Central Silk Board Junction - Hosur Road Ramp',
+    roadName: 'Silk Board Flyover Descent',
+    wardName: 'BTM Layout / Silk Board',
+    wardNumber: 151,
+    landmark: 'Near Silk Board flyover entry',
+    coords: { lat: 12.9172, lng: 77.6228 },
+    imageUrl: '/sample_data/images/real/silkboard_junction.jpg',
+    expectedDuplicate: 'BNG-PTH-1031',
+    potholeCount: 2
+  },
+  {
+    id: 'blr-pothole-groundtruth',
+    title: 'Bengaluru Road Surface Pothole - Real Photo Ground Truth',
+    roadName: 'Bellandur-Marathahalli Service Road',
     wardName: 'Bellandur',
     wardNumber: 150,
-    landmark: 'Hackathon Stage Demonstration Area',
-    coords: { lat: 12.9279, lng: 77.6833 },
-    imageUrl: '/sample_data/images/indoor_hackathon_demo.jpg',
+    landmark: 'Service Road near Cisco Campus',
+    coords: { lat: 12.9340, lng: 77.6910 },
+    imageUrl: '/sample_data/images/real/blr_potholes_real.jpg',
     expectedDuplicate: 'BNG-PTH-1042',
-    potholeCount: 2
+    potholeCount: 3
   }
 ];
 

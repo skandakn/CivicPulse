@@ -272,3 +272,22 @@
 input:focus, select:focus, textarea:focus, button:focus {
   outline: none;
 }
+
+/* CCTV Surveillance Pan & Scanline Animations */
+@keyframes cctvPan {
+  0% {
+    transform: scale(1.08) translate(0%, 0%);
+  }
+  50% {
+    transform: scale(1.15) translate(-2.5%, -1.5%);
+  }
+  100% {
+    transform: scale(1.08) translate(2.5%, 1.5%);
+  }
+}
+
+.animate-cctv-pan {
+  animation: cctvPan 16s ease-in-out infinite alternate;
+  transform-origin: center center;
+}
+

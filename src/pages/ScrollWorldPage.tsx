@@ -47,65 +47,92 @@ interface CCTVCameraFeed {
   ward: string;
   coordinates: string;
   imageUrl: string;
+  videoUrl?: string;
+  fallbackUrl?: string;
   hazardId: string;
   hazardDepth: string;
   severity: 'CRITICAL' | 'HIGH' | 'MEDIUM';
   fps: number;
   zoom: string;
+  region: string;
 }
 
 const CCTV_FEEDS: CCTVCameraFeed[] = [
   {
     id: 'CAM-BLR-ORR-04',
-    name: 'ORR EcoSpace Flyover Descent',
-    location: 'Outer Ring Road, Bellandur',
+    name: 'ORR EcoSpace / Bellandur Arterial Corridor',
+    location: 'Outer Ring Road, Bellandur, Bengaluru',
     ward: 'Ward 150 (Mahadevapura)',
     coordinates: '12.9279° N, 77.6828° E',
-    imageUrl: '/sample_data/images/bellandur_outer_ring_road_severe.jpg',
+    imageUrl: '/sample_data/images/real/bellandur_orr_central.jpg',
+    videoUrl: '/sample_data/images/real/cctv_highway_feed.webm',
+    fallbackUrl: '/sample_data/images/real/bellandur_orr_flyover.jpg',
     hazardId: 'BNG-PTH-1042',
     hazardDepth: '18.0 cm Cavity',
     severity: 'CRITICAL',
     fps: 30,
-    zoom: '2.4x OPTICAL'
+    zoom: '2.4x OPTICAL',
+    region: 'BELLANDUR ORR'
   },
   {
     id: 'CAM-BLR-IND-12',
-    name: '100ft Road Corridor Signal',
-    location: '100ft Road, Indiranagar',
+    name: '100ft Road Corridor & Metro Signal',
+    location: '100ft Road, Indiranagar, Bengaluru',
     ward: 'Ward 82 (East)',
     coordinates: '12.9719° N, 77.6412° E',
-    imageUrl: '/sample_data/images/indiranagar_100ft_road_cluster.jpg',
+    imageUrl: '/sample_data/images/real/indiranagar_100ft_road.jpg',
+    fallbackUrl: '/sample_data/images/real/bangalore_traffic_view.jpg',
     hazardId: 'BNG-PTH-1088',
     hazardDepth: '14.2 cm Cluster',
     severity: 'HIGH',
     fps: 30,
-    zoom: '1.8x OPTICAL'
+    zoom: '1.8x OPTICAL',
+    region: 'INDIRANAGAR'
   },
   {
-    id: 'CAM-BLR-KOR-08',
-    name: 'Sony World Signal Junction',
-    location: '80ft Road, Koramangala 4th Block',
+    id: 'CAM-BLR-SLK-01',
+    name: 'Central Silk Board Flyover Junction',
+    location: 'Silk Board Junction, Hosur Road, Bengaluru',
     ward: 'Ward 151 (South)',
-    coordinates: '12.9352° N, 77.6245° E',
-    imageUrl: '/sample_data/images/koramangala_80ft_road_moderate.jpg',
+    coordinates: '12.9172° N, 77.6228° E',
+    imageUrl: '/sample_data/images/real/silkboard_junction.jpg',
+    fallbackUrl: '/sample_data/images/real/bangalore_traffic_road.jpg',
     hazardId: 'BNG-PTH-1031',
-    hazardDepth: '9.5 cm Depression',
-    severity: 'MEDIUM',
+    hazardDepth: '12.5 cm Depression',
+    severity: 'HIGH',
     fps: 25,
-    zoom: '3.1x OPTICAL'
+    zoom: '3.1x OPTICAL',
+    region: 'SILK BOARD'
   },
   {
     id: 'CAM-BLR-WTF-02',
-    name: 'ITPL Main Road Metro Pier #42',
-    location: 'Near Hope Farm, Whitefield',
+    name: 'Kundalahalli Metro Flyover Corridor',
+    location: 'Near Hope Farm / ITPL, Whitefield, Bengaluru',
     ward: 'Ward 84 (Mahadevapura)',
     coordinates: '12.9854° N, 77.7312° E',
-    imageUrl: '/sample_data/images/whitefield_itpl_critical.jpg',
+    imageUrl: '/sample_data/images/real/whitefield_kundalahalli_flyover.jpg',
+    fallbackUrl: '/sample_data/images/real/pothole_asphalt_heavy.jpg',
     hazardId: 'BNG-PTH-1099',
     hazardDepth: '16.5 cm Crater',
     severity: 'CRITICAL',
     fps: 30,
-    zoom: '2.0x OPTICAL'
+    zoom: '2.0x OPTICAL',
+    region: 'WHITEFIELD'
+  },
+  {
+    id: 'CAM-BLR-PTH-99',
+    name: 'Bengaluru Road Surface Pothole Deep Scan',
+    location: 'Bellandur-Marathahalli Service Road, Bengaluru',
+    ward: 'Ward 150 (Mahadevapura)',
+    coordinates: '12.9340° N, 77.6910° E',
+    imageUrl: '/sample_data/images/real/blr_potholes_real.jpg',
+    fallbackUrl: '/sample_data/images/real/pothole_crater_severe.jpg',
+    hazardId: 'BNG-PTH-1042',
+    hazardDepth: '18.0 cm Cavity',
+    severity: 'CRITICAL',
+    fps: 30,
+    zoom: '4.5x MACRO',
+    region: 'BENGALURU ROAD'
   }
 ];
 
@@ -193,7 +220,7 @@ const WAYPOINTS: SceneWaypoint[] = [
     ],
     cam: { x: 5, y: 12, z: 38 },
     color: '#2E8C42',
-    defaultCctvId: 'CAM-BLR-KOR-08'
+    defaultCctvId: 'CAM-BLR-SLK-01'
   },
   {
     id: 'victory',
@@ -227,6 +254,8 @@ export const ScrollWorldPage: React.FC = () => {
   // CCTV Surveillance Feed State
   const [activeCctvId, setActiveCctvId] = useState<string>('CAM-BLR-ORR-04');
   const [isCctvExpanded, setIsCctvExpanded] = useState<boolean>(false);
+  const [mediaMode, setMediaMode] = useState<'VIDEO' | 'PHOTO'>('VIDEO');
+  const [imgLoadError, setImgLoadError] = useState<Record<string, boolean>>({});
   const [timeStr, setTimeStr] = useState<string>('');
 
   // Web Audio Context for spatial drone hum
@@ -707,22 +736,44 @@ export const ScrollWorldPage: React.FC = () => {
       <div
         className={`absolute right-4 top-20 z-20 transition-all duration-300 ${
           isCctvExpanded
-            ? 'w-[420px] sm:w-[500px] max-w-[calc(100vw-32px)]'
-            : 'w-[290px] sm:w-[340px]'
+            ? 'w-[440px] sm:w-[540px] max-w-[calc(100vw-32px)]'
+            : 'w-[290px] sm:w-[350px]'
         }`}
       >
         <div className="brut bg-[#121210]/95 backdrop-blur-md border-[2.5px] border-[#E8A030] text-left text-white shadow-[4px_4px_0_0_#121210] overflow-hidden">
           {/* CCTV Monitor Topbar */}
-          <div className="bg-[#1a1c1a] border-b border-white/20 p-2.5 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping" />
-              <div className="flex items-center gap-1.5 font-bold text-[11px] text-red-400">
-                <Video className="w-3.5 h-3.5" />
-                <span>REC // LIVE CCTV STREAM</span>
+          <div className="bg-[#1a1c1a] border-b border-white/20 p-2.5 flex items-center justify-between gap-1">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping shrink-0" />
+              <div className="flex items-center gap-1.5 font-bold text-[11px] text-red-400 truncate">
+                <Video className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">REC // {activeCctvFeed.videoUrl && mediaMode === 'VIDEO' ? 'LIVE VIDEO STREAM' : 'GEO CCTV CAMERA'}</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 shrink-0">
+              {activeCctvFeed.videoUrl && (
+                <div className="flex items-center border border-white/20 bg-black/60 overflow-hidden">
+                  <button
+                    onClick={() => setMediaMode('VIDEO')}
+                    className={`px-1.5 py-0.5 text-[8px] font-mono font-bold transition-colors cursor-pointer ${
+                      mediaMode === 'VIDEO' ? 'bg-red-600 text-white' : 'text-slate-400 hover:text-white'
+                    }`}
+                    title="Live Traffic Video Loop"
+                  >
+                    ▶ VIDEO
+                  </button>
+                  <button
+                    onClick={() => setMediaMode('PHOTO')}
+                    className={`px-1.5 py-0.5 text-[8px] font-mono font-bold transition-colors cursor-pointer ${
+                      mediaMode === 'PHOTO' ? 'bg-[#E8A030] text-[#121210]' : 'text-slate-400 hover:text-white'
+                    }`}
+                    title="High-Res Geo Photograph"
+                  >
+                    📷 PHOTO
+                  </button>
+                </div>
+              )}
               <span className="text-[9px] font-mono text-[#E8A030] px-1.5 py-0.5 bg-black border border-[#E8A030]/40">
                 {activeCctvFeed.fps} FPS
               </span>
@@ -738,15 +789,29 @@ export const ScrollWorldPage: React.FC = () => {
 
           {/* Actual CCTV Video Stream Frame */}
           <div className="relative aspect-video bg-black overflow-hidden border-b border-white/10 group">
-            <img
-              src={activeCctvFeed.imageUrl}
-              alt={activeCctvFeed.name}
-              className="w-full h-full object-cover filter contrast-110 brightness-95"
-              onError={(e) => {
-                // Fallback to high-contrast canvas pattern if local file proxy delayed
-                (e.target as HTMLElement).style.display = 'none';
-              }}
-            />
+            {activeCctvFeed.videoUrl && mediaMode === 'VIDEO' ? (
+              <video
+                key={activeCctvFeed.id + '-video'}
+                src={activeCctvFeed.videoUrl}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover filter contrast-110 brightness-95"
+              />
+            ) : (
+              <img
+                key={activeCctvFeed.id + '-img'}
+                src={imgLoadError[activeCctvFeed.id] ? (activeCctvFeed.fallbackUrl || '/sample_data/images/real/blr_potholes_real.jpg') : activeCctvFeed.imageUrl}
+                alt={activeCctvFeed.name}
+                className="w-full h-full object-cover filter contrast-110 brightness-95 animate-cctv-pan"
+                onError={() => {
+                  if (!imgLoadError[activeCctvFeed.id]) {
+                    setImgLoadError(prev => ({ ...prev, [activeCctvFeed.id]: true }));
+                  }
+                }}
+              />
+            )}
 
             {/* Scanlines Effect Overlay */}
             <div
@@ -758,41 +823,45 @@ export const ScrollWorldPage: React.FC = () => {
             />
 
             {/* CCTV Timestamp & Telemetry HUD Overlay */}
-            <div className="absolute top-2 left-2 text-[10px] font-mono text-emerald-400 drop-shadow-md flex flex-col gap-0.5 pointer-events-none bg-black/60 px-1.5 py-1 border border-white/20">
+            <div className="absolute top-2 left-2 text-[10px] font-mono text-emerald-400 drop-shadow-md flex flex-col gap-0.5 pointer-events-none bg-black/70 px-1.5 py-1 border border-white/20">
               <div className="font-bold flex items-center gap-1">
                 <Camera className="w-3 h-3 text-red-500" />
                 <span>{activeCctvFeed.id}</span>
               </div>
-              <div className="text-[9px] text-white/80">{timeStr}</div>
+              <div className="text-[9px] text-white/90">{timeStr}</div>
               <div className="text-[8px] text-slate-300">{activeCctvFeed.coordinates}</div>
             </div>
 
-            {/* Optical Zoom & Signal HUD */}
-            <div className="absolute top-2 right-2 text-right pointer-events-none">
-              <div className="bg-black/60 px-1.5 py-0.5 border border-white/20 text-[9px] text-[#E8A030] font-bold">
+            {/* Optical Zoom & Verified Real Location Badge */}
+            <div className="absolute top-2 right-2 text-right pointer-events-none flex flex-col items-end gap-1">
+              <div className="bg-[#2E8C42] text-white px-1.5 py-0.5 border border-[#CFE8D6]/40 text-[8px] font-black uppercase tracking-wider flex items-center gap-1 shadow-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                <span>REAL BENGALURU FEED</span>
+              </div>
+              <div className="bg-black/70 px-1.5 py-0.5 border border-white/20 text-[9px] text-[#E8A030] font-bold">
                 {activeCctvFeed.zoom}
               </div>
             </div>
 
             {/* AI Real-time Bounding Box Crosshair on Pothole */}
             <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-              <div className="relative w-32 h-20 border-2 border-red-500 shadow-[0_0_12px_rgba(239,68,68,0.6)] animate-pulse">
-                <div className="absolute -top-4 left-0 bg-red-600 text-white text-[8px] font-bold px-1 py-0.2">
+              <div className="relative w-36 h-22 border-2 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.7)] animate-pulse">
+                <div className="absolute -top-4 left-0 bg-red-600 text-white text-[8px] font-bold px-1.5 py-0.5 uppercase tracking-wide">
                   HAZARD: {activeCctvFeed.hazardId}
                 </div>
-                <div className="absolute -bottom-4 right-0 bg-black/80 text-yellow-300 text-[8px] font-bold px-1 border border-yellow-500/50">
+                <div className="absolute -bottom-4 right-0 bg-black/90 text-yellow-300 text-[8px] font-bold px-1 border border-yellow-500/50">
                   DEPTH: {activeCctvFeed.hazardDepth}
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-2 h-2 rounded-full bg-red-500" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
                 </div>
               </div>
             </div>
 
             {/* Bottom Feed Label */}
-            <div className="absolute bottom-1 left-2 right-2 flex items-center justify-between text-[9px] font-mono bg-black/70 px-2 py-1 text-slate-200 pointer-events-none">
-              <span className="truncate">{activeCctvFeed.name}</span>
-              <span className="text-[#E8A030] font-bold shrink-0">{activeCctvFeed.ward}</span>
+            <div className="absolute bottom-1 left-2 right-2 flex items-center justify-between text-[9px] font-mono bg-black/80 px-2 py-1 text-slate-200 pointer-events-none border border-white/10">
+              <span className="truncate max-w-[200px]">{activeCctvFeed.name}</span>
+              <span className="text-[#E8A030] font-bold shrink-0">{activeCctvFeed.region}</span>
             </div>
           </div>
 
@@ -805,13 +874,20 @@ export const ScrollWorldPage: React.FC = () => {
                 return (
                   <button
                     key={feed.id}
-                    onClick={() => setActiveCctvId(feed.id)}
+                    onClick={() => {
+                      setActiveCctvId(feed.id);
+                      if (feed.videoUrl) {
+                        setMediaMode('VIDEO');
+                      } else {
+                        setMediaMode('PHOTO');
+                      }
+                    }}
                     className={`flex-1 py-1 px-1.5 text-[9px] font-bold border transition-colors cursor-pointer text-center truncate ${
                       isSelected
                         ? 'bg-[#E8A030] text-[#121210] border-[#121210]'
                         : 'bg-white/10 hover:bg-white/20 text-slate-300 border-white/20'
                     }`}
-                    title={`${feed.id} — ${feed.name}`}
+                    title={`${feed.id} — ${feed.name} (${feed.location})`}
                   >
                     CAM {idx + 1}
                   </button>
