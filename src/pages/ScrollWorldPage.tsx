@@ -571,6 +571,74 @@ export const ScrollWorldPage: React.FC = () => {
       const height = canvas.height || 680;
       const fov = 380;
 
+      // Always paint a visible 3D base frame first. This keeps the flight
+      // visible even if a browser-specific canvas operation fails later in the
+      // richer HUD layers.
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = '#06130d';
+      ctx.fillRect(0, 0, width, height);
+      const baseHorizon = height * 0.43;
+      const baseSky = ctx.createLinearGradient(0, 0, 0, baseHorizon);
+      baseSky.addColorStop(0, '#06110d');
+      baseSky.addColorStop(1, '#16432a');
+      ctx.fillStyle = baseSky;
+      ctx.fillRect(0, 0, width, baseHorizon);
+      ctx.fillStyle = '#0a2116';
+      ctx.fillRect(0, baseHorizon, width, height - baseHorizon);
+      const vanishingX = width * 0.5;
+      const vanishingY = baseHorizon;
+      const roadBottom = height * 1.08;
+      ctx.fillStyle = '#17231d';
+      ctx.beginPath();
+      ctx.moveTo(vanishingX - 9, vanishingY);
+      ctx.lineTo(vanishingX + 9, vanishingY);
+      ctx.lineTo(width * 0.76, roadBottom);
+      ctx.lineTo(width * 0.24, roadBottom);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(232, 160, 48, 0.9)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(vanishingX - 9, vanishingY);
+      ctx.lineTo(width * 0.24, roadBottom);
+      ctx.moveTo(vanishingX + 9, vanishingY);
+      ctx.lineTo(width * 0.76, roadBottom);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(125, 240, 178, 0.32)';
+      ctx.lineWidth = 1;
+      for (let line = -6; line <= 6; line++) {
+        ctx.beginPath();
+        ctx.moveTo(vanishingX + line * 10, vanishingY);
+        ctx.lineTo(vanishingX + line * width * 0.12, height);
+        ctx.stroke();
+      }
+      for (let row = 1; row < 9; row++) {
+        const y = vanishingY + Math.pow(row / 9, 1.7) * (height - vanishingY);
+        ctx.beginPath();
+        ctx.moveTo(width * 0.12, y);
+        ctx.lineTo(width * 0.88, y);
+        ctx.stroke();
+      }
+      for (let building = 0; building < 8; building++) {
+        const side = building % 2 === 0 ? -1 : 1;
+        const depth = 0.18 + (building % 4) * 0.17;
+        const bx = vanishingX + side * (width * (0.17 + depth * 0.24));
+        const bw = width * (0.035 + depth * 0.018);
+        const bh = height * (0.12 + depth * 0.17);
+        const by = baseHorizon + height * 0.07 + depth * height * 0.28;
+        ctx.fillStyle = building % 3 === 0 ? '#102f24' : '#13251d';
+        ctx.strokeStyle = building % 2 === 0 ? '#00d9e8' : '#e8a030';
+        ctx.lineWidth = 1.5;
+        ctx.fillRect(bx - bw / 2, by - bh, bw, bh);
+        ctx.strokeRect(bx - bw / 2, by - bh, bw, bh);
+        for (let row = 1; row < 6; row++) {
+          for (let col = 1; col < 4; col++) {
+            ctx.fillStyle = (row + col + building) % 3 === 0 ? '#00d9e8' : '#d9982d';
+            ctx.fillRect(bx - bw / 2 + col * bw / 4, by - bh + row * bh / 7, Math.max(2, bw * 0.08), Math.max(2, bh * 0.035));
+          }
+        }
+      }
+
       const cam = getCamera(scrollProgressRef.current);
 
       // 3D Perspective Projection with near-plane guard
@@ -1025,10 +1093,19 @@ export const ScrollWorldPage: React.FC = () => {
         ctx.fillText('✓ AI REPAIR AUDIT: 98.4% COMPACTION PROVEN', auditPos.x - 110, auditPos.y - auditR * 0.8);
       }
 
-      animId = requestAnimationFrame(render);
     };
 
-    animId = requestAnimationFrame(render);
+    const safeRender = (time: number) => {
+      try {
+        render(time);
+      } catch (error) {
+        console.error('3D Scroll-World render error:', error);
+      } finally {
+        animId = requestAnimationFrame(safeRender);
+      }
+    };
+
+    animId = requestAnimationFrame(safeRender);
 
     return () => {
       window.removeEventListener('resize', handleResize);
