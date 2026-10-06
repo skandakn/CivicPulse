@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
-import * as THREE from 'three';
 import {
   Compass,
   Play,
@@ -13,9 +12,7 @@ import {
   Cpu,
   Layers,
   MapPin,
-  ChevronDown,
-  ChevronUp,
-  Maximize2
+  ChevronDown
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
@@ -31,8 +28,7 @@ interface SceneWaypoint {
     value: string;
     highlight?: boolean;
   }[];
-  cameraPos: [number, number, number];
-  cameraLookAt: [number, number, number];
+  cam: { x: number; y: number; z: number };
   color: string;
 }
 
@@ -50,8 +46,7 @@ const WAYPOINTS: SceneWaypoint[] = [
       { label: 'TELEMETRY INGEST', value: '78 REPORTS / HR', highlight: true },
       { label: 'SURFACE ANOMALIES', value: '3,412 DETECTED' },
     ],
-    cameraPos: [0, 42, 65],
-    cameraLookAt: [0, 0, 0],
+    cam: { x: 0, y: 120, z: 280 },
     color: '#2E8C42'
   },
   {
@@ -67,8 +62,7 @@ const WAYPOINTS: SceneWaypoint[] = [
       { label: 'EMERGENCY PROXIMITY', value: 'SAKRA WORLD HOSP 420M', highlight: true },
       { label: 'FATALITY RISK', value: 'ELEVATED (LEVEL 4)' },
     ],
-    cameraPos: [15, 12, 28],
-    cameraLookAt: [8, 0, 8],
+    cam: { x: 25, y: 35, z: 110 },
     color: '#E8A030'
   },
   {
@@ -84,8 +78,7 @@ const WAYPOINTS: SceneWaypoint[] = [
       { label: 'DEDUPLICATION', value: '94% SPATIAL CLUSTER (15M)' },
       { label: 'SEVERITY TIER', value: 'CRITICAL (SCORE 94/100)' },
     ],
-    cameraPos: [5, 1.2, 7],
-    cameraLookAt: [4.5, 0, 5.5],
+    cam: { x: 0, y: 4, z: 22 },
     color: '#C03A3A'
   },
   {
@@ -101,8 +94,7 @@ const WAYPOINTS: SceneWaypoint[] = [
       { label: 'DLP WARRANTY', value: 'CLAUSE 45.2 (ACTIVE)', highlight: true },
       { label: 'TAXPAYER LIABILITY', value: '₹0.00 (CONTRACTOR COST)' },
     ],
-    cameraPos: [-12, 8, 14],
-    cameraLookAt: [-4, 3, 2],
+    cam: { x: -35, y: 22, z: 75 },
     color: '#E8A030'
   },
   {
@@ -118,8 +110,7 @@ const WAYPOINTS: SceneWaypoint[] = [
       { label: 'ASPHALT UNIFORMITY', value: 'GRADE A (IRC-SP-100)' },
       { label: 'AI CERTIFICATE', value: 'AUDIT HASH: #CP-88421' },
     ],
-    cameraPos: [2, 3, 10],
-    cameraLookAt: [0, 0, 0],
+    cam: { x: 5, y: 12, z: 38 },
     color: '#2E8C42'
   },
   {
@@ -135,72 +126,53 @@ const WAYPOINTS: SceneWaypoint[] = [
       { label: 'ORR TRANSIT SPEED', value: '+34% FLOW RESTORATION' },
       { label: 'PLATFORM STATUS', value: 'MUNICIPAL LEDGER READY' },
     ],
-    cameraPos: [0, 24, 45],
-    cameraLookAt: [0, 4, 0],
+    cam: { x: 0, y: 80, z: 200 },
     color: '#2E8C42'
   }
 ];
 
 export const ScrollWorldPage: React.FC = () => {
   const { setCurrentView, selectIncidentById } = useApp();
-  const mountRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Scroll / Progress State (0 to 1 across all waypoints)
+  // Scroll Progress (0 to 1)
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isAutoPilot, setIsAutoPilot] = useState(true);
   const [isAudioMuted, setIsAudioMuted] = useState(true);
   const [activeWaypointIndex, setActiveWaypointIndex] = useState(0);
 
-  // Audio Synth via Web Audio API for immersive spatial hum
+  // Web Audio Context for spatial drone hum
   const audioContextRef = useRef<AudioContext | null>(null);
-  const droneOscRef = useRef<OscillatorNode | null>(null);
 
-  // Three.js References
-  const sceneRef = useRef<THREE.Scene | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const animationFrameRef = useRef<number>(0);
-
-  // Objects in 3D scene
-  const gridMeshRef = useRef<THREE.LineSegments | null>(null);
-  const buildingsGroupRef = useRef<THREE.Group | null>(null);
-  const laserScannerRef = useRef<THREE.Mesh | null>(null);
-  const roadMeshRef = useRef<THREE.Mesh | null>(null);
-  const craterMeshRef = useRef<THREE.Mesh | null>(null);
-  const pulseRingsRef = useRef<THREE.Mesh[]>([]);
-
-  // Calculate current active waypoint based on progress
+  // Active Waypoint calculation
   const currentWaypoint = useMemo(() => {
     const rawIndex = scrollProgress * (WAYPOINTS.length - 1);
     const index = Math.min(Math.floor(rawIndex), WAYPOINTS.length - 1);
     return WAYPOINTS[index] || WAYPOINTS[0];
   }, [scrollProgress]);
 
-  // Keep waypoint index state updated
   useEffect(() => {
     const rawIndex = scrollProgress * (WAYPOINTS.length - 1);
     const index = Math.min(Math.floor(rawIndex), WAYPOINTS.length - 1);
     setActiveWaypointIndex(index);
   }, [scrollProgress]);
 
-  // Setup Web Audio spatial drone
+  // Audio Synth Toggle
   const toggleAudio = () => {
     if (isAudioMuted) {
       try {
-        const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-        const ctx = new AudioContextClass();
+        const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        const ctx = new AudioCtx();
         audioContextRef.current = ctx;
 
-        // Ambient cyber drone oscillator
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(55, ctx.currentTime); // Low A
+        osc.frequency.setValueAtTime(55, ctx.currentTime);
 
-        // Filter for deep rumble
         const filter = ctx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(180, ctx.currentTime);
+        filter.frequency.setValueAtTime(200, ctx.currentTime);
 
         gain.gain.setValueAtTime(0.04, ctx.currentTime);
 
@@ -209,7 +181,6 @@ export const ScrollWorldPage: React.FC = () => {
         gain.connect(ctx.destination);
         osc.start();
 
-        droneOscRef.current = osc;
         setIsAudioMuted(false);
       } catch (e) {
         console.warn('Audio init error:', e);
@@ -223,234 +194,7 @@ export const ScrollWorldPage: React.FC = () => {
     }
   };
 
-  // Three.js 3D World Setup
-  useEffect(() => {
-    if (!mountRef.current) return;
-    const container = mountRef.current;
-    const width = container.clientWidth;
-    const height = container.clientHeight;
-
-    // 1. Scene
-    const scene = new THREE.Scene();
-    sceneRef.current = scene;
-    scene.background = new THREE.Color(0x0e1410); // Deep cyber-moss green-black
-    scene.fog = new THREE.FogExp2(0x0e1410, 0.015);
-
-    // 2. Camera
-    const camera = new THREE.PerspectiveCamera(52, width / height, 0.1, 1000);
-    cameraRef.current = camera;
-    camera.position.set(...WAYPOINTS[0].cameraPos);
-    camera.lookAt(...WAYPOINTS[0].cameraLookAt);
-
-    // 3. Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
-    rendererRef.current = renderer;
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    container.appendChild(renderer.domElement);
-
-    // 4. Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-    scene.add(ambientLight);
-
-    const dirLight = new THREE.DirectionalLight(0xe8a030, 2.2);
-    dirLight.position.set(30, 60, 40);
-    scene.add(dirLight);
-
-    const cyanPointLight = new THREE.PointLight(0x00f0ff, 3.5, 60);
-    cyanPointLight.position.set(5, 4, 6);
-    scene.add(cyanPointLight);
-
-    // 5. Build 3D Bengaluru City Grid & Topography
-    const gridHelper = new THREE.GridHelper(180, 70, 0x2e8c42, 0x183b24);
-    gridHelper.position.y = -0.05;
-    scene.add(gridHelper);
-    gridMeshRef.current = gridHelper;
-
-    // Outer Ring Road Highway Mesh
-    const roadGeometry = new THREE.PlaneGeometry(16, 160);
-    const roadMaterial = new THREE.MeshStandardMaterial({
-      color: 0x16181b,
-      roughness: 0.9,
-      metalness: 0.1
-    });
-    const road = new THREE.Mesh(roadGeometry, roadMaterial);
-    road.rotation.x = -Math.PI / 2;
-    road.position.set(4, 0, 0);
-    scene.add(road);
-    roadMeshRef.current = road;
-
-    // Road White Markings
-    const lineGeo = new THREE.PlaneGeometry(0.35, 160);
-    const lineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const centerLine = new THREE.Mesh(lineGeo, lineMat);
-    centerLine.rotation.x = -Math.PI / 2;
-    centerLine.position.set(4, 0.02, 0);
-    scene.add(centerLine);
-
-    // 6. The Pothole Crater Geometry (Scene 3 focal point)
-    const craterGeo = new THREE.CylinderGeometry(1.4, 0.8, 0.5, 24);
-    const craterMat = new THREE.MeshStandardMaterial({
-      color: 0x050607,
-      roughness: 0.95,
-      wireframe: false
-    });
-    const crater = new THREE.Mesh(craterGeo, craterMat);
-    crater.position.set(5, -0.22, 6);
-    scene.add(crater);
-    craterMeshRef.current = crater;
-
-    // Laser Scanner Grid over crater
-    const laserGeo = new THREE.RingGeometry(0.2, 1.8, 32);
-    const laserMat = new THREE.MeshBasicMaterial({
-      color: 0x00f0ff,
-      side: THREE.DoubleSide,
-      transparent: true,
-      opacity: 0.75,
-      wireframe: true
-    });
-    const laserMesh = new THREE.Mesh(laserGeo, laserMat);
-    laserMesh.rotation.x = -Math.PI / 2;
-    laserMesh.position.set(5, 0.05, 6);
-    scene.add(laserMesh);
-    laserScannerRef.current = laserMesh;
-
-    // 15m Duplicate Clustering Pulse Rings
-    const rings: THREE.Mesh[] = [];
-    for (let i = 0; i < 3; i++) {
-      const ringGeo = new THREE.RingGeometry(2 + i * 2.2, 2.15 + i * 2.2, 36);
-      const ringMat = new THREE.MeshBasicMaterial({
-        color: 0xe8a030,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.5 - i * 0.14
-      });
-      const ring = new THREE.Mesh(ringGeo, ringMat);
-      ring.rotation.x = -Math.PI / 2;
-      ring.position.set(5, 0.04, 6);
-      scene.add(ring);
-      rings.push(ring);
-    }
-    pulseRingsRef.current = rings;
-
-    // 7. Tech Hubs, Flyover Pillars & Bengaluru Skyline
-    const buildingsGroup = new THREE.Group();
-    const boxGeo = new THREE.BoxGeometry(1, 1, 1);
-
-    // Procedural Tech Park Towers
-    for (let i = 0; i < 55; i++) {
-      const h = 4 + Math.random() * 22;
-      const w = 3 + Math.random() * 4;
-      const d = 3 + Math.random() * 4;
-      const isEast = Math.random() > 0.5;
-      const x = isEast ? 12 + Math.random() * 35 : -12 - Math.random() * 35;
-      const z = -70 + Math.random() * 140;
-
-      const buildingMat = new THREE.MeshStandardMaterial({
-        color: i % 3 === 0 ? 0x1f2b24 : i % 2 === 0 ? 0x17211b : 0x243329,
-        roughness: 0.8,
-        wireframe: Math.random() > 0.85
-      });
-      const bldg = new THREE.Mesh(boxGeo, buildingMat);
-      bldg.scale.set(w, h, d);
-      bldg.position.set(x, h / 2, z);
-      buildingsGroup.add(bldg);
-
-      // Neon cyber edge along roof
-      const edgeGeo = new THREE.EdgesGeometry(bldg.geometry);
-      const edgeMat = new THREE.LineBasicMaterial({
-        color: i % 4 === 0 ? 0x00f0ff : 0x2e8c42,
-        transparent: true,
-        opacity: 0.4
-      });
-      const edges = new THREE.LineSegments(edgeGeo, edgeMat);
-      edges.scale.set(w, h, d);
-      edges.position.copy(bldg.position);
-      buildingsGroup.add(edges);
-    }
-    scene.add(buildingsGroup);
-    buildingsGroupRef.current = buildingsGroup;
-
-    // 8. Animation & Render Loop
-    let time = 0;
-    const animate = () => {
-      animationFrameRef.current = requestAnimationFrame(animate);
-      time += 0.02;
-
-      // Pulse crater laser scan
-      if (laserScannerRef.current) {
-        laserScannerRef.current.rotation.z += 0.03;
-        const scale = 1 + Math.sin(time * 3) * 0.12;
-        laserScannerRef.current.scale.set(scale, scale, 1);
-      }
-
-      // Expand duplicate detection rings
-      pulseRingsRef.current.forEach((ring, idx) => {
-        const ringScale = 1 + ((time * 0.8 + idx * 0.4) % 1.5);
-        ring.scale.set(ringScale, ringScale, 1);
-      });
-
-      renderer.render(scene, camera);
-    };
-    animate();
-
-    // 9. Resize Listener
-    const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    };
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      cancelAnimationFrame(animationFrameRef.current);
-      if (renderer.domElement && container.contains(renderer.domElement)) {
-        container.removeChild(renderer.domElement);
-      }
-      renderer.dispose();
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
-      }
-    };
-  }, []);
-
-  // Scrub camera position smoothly based on scrollProgress
-  useEffect(() => {
-    if (!cameraRef.current) return;
-    const camera = cameraRef.current;
-
-    const totalSegments = WAYPOINTS.length - 1;
-    const rawSegment = scrollProgress * totalSegments;
-    const startIndex = Math.min(Math.floor(rawSegment), totalSegments - 1);
-    const endIndex = Math.min(startIndex + 1, totalSegments);
-    const segT = rawSegment - startIndex;
-
-    const pA = WAYPOINTS[startIndex].cameraPos;
-    const pB = WAYPOINTS[endIndex].cameraPos;
-    const lA = WAYPOINTS[startIndex].cameraLookAt;
-    const lB = WAYPOINTS[endIndex].cameraLookAt;
-
-    // Smooth cubic easing between waypoints
-    const smoothT = segT * segT * (3 - 2 * segT);
-
-    camera.position.x = pA[0] + (pB[0] - pA[0]) * smoothT;
-    camera.position.y = pA[1] + (pB[1] - pA[1]) * smoothT;
-    camera.position.z = pA[2] + (pB[2] - pA[2]) * smoothT;
-
-    const lookTarget = new THREE.Vector3(
-      lA[0] + (lB[0] - lA[0]) * smoothT,
-      lA[1] + (lB[1] - lA[1]) * smoothT,
-      lA[2] + (lB[2] - lA[2]) * smoothT
-    );
-    camera.lookAt(lookTarget);
-  }, [scrollProgress]);
-
-  // Autopilot loop: smooth automatic camera flight
+  // Autopilot Animation Loop
   useEffect(() => {
     if (!isAutoPilot) return;
     let animId: number;
@@ -461,7 +205,7 @@ export const ScrollWorldPage: React.FC = () => {
       lastTime = currentTime;
 
       setScrollProgress((prev) => {
-        const next = prev + dt * 0.05; // ~20 second cinematic loop
+        const next = prev + dt * 0.05; // 20s cinematic cycle
         return next >= 1 ? 0 : next;
       });
 
@@ -472,7 +216,7 @@ export const ScrollWorldPage: React.FC = () => {
     return () => cancelAnimationFrame(animId);
   }, [isAutoPilot]);
 
-  // Wheel scrubbing handler
+  // Wheel scrubbing
   const handleWheel = (e: React.WheelEvent) => {
     setIsAutoPilot(false);
     const delta = e.deltaY * 0.0006;
@@ -484,13 +228,270 @@ export const ScrollWorldPage: React.FC = () => {
     setScrollProgress(idx / (WAYPOINTS.length - 1));
   };
 
+  // 3D Canvas Rendering Loop (Native 3D Perspective Projection Engine)
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animId: number;
+    let tick = 0;
+
+    // Camera Interpolation helper
+    const getCamera = (progress: number) => {
+      const total = WAYPOINTS.length - 1;
+      const raw = progress * total;
+      const i0 = Math.min(Math.floor(raw), total - 1);
+      const i1 = Math.min(i0 + 1, total);
+      const t = raw - i0;
+      const s = t * t * (3 - 2 * t); // smoothstep
+
+      const c0 = WAYPOINTS[i0].cam;
+      const c1 = WAYPOINTS[i1].cam;
+
+      return {
+        x: c0.x + (c1.x - c0.x) * s,
+        y: c0.y + (c1.y - c0.y) * s,
+        z: c0.z + (c1.z - c0.z) * s
+      };
+    };
+
+    const render = () => {
+      tick += 0.03;
+      const width = canvas.width;
+      const height = canvas.height;
+      const fov = 420;
+
+      // Clear with deep futuristic cyber-black
+      ctx.fillStyle = '#0a100d';
+      ctx.fillRect(0, 0, width, height);
+
+      const cam = getCamera(scrollProgress);
+
+      // 3D Point Projection Helper
+      const project = (px: number, py: number, pz: number) => {
+        const dx = px - cam.x;
+        const dy = py - cam.y;
+        const dz = pz - cam.z;
+        if (dz <= 2) return null; // Behind near clipping plane
+        const scale = fov / dz;
+        return {
+          x: width / 2 + dx * scale,
+          y: height / 2 - dy * scale,
+          scale,
+          z: dz
+        };
+      };
+
+      // 1. Draw 3D Ground Cyber Grid (Bengaluru Road Network)
+      ctx.lineWidth = 1;
+      const gridSpacing = 16;
+      const gridRange = 160;
+
+      for (let gx = -gridRange; gx <= gridRange; gx += gridSpacing) {
+        const p1 = project(gx, 0, -gridRange);
+        const p2 = project(gx, 0, gridRange);
+        if (p1 && p2) {
+          const alpha = Math.max(0, 1 - (p1.z + p2.z) / (gridRange * 3));
+          ctx.strokeStyle = `rgba(46, 140, 66, ${alpha * 0.45})`;
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+        }
+      }
+
+      for (let gz = -gridRange; gz <= gridRange; gz += gridSpacing) {
+        const p1 = project(-gridRange, 0, gz);
+        const p2 = project(gridRange, 0, gz);
+        if (p1 && p2) {
+          const alpha = Math.max(0, 1 - (p1.z + p2.z) / (gridRange * 3));
+          ctx.strokeStyle = `rgba(46, 140, 66, ${alpha * 0.45})`;
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+        }
+      }
+
+      // 2. Draw 3D Outer Ring Road Corridor (Asphalt Highway Ribbon)
+      const roadW = 14;
+      for (let zSeg = -120; zSeg <= 120; zSeg += 15) {
+        const left = project(-roadW / 2 + 5, 0.2, zSeg);
+        const right = project(roadW / 2 + 5, 0.2, zSeg);
+        const nextLeft = project(-roadW / 2 + 5, 0.2, zSeg + 15);
+        const nextRight = project(roadW / 2 + 5, 0.2, zSeg + 15);
+
+        if (left && right && nextLeft && nextRight) {
+          ctx.fillStyle = '#141816';
+          ctx.beginPath();
+          ctx.moveTo(left.x, left.y);
+          ctx.lineTo(right.x, right.y);
+          ctx.lineTo(nextRight.x, nextRight.y);
+          ctx.lineTo(nextLeft.x, nextLeft.y);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.strokeStyle = 'rgba(232, 160, 48, 0.4)';
+          ctx.stroke();
+
+          // Animated white dashed center line
+          const c1 = project(5, 0.3, zSeg + ((tick * 15) % 15));
+          const c2 = project(5, 0.3, zSeg + 6 + ((tick * 15) % 15));
+          if (c1 && c2) {
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = Math.max(1, c1.scale * 0.2);
+            ctx.beginPath();
+            ctx.moveTo(c1.x, c1.y);
+            ctx.lineTo(c2.x, c2.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // 3. Draw 3D Tech Park Buildings / Cityscape Skyline
+      const buildings = [
+        { x: -30, z: 20, w: 14, d: 14, h: 45 },
+        { x: -45, z: 60, w: 16, d: 16, h: 60 },
+        { x: -35, z: 110, w: 20, d: 18, h: 50 },
+        { x: 38, z: 15, w: 16, d: 16, h: 55 },
+        { x: 48, z: 75, w: 22, d: 20, h: 70 },
+        { x: 42, z: 130, w: 18, d: 18, h: 48 },
+        { x: -25, z: -50, w: 16, d: 14, h: 38 },
+        { x: 32, z: -40, w: 14, d: 14, h: 42 },
+      ];
+
+      buildings.forEach((b) => {
+        const base = project(b.x, 0, b.z);
+        const top = project(b.x, b.h, b.z);
+        if (base && top) {
+          const bw = b.w * base.scale;
+          ctx.strokeStyle = 'rgba(0, 240, 255, 0.3)';
+          ctx.fillStyle = 'rgba(18, 30, 24, 0.85)';
+          ctx.beginPath();
+          ctx.rect(base.x - bw / 2, top.y, bw, base.y - top.y);
+          ctx.fill();
+          ctx.stroke();
+
+          // Neon roof antenna/light
+          ctx.fillStyle = '#00f0ff';
+          ctx.beginPath();
+          ctx.arc(top.x, top.y, Math.max(2, top.scale * 0.4), 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+
+      // 4. Focus: The BNG-PTH-1042 Crater & Laser Depth Scanner (x=5, z=20)
+      const craterCenter = project(5, 0, 20);
+      if (craterCenter) {
+        // Deep crater cavity
+        const craterR = 3.5 * craterCenter.scale;
+        ctx.fillStyle = '#050706';
+        ctx.strokeStyle = '#c03a3a';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(craterCenter.x, craterCenter.y, craterR, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Rotating Cyan Laser Scanner Ring
+        const laserR = craterR * (1.2 + Math.sin(tick * 4) * 0.15);
+        ctx.strokeStyle = '#00f0ff';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(craterCenter.x, craterCenter.y, laserR, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Laser crosshair ticks
+        const angle = tick * 2;
+        ctx.beginPath();
+        ctx.moveTo(craterCenter.x + Math.cos(angle) * (laserR + 8), craterCenter.y + Math.sin(angle) * (laserR + 8));
+        ctx.lineTo(craterCenter.x - Math.cos(angle) * (laserR + 8), craterCenter.y - Math.sin(angle) * (laserR + 8));
+        ctx.stroke();
+
+        // 15m Duplicate Clustering Pulse Rings (Amber Waves)
+        for (let ring = 1; ring <= 3; ring++) {
+          const ringProgress = (tick * 0.6 + ring * 0.33) % 1;
+          const currentR = craterR * (1.5 + ringProgress * 4.5);
+          ctx.strokeStyle = `rgba(232, 160, 48, ${1 - ringProgress})`;
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(craterCenter.x, craterCenter.y, currentR, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        // Floating Micro-Scan Depth Callout Label
+        ctx.font = 'bold 11px monospace';
+        ctx.fillStyle = '#c03a3a';
+        ctx.fillText('▼ BNG-PTH-1042 (-18.0cm)', craterCenter.x + laserR + 10, craterCenter.y - 12);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '9px monospace';
+        ctx.fillText('CRATER VOL: 1.45m² • RISK: 94/100', craterCenter.x + laserR + 10, craterCenter.y + 4);
+      }
+
+      // 5. Waypoint 4: Floating KPPP Tender Hologram Data Plane
+      if (scrollProgress >= 0.45 && scrollProgress <= 0.75) {
+        const docPos = project(-15, 14, 55);
+        if (docPos) {
+          const dw = 140 * (docPos.scale * 0.08);
+          const dh = 85 * (docPos.scale * 0.08);
+          ctx.fillStyle = 'rgba(18, 18, 16, 0.85)';
+          ctx.strokeStyle = '#e8a030';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.rect(docPos.x - dw / 2, docPos.y - dh / 2, dw, dh);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = '#e8a030';
+          ctx.font = 'bold 9px monospace';
+          ctx.fillText('★ KPPP CONTRACT IND6298', docPos.x - dw / 2 + 8, docPos.y - dh / 2 + 18);
+          ctx.fillStyle = '#2e8c42';
+          ctx.fillText('CLAUSE 45.2 DLP ENFORCED', docPos.x - dw / 2 + 8, docPos.y - dh / 2 + 34);
+          ctx.fillStyle = '#ffffff';
+          ctx.fillText('KMV INFRASTRUCTURES LTD', docPos.x - dw / 2 + 8, docPos.y - dh / 2 + 50);
+          ctx.fillText('TAXPAYER LIABILITY: ₹0', docPos.x - dw / 2 + 8, docPos.y - dh / 2 + 66);
+        }
+      }
+
+      // 6. Horizon Glow & Atmospheric Gradient
+      const grad = ctx.createLinearGradient(0, 0, 0, height / 2);
+      grad.addColorStop(0, 'rgba(14, 20, 16, 0.9)');
+      grad.addColorStop(1, 'rgba(14, 20, 16, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, width, height / 2);
+
+      animId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    // Auto resize canvas
+    const handleResize = () => {
+      if (!canvas || !canvas.parentElement) return;
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animId);
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+    };
+  }, [scrollProgress]);
+
   return (
     <div
       onWheel={handleWheel}
-      className="relative w-full h-[calc(100vh-100px)] min-h-[680px] bg-[#0E1410] border-[3px] border-[#121210] overflow-hidden select-none font-mono text-[#F8FAFC]"
+      className="relative w-full h-[calc(100vh-100px)] min-h-[680px] bg-[#0A100D] border-[3px] border-[#121210] overflow-hidden select-none font-mono text-[#F8FAFC]"
     >
-      {/* 1. Full-bleed 3D WebGL Canvas */}
-      <div ref={mountRef} className="absolute inset-0 z-0 cursor-grab active:cursor-grabbing" />
+      {/* 1. Full-bleed 3D HTML5 Canvas */}
+      <canvas ref={canvasRef} className="absolute inset-0 z-0 cursor-grab active:cursor-grabbing w-full h-full" />
 
       {/* 2. Cybernetic Grid Watermark & Compass Overlay */}
       <div className="absolute top-4 left-4 z-10 flex items-center gap-3">
@@ -500,11 +501,11 @@ export const ScrollWorldPage: React.FC = () => {
         </div>
         <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-black/60 backdrop-blur-md border border-white/20 text-[10px] text-emerald-400 font-bold">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-          <span>REALTIME FLYTHROUGH ENGINE</span>
+          <span>REALTIME 3D FLYTHROUGH ENGINE</span>
         </div>
       </div>
 
-      {/* 3. Top Right Cockpit Controls */}
+      {/* 3. Top Right Controls */}
       <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
         <button
           onClick={toggleAudio}
@@ -608,9 +609,8 @@ export const ScrollWorldPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 5. Right Side: Interactive HUD Crosshairs & Live Coordinates */}
+      {/* 5. Right Side: Interactive HUD Crosshairs */}
       <div className="hidden lg:flex absolute right-6 top-24 bottom-28 w-60 z-10 flex-col justify-between pointer-events-none text-right">
-        {/* Sensor Box */}
         <div className="p-3 bg-black/60 border border-white/15 text-[10px] text-slate-400 space-y-1 backdrop-blur-sm">
           <div className="text-emerald-400 font-bold flex items-center justify-end gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
@@ -618,10 +618,9 @@ export const ScrollWorldPage: React.FC = () => {
           </div>
           <div>BEARING: 042° NNE</div>
           <div>INSPECTION SPEED: 1.4 MACH</div>
-          <div>CARTO MESH: 38,400 POLYS</div>
+          <div>ENGINE: PURE CANVAS 3D</div>
         </div>
 
-        {/* Scroll Instruction */}
         <div className="space-y-1.5 p-3 bg-[#E8A030]/10 border border-[#E8A030]/40 text-[#E8A030] text-[11px] font-bold">
           <div className="flex items-center justify-end gap-1.5">
             <ChevronDown className="w-4 h-4 animate-bounce" />
@@ -636,7 +635,6 @@ export const ScrollWorldPage: React.FC = () => {
       {/* 6. Bottom Timeline Scrubber Navigation Bar */}
       <div className="absolute bottom-3 left-4 right-4 z-20">
         <div className="brut bg-[#121210] border-2 border-[#CFE8D6] p-2.5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-[4px_4px_0_0_#2E8C42]">
-          {/* Waypoint Chapter Pills */}
           <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
             {WAYPOINTS.map((wp, idx) => {
               const isActive = activeWaypointIndex === idx;
@@ -656,7 +654,6 @@ export const ScrollWorldPage: React.FC = () => {
             })}
           </div>
 
-          {/* Interactive Range Slider */}
           <div className="flex items-center gap-3 w-full sm:w-72">
             <span className="text-[10px] text-slate-400 font-bold">SCRUB:</span>
             <input
@@ -676,7 +673,6 @@ export const ScrollWorldPage: React.FC = () => {
             </span>
           </div>
 
-          {/* Quick Exit to Main App */}
           <button
             onClick={() => setCurrentView('GODS_EYE')}
             className="hidden md:flex items-center gap-1.5 px-3 py-1 bg-[#2E8C42] hover:bg-[#257336] text-white text-[10px] font-extrabold border border-white cursor-pointer"
