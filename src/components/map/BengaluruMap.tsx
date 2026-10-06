@@ -233,16 +233,12 @@ export const BengaluruMap: React.FC<BengaluruMapProps> = ({
       attributionControl: false
     });
 
-    // Clean high-contrast CARTO Voyager Basemap matching Approva neo-brutalist canvas
-    const cartoApiKey = import.meta.env.VITE_CARTO_API_KEY as string | undefined;
-    const cartoTileUrl = cartoApiKey
-      ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${cartoApiKey}`
-      : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+    // Clean Google Maps Basemap matching Neo-brutalist canvas (No API Key Required)
+    const googleMapsUrl = 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}';
 
-    L.tileLayer(cartoTileUrl, {
-      subdomains: 'abcd',
-      maxZoom: 19,
-      attribution: '© CARTO © OpenStreetMap'
+    L.tileLayer(googleMapsUrl, {
+      maxZoom: 20,
+      attribution: '© Google Maps'
     }).addTo(map);
 
     // Zoom controls at bottom-right
