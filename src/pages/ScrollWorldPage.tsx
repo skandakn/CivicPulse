@@ -1140,12 +1140,10 @@ export const ScrollWorldPage: React.FC = () => {
           @keyframes civicpulse-building-drift { from { transform: translate3d(0, -10px, 0); } to { transform: translate3d(0, 14px, 0); } }
           @keyframes civicpulse-window-blink { 0%, 100% { opacity: .65; } 50% { opacity: 1; } }
         `}</style>
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,#06100b_0%,#0b2518_44%,#07130d_100%)]" />
-        <div className="absolute left-1/2 top-[41%] h-[65%] w-[52%] -translate-x-1/2 border-x-2 border-amber-400/60 bg-[#121d17] [clip-path:polygon(48%_0,52%_0,100%_100%,0_100%)]" style={{ animation: 'civicpulse-road-flow 3.2s ease-in-out infinite alternate' }}>
-          <div className="absolute inset-0 opacity-70 [background:repeating-linear-gradient(90deg,transparent_0%,transparent_48%,rgba(255,255,255,.65)_49%,rgba(255,255,255,.65)_50%,transparent_51%,transparent_100%)]" />
-          <div className="absolute inset-0 opacity-60 [background:repeating-linear-gradient(180deg,transparent_0%,transparent_8%,rgba(255,255,255,.8)_9%,rgba(255,255,255,.8)_10%,transparent_11%,transparent_18%)]" />
+        <div className="absolute left-1/2 top-[41%] h-[65%] w-[52%] -translate-x-1/2 border-x-2 border-amber-400/60 bg-[#121d17]/55 [clip-path:polygon(48%_0,52%_0,100%_100%,0_100%)]" style={{ animation: 'civicpulse-road-flow 3.2s ease-in-out infinite alternate' }}>
+          <div className="absolute left-1/2 top-0 h-full w-[3px] -translate-x-1/2 opacity-75 [background:repeating-linear-gradient(180deg,rgba(255,255,255,.95)_0%,rgba(255,255,255,.95)_5%,transparent_5%,transparent_14%)]" />
         </div>
-        <div className="absolute left-1/2 top-[43%] h-[58%] w-[92%] -translate-x-1/2 opacity-40" style={{ animation: 'civicpulse-grid-flow 4s linear infinite alternate', backgroundImage: 'linear-gradient(rgba(46,140,66,.45) 1px, transparent 1px), linear-gradient(90deg, rgba(46,140,66,.45) 1px, transparent 1px)', backgroundSize: '44px 32px' }} />
+        <div className="absolute left-1/2 top-[43%] h-[58%] w-[92%] -translate-x-1/2 opacity-20" style={{ animation: 'civicpulse-grid-flow 4s linear infinite alternate', backgroundImage: 'linear-gradient(rgba(46,140,66,.45) 1px, transparent 1px), linear-gradient(90deg, rgba(46,140,66,.45) 1px, transparent 1px)', backgroundSize: '44px 32px' }} />
         {[0, 1, 2, 3, 4, 5, 6, 7].map((building) => {
           const left = building % 2 === 0;
           const depth = 18 + (building % 4) * 8;
