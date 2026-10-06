@@ -7,15 +7,10 @@ import {
   Volume2,
   VolumeX,
   ArrowRight,
-  ShieldCheck,
-  Zap,
-  Cpu,
-  Layers,
-  MapPin,
-  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Video,
   Camera,
-  Radio,
   Maximize2,
   Minimize2,
   AlertTriangle,
@@ -243,18 +238,31 @@ const WAYPOINTS: SceneWaypoint[] = [
 
 export const ScrollWorldPage: React.FC = () => {
   const { setCurrentView, selectIncidentById } = useApp();
+  const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sceneryImagesRef = useRef<HTMLImageElement[]>([]);
 
-  // Scroll Progress (0 to 1)
+  // Progressive camera scroll (0 to 1)
+  // High-frequency ref decoupled from React rendering loop for smooth 60fps
+  const scrollProgressRef = useRef<number>(0);
+  const targetProgressRef = useRef<number>(0);
+
+  // Throttled React state for UI overlays & HUD
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isAutoPilot, setIsAutoPilot] = useState(true);
+  const isAutoPilotRef = useRef(true);
   const [isAudioMuted, setIsAudioMuted] = useState(true);
   const [activeWaypointIndex, setActiveWaypointIndex] = useState(0);
+
+  // Dragging & Interaction State
+  const isDraggingRef = useRef(false);
+  const dragStartYRef = useRef(0);
+  const dragStartProgressRef = useRef(0);
 
   // CCTV Surveillance Feed State
   const [activeCctvId, setActiveCctvId] = useState<string>('CAM-BLR-ORR-04');
   const [isCctvExpanded, setIsCctvExpanded] = useState<boolean>(false);
+  const [isDossierExpanded, setIsDossierExpanded] = useState<boolean>(true);
   const [mediaMode, setMediaMode] = useState<'VIDEO' | 'PHOTO'>('VIDEO');
   const [imgLoadError, setImgLoadError] = useState<Record<string, boolean>>({});
   const [timeStr, setTimeStr] = useState<string>('');
@@ -262,11 +270,15 @@ export const ScrollWorldPage: React.FC = () => {
   // Web Audio Context for spatial drone hum
   const audioContextRef = useRef<AudioContext | null>(null);
 
+  useEffect(() => {
+    isAutoPilotRef.current = isAutoPilot;
+  }, [isAutoPilot]);
+
   const activeCctvFeed = useMemo(() => {
     return CCTV_FEEDS.find((c) => c.id === activeCctvId) || CCTV_FEEDS[0];
   }, [activeCctvId]);
 
-  // Active Waypoint calculation
+  // Active Waypoint calculation based on throttled UI progress
   const currentWaypoint = useMemo(() => {
     const rawIndex = scrollProgress * (WAYPOINTS.length - 1);
     const index = Math.min(Math.floor(rawIndex), WAYPOINTS.length - 1);
@@ -333,41 +345,118 @@ export const ScrollWorldPage: React.FC = () => {
     }
   };
 
-  // Autopilot Animation Loop
-  useEffect(() => {
-    if (!isAutoPilot) return;
-    let animId: number;
-    let lastTime = performance.now();
-
-    const loop = (currentTime: number) => {
-      const dt = (currentTime - lastTime) / 1000;
-      lastTime = currentTime;
-
-      setScrollProgress((prev) => {
-        const next = prev + dt * 0.05; // 20s cinematic cycle
-        return next >= 1 ? 0 : next;
-      });
-
-      animId = requestAnimationFrame(loop);
-    };
-
-    animId = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(animId);
-  }, [isAutoPilot]);
-
-  // Wheel scrubbing
-  const handleWheel = (e: React.WheelEvent) => {
-    setIsAutoPilot(false);
-    const delta = e.deltaY * 0.0006;
-    setScrollProgress((prev) => Math.max(0, Math.min(1, prev + delta)));
+  // Immediate seek function
+  const seekProgress = (val: number, pauseAutopilot = true, instant = false) => {
+    const clamped = Math.max(0, Math.min(1, val));
+    targetProgressRef.current = clamped;
+    if (instant) {
+      scrollProgressRef.current = clamped;
+    }
+    setScrollProgress(clamped);
+    if (pauseAutopilot) {
+      isAutoPilotRef.current = false;
+      setIsAutoPilot(false);
+    }
   };
 
   const jumpToWaypoint = (idx: number) => {
-    setIsAutoPilot(false);
-    setScrollProgress(idx / (WAYPOINTS.length - 1));
+    const target = idx / (WAYPOINTS.length - 1);
+    seekProgress(target, true, false);
   };
 
+  const jumpPrevWaypoint = () => {
+    const nextIdx = Math.max(0, activeWaypointIndex - 1);
+    jumpToWaypoint(nextIdx);
+  };
+
+  const jumpNextWaypoint = () => {
+    const nextIdx = Math.min(WAYPOINTS.length - 1, activeWaypointIndex + 1);
+    jumpToWaypoint(nextIdx);
+  };
+
+  // Pointer drag controls (Mouse click-and-drag or touch drag on canvas)
+  const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    isDraggingRef.current = true;
+    dragStartYRef.current = e.clientY;
+    dragStartProgressRef.current = targetProgressRef.current;
+    isAutoPilotRef.current = false;
+    setIsAutoPilot(false);
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      // Ignore fallback
+    }
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!isDraggingRef.current) return;
+    const dy = dragStartYRef.current - e.clientY;
+    const delta = dy * 0.0016;
+    const next = Math.max(0, Math.min(1, dragStartProgressRef.current + delta));
+    targetProgressRef.current = next;
+    scrollProgressRef.current = next;
+    setScrollProgress(next);
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    isDraggingRef.current = false;
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {
+      // Ignore fallback
+    }
+  };
+
+  const handlePointerCancel = () => {
+    isDraggingRef.current = false;
+  };
+
+  // Native non-passive Wheel listener on container with e.preventDefault()
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      isAutoPilotRef.current = false;
+      setIsAutoPilot(false);
+      const delta = e.deltaY * 0.0006;
+      const next = Math.max(0, Math.min(1, targetProgressRef.current + delta));
+      targetProgressRef.current = next;
+      scrollProgressRef.current = next;
+      setScrollProgress(next);
+    };
+
+    container.addEventListener('wheel', onWheel, { passive: false });
+    return () => container.removeEventListener('wheel', onWheel);
+  }, []);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown') {
+        e.preventDefault();
+        seekProgress(targetProgressRef.current + 0.05, true, false);
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        seekProgress(targetProgressRef.current - 0.05, true, false);
+      } else if (e.key === ' ') {
+        e.preventDefault();
+        setIsAutoPilot((p) => {
+          const next = !p;
+          isAutoPilotRef.current = next;
+          return next;
+        });
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
   // 3D Canvas Rendering Loop (Native 3D Perspective Projection Engine)
+  // Runs entirely on requestAnimationFrame with zero React dependency churn
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -376,6 +465,22 @@ export const ScrollWorldPage: React.FC = () => {
 
     let animId: number;
     let tick = 0;
+    let lastTime = performance.now();
+    let lastUiTime = 0;
+
+    const handleResize = () => {
+      if (!canvas) return;
+      const parent = canvas.parentElement;
+      const w = parent ? parent.clientWidth : window.innerWidth;
+      const h = parent ? parent.clientHeight : 680;
+      if (w > 0 && h > 0) {
+        canvas.width = w;
+        canvas.height = h;
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
 
     const getCamera = (progress: number) => {
       const total = WAYPOINTS.length - 1;
@@ -432,13 +537,47 @@ export const ScrollWorldPage: React.FC = () => {
       { x: 48, z: 370, w: 24, d: 22, h: 70, name: 'BENGALURU SMART CITY', color: '#00f0ff' }
     ];
 
-    const render = () => {
+    const skylineHeights: Record<number, number> = {
+      0: 25, 0.08: 42, 0.14: 28, 0.22: 55, 0.28: 35, 0.36: 48, 0.44: 62,
+      0.52: 38, 0.60: 58, 0.68: 32, 0.76: 50, 0.84: 45, 0.92: 30, 1.0: 25
+    };
+
+    const skylinePoints = [
+      { x: 0, h: 25 }, { x: 0.08, h: 42 }, { x: 0.14, h: 28 }, { x: 0.22, h: 55 },
+      { x: 0.28, h: 35 }, { x: 0.36, h: 48 }, { x: 0.44, h: 62 }, { x: 0.52, h: 38 },
+      { x: 0.60, h: 58 }, { x: 0.68, h: 32 }, { x: 0.76, h: 50 }, { x: 0.84, h: 45 },
+      { x: 0.92, h: 30 }, { x: 1.0, h: 25 }
+    ];
+
+    const render = (time: number) => {
+      if (canvas.width <= 0 || canvas.height <= 0) {
+        handleResize();
+      }
+
+      const dt = Math.min((time - lastTime) / 1000, 0.1);
+      lastTime = time;
       tick += 0.025;
-      const width = canvas.width;
-      const height = canvas.height;
+
+      // Autopilot advance or smooth inertia lerp
+      if (isAutoPilotRef.current && !isDraggingRef.current) {
+        targetProgressRef.current = (targetProgressRef.current + dt * 0.04) % 1;
+        scrollProgressRef.current = targetProgressRef.current;
+      } else {
+        const diff = targetProgressRef.current - scrollProgressRef.current;
+        scrollProgressRef.current += diff * 0.18;
+      }
+
+      // Throttled UI state sync for React HUD elements (~12fps)
+      if (time - lastUiTime > 80) {
+        setScrollProgress(scrollProgressRef.current);
+        lastUiTime = time;
+      }
+
+      const width = canvas.width || 1200;
+      const height = canvas.height || 680;
       const fov = 380;
 
-      const cam = getCamera(scrollProgress);
+      const cam = getCamera(scrollProgressRef.current);
 
       // 3D Perspective Projection with near-plane guard
       const project = (px: number, py: number, pz: number) => {
@@ -514,7 +653,7 @@ export const ScrollWorldPage: React.FC = () => {
         const twinkleAlpha = star.twinkle * (0.4 + Math.sin(tick * 3 + star.x * 20) * 0.3);
         ctx.fillStyle = star.isCyan ? `rgba(0, 240, 255, ${twinkleAlpha})` : `rgba(255, 255, 255, ${twinkleAlpha})`;
         ctx.beginPath();
-        ctx.arc(sx, sy, star.size, 0, Math.PI * 2);
+        ctx.arc(sx, sy, Math.max(0.5, star.size), 0, Math.PI * 2);
         ctx.fill();
       });
 
@@ -538,12 +677,6 @@ export const ScrollWorldPage: React.FC = () => {
 
       // 4. DISTANT BENGALURU CITY SKYLINE SILHOUETTE (Horizon profile)
       ctx.fillStyle = '#0a1610';
-      const skylinePoints = [
-        { x: 0, h: 25 }, { x: 0.08, h: 42 }, { x: 0.14, h: 28 }, { x: 0.22, h: 55 },
-        { x: 0.28, h: 35 }, { x: 0.36, h: 48 }, { x: 0.44, h: 62 }, { x: 0.52, h: 38 },
-        { x: 0.60, h: 58 }, { x: 0.68, h: 32 }, { x: 0.76, h: 50 }, { x: 0.84, h: 45 },
-        { x: 0.92, h: 30 }, { x: 1.0, h: 25 }
-      ];
       ctx.beginPath();
       ctx.moveTo(0, horizonY);
       skylinePoints.forEach((pt) => {
@@ -556,7 +689,8 @@ export const ScrollWorldPage: React.FC = () => {
       // Blinking red aviation warning beacons on distant towers
       [0.22, 0.44, 0.60, 0.76].forEach((ratio, idx) => {
         const beaconX = ratio * width;
-        const beaconY = horizonY - skylinePoints.find((p) => p.x === ratio)!.h * 0.6;
+        const h = skylineHeights[ratio] || 50;
+        const beaconY = horizonY - h * 0.6;
         const beaconGlow = Math.sin(tick * 5 + idx) > 0 ? 1 : 0.2;
         ctx.fillStyle = `rgba(239, 68, 68, ${beaconGlow})`;
         ctx.beginPath();
@@ -692,18 +826,16 @@ export const ScrollWorldPage: React.FC = () => {
 
           // Headlights or Taillights
           if (isSouthbound) {
-            // Taillights (Red)
             ctx.fillStyle = '#ef4444';
             ctx.beginPath();
-            ctx.arc(vPos.x - vw * 0.35, vPos.y - vh * 0.35, Math.max(1, vPos.scale * 0.15), 0, Math.PI * 2);
-            ctx.arc(vPos.x + vw * 0.35, vPos.y - vh * 0.35, Math.max(1, vPos.scale * 0.15), 0, Math.PI * 2);
+            ctx.arc(vPos.x - vw * 0.35, vPos.y - vh * 0.35, Math.max(0.5, vPos.scale * 0.15), 0, Math.PI * 2);
+            ctx.arc(vPos.x + vw * 0.35, vPos.y - vh * 0.35, Math.max(0.5, vPos.scale * 0.15), 0, Math.PI * 2);
             ctx.fill();
           } else {
-            // Headlights (White/Yellow Beam)
             ctx.fillStyle = '#fef08a';
             ctx.beginPath();
-            ctx.arc(vPos.x - vw * 0.35, vPos.y - vh * 0.35, Math.max(1, vPos.scale * 0.18), 0, Math.PI * 2);
-            ctx.arc(vPos.x + vw * 0.35, vPos.y - vh * 0.35, Math.max(1, vPos.scale * 0.18), 0, Math.PI * 2);
+            ctx.arc(vPos.x - vw * 0.35, vPos.y - vh * 0.35, Math.max(0.5, vPos.scale * 0.18), 0, Math.PI * 2);
+            ctx.arc(vPos.x + vw * 0.35, vPos.y - vh * 0.35, Math.max(0.5, vPos.scale * 0.18), 0, Math.PI * 2);
             ctx.fill();
           }
         }
@@ -716,7 +848,6 @@ export const ScrollWorldPage: React.FC = () => {
         const pillarBase = project(metroX, 0, mz);
         const pillarTop = project(metroX, metroY, mz);
         if (pillarBase && pillarTop) {
-          // Concrete support column
           const colW = 3.2 * pillarBase.scale;
           ctx.fillStyle = '#1c2822';
           ctx.strokeStyle = '#2e8c42';
@@ -751,7 +882,6 @@ export const ScrollWorldPage: React.FC = () => {
         ctx.fillRect(trainHead.x - tw / 2, trainHead.y - th, tw, th);
         ctx.strokeRect(trainHead.x - tw / 2, trainHead.y - th, tw, th);
 
-        // Train glowing window strip
         ctx.fillStyle = '#00f0ff';
         ctx.fillRect(trainHead.x - tw * 0.4, trainHead.y - th * 0.7, tw * 0.8, th * 0.35);
       }
@@ -766,7 +896,6 @@ export const ScrollWorldPage: React.FC = () => {
           const bh = base.y - top.y;
           const bx = base.x - bw / 2;
 
-          // Building front facade
           const facadeGrad = ctx.createLinearGradient(bx, top.y, bx + bw, base.y);
           facadeGrad.addColorStop(0, '#10241a');
           facadeGrad.addColorStop(1, '#0b1711');
@@ -776,7 +905,6 @@ export const ScrollWorldPage: React.FC = () => {
           ctx.fillRect(bx, top.y, bw, bh);
           ctx.strokeRect(bx, top.y, bw, bh);
 
-          // Grid of lit office windows
           const cols = Math.min(8, Math.max(3, Math.floor(bw / 8)));
           const rows = Math.min(14, Math.max(4, Math.floor(bh / 10)));
           const winW = bw / (cols * 1.8);
@@ -784,7 +912,6 @@ export const ScrollWorldPage: React.FC = () => {
 
           for (let r = 1; r < rows; r++) {
             for (let c = 1; c < cols; c++) {
-              // Deterministic light on/off state
               const isLit = (c * 17 + r * 31 + Math.floor(b.z)) % 3 !== 0;
               if (isLit) {
                 const wx = bx + c * (bw / cols);
@@ -795,7 +922,6 @@ export const ScrollWorldPage: React.FC = () => {
             }
           }
 
-          // Rooftop beacon antenna with flashing red light
           const beaconPos = project(b.x, b.h + 4, b.z);
           if (beaconPos) {
             ctx.strokeStyle = '#ffffff';
@@ -808,11 +934,10 @@ export const ScrollWorldPage: React.FC = () => {
             const beaconFlash = Math.sin(tick * 4 + b.x) > 0 ? 1 : 0.2;
             ctx.fillStyle = `rgba(239, 68, 68, ${beaconFlash})`;
             ctx.beginPath();
-            ctx.arc(beaconPos.x, beaconPos.y, Math.max(2, beaconPos.scale * 0.35), 0, Math.PI * 2);
+            ctx.arc(beaconPos.x, beaconPos.y, Math.max(1.5, beaconPos.scale * 0.35), 0, Math.PI * 2);
             ctx.fill();
           }
 
-          // Rooftop Tech Park Signage
           if (base.scale > 1.2) {
             ctx.fillStyle = b.color;
             ctx.font = `bold ${Math.max(8, Math.min(11, base.scale * 0.7))}px monospace`;
@@ -825,33 +950,29 @@ export const ScrollWorldPage: React.FC = () => {
       const craterCenter = project(0, 0, 150);
       if (craterCenter && craterCenter.z > 2 && craterCenter.z < 200) {
         const craterScale = craterCenter.scale;
-        const outerR = 6.5 * craterScale;
+        const outerR = Math.max(1, 6.5 * craterScale);
 
-        // Outer fractured road fissure lips
         ctx.fillStyle = '#060a08';
         ctx.strokeStyle = '#c03a3a';
         ctx.lineWidth = 2.5;
         ctx.beginPath();
-        ctx.ellipse(craterCenter.x, craterCenter.y, outerR * 1.3, outerR * 0.75, 0, 0, Math.PI * 2);
+        ctx.ellipse(craterCenter.x, craterCenter.y, Math.max(0.5, outerR * 1.3), Math.max(0.5, outerR * 0.75), 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
 
-        // Mid fracture basin (-8.0cm depression)
         ctx.fillStyle = '#0a0d0b';
         ctx.strokeStyle = '#e8a030';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.ellipse(craterCenter.x, craterCenter.y + outerR * 0.1, outerR * 0.85, outerR * 0.45, 0, 0, Math.PI * 2);
+        ctx.ellipse(craterCenter.x, craterCenter.y + outerR * 0.1, Math.max(0.5, outerR * 0.85), Math.max(0.5, outerR * 0.45), 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
 
-        // Deep cavity core (-18.0cm void)
         ctx.fillStyle = '#000000';
         ctx.beginPath();
-        ctx.ellipse(craterCenter.x, craterCenter.y + outerR * 0.2, outerR * 0.45, outerR * 0.25, 0, 0, Math.PI * 2);
+        ctx.ellipse(craterCenter.x, craterCenter.y + outerR * 0.2, Math.max(0.5, outerR * 0.45), Math.max(0.5, outerR * 0.25), 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // Animated oscillating cyan laser scanner
         const laserAngle = tick * 3;
         const scanWidth = outerR * 1.4;
         const scanYOffset = Math.sin(laserAngle) * (outerR * 0.55);
@@ -863,18 +984,16 @@ export const ScrollWorldPage: React.FC = () => {
         ctx.lineTo(craterCenter.x + scanWidth, craterCenter.y + scanYOffset);
         ctx.stroke();
 
-        // Pulsing Sonar Warning Waves
         for (let ring = 1; ring <= 3; ring++) {
           const ringProgress = (tick * 0.7 + ring * 0.33) % 1;
-          const currentR = outerR * (1.1 + ringProgress * 3.2);
-          ctx.strokeStyle = `rgba(239, 68, 68, ${1 - ringProgress})`;
+          const currentR = Math.max(0.5, outerR * (1.1 + ringProgress * 3.2));
+          ctx.strokeStyle = `rgba(239, 68, 68, ${Math.max(0, 1 - ringProgress)})`;
           ctx.lineWidth = 1.5;
           ctx.beginPath();
-          ctx.ellipse(craterCenter.x, craterCenter.y, currentR * 1.3, currentR * 0.7, 0, 0, Math.PI * 2);
+          ctx.ellipse(craterCenter.x, craterCenter.y, Math.max(0.5, currentR * 1.3), Math.max(0.5, currentR * 0.7), 0, 0, Math.PI * 2);
           ctx.stroke();
         }
 
-        // 3D Holographic HUD Callout Box
         const calloutX = craterCenter.x + outerR * 1.6;
         const calloutY = craterCenter.y - outerR * 0.8;
         const boxW = Math.max(160, craterScale * 18);
@@ -886,7 +1005,6 @@ export const ScrollWorldPage: React.FC = () => {
         ctx.strokeRect(calloutX, calloutY, boxW, boxH);
         ctx.fillRect(calloutX, calloutY, boxW, boxH);
 
-        // Leader line connecting crater to HUD
         ctx.strokeStyle = '#00f0ff';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
@@ -933,11 +1051,11 @@ export const ScrollWorldPage: React.FC = () => {
       // 13. WAYPOINT 5 FOCUS: AI REPAIR VERIFICATION SCANNER
       const auditPos = project(0, 0.2, 320);
       if (auditPos && auditPos.z > 2 && auditPos.z < 160) {
-        const auditR = 7 * auditPos.scale;
+        const auditR = Math.max(1, 7 * auditPos.scale);
         ctx.strokeStyle = '#2e8c42';
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.ellipse(auditPos.x, auditPos.y, auditR * 1.4, auditR * 0.7, 0, 0, Math.PI * 2);
+        ctx.ellipse(auditPos.x, auditPos.y, Math.max(0.5, auditR * 1.4), Math.max(0.5, auditR * 0.7), 0, 0, Math.PI * 2);
         ctx.stroke();
 
         ctx.fillStyle = '#2e8c42';
@@ -948,15 +1066,7 @@ export const ScrollWorldPage: React.FC = () => {
       animId = requestAnimationFrame(render);
     };
 
-    render();
-
-    const handleResize = () => {
-      if (!canvas || !canvas.parentElement) return;
-      canvas.width = canvas.parentElement.clientWidth;
-      canvas.height = canvas.parentElement.clientHeight;
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
+    animId = requestAnimationFrame(render);
 
     return () => {
       window.removeEventListener('resize', handleResize);
@@ -965,30 +1075,47 @@ export const ScrollWorldPage: React.FC = () => {
         audioContextRef.current.close();
       }
     };
-  }, [scrollProgress]);
+  }, []);
 
   return (
     <div
-      onWheel={handleWheel}
+      ref={containerRef}
       className="relative w-full h-[calc(100vh-100px)] min-h-[680px] bg-[#0A100D] border-[3px] border-[#121210] overflow-hidden select-none font-mono text-[#F8FAFC]"
     >
-      {/* 1. Full-bleed 3D HTML5 Canvas */}
-      <canvas ref={canvasRef} className="absolute inset-0 z-0 cursor-grab active:cursor-grabbing w-full h-full" />
+      {/* 1. Full-bleed 3D HTML5 Canvas with pointer drag support */}
+      <canvas
+        ref={canvasRef}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerCancel}
+        className="absolute inset-0 z-0 cursor-grab active:cursor-grabbing w-full h-full touch-none"
+      />
 
       {/* 2. Cybernetic Grid Watermark & Compass Overlay */}
-      <div className="absolute top-4 left-4 z-10 flex items-center gap-3">
-        <div className="brut bg-[#CFE8D6] border-2 border-[#121210] px-3 py-1 text-xs font-bold text-[#121210] flex items-center gap-2">
+      <div className="absolute top-4 left-4 z-10 flex items-center gap-2 sm:gap-3 pointer-events-none">
+        <div className="pointer-events-auto brut bg-[#CFE8D6] border-2 border-[#121210] px-3 py-1 text-xs font-bold text-[#121210] flex items-center gap-2">
           <Compass className="w-4 h-4 text-[#2E8C42] animate-spin" style={{ animationDuration: '14s' }} />
-          <span>CIVICPULSE 3D SCROLL-WORLD</span>
+          <span className="hidden sm:inline">CIVICPULSE 3D SCROLL-WORLD</span>
+          <span className="sm:hidden">3D SCROLL</span>
         </div>
-        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-black/60 backdrop-blur-md border border-white/20 text-[10px] text-emerald-400 font-bold">
+        <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 bg-black/70 backdrop-blur-md border border-white/20 text-[10px] text-emerald-400 font-bold">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-          <span>GOD'S EYE CCTV RADAR SYNCHRONIZED</span>
+          <span>REAL BENGALURU AIRSPACE · 60 FPS</span>
         </div>
         <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 bg-black/60 backdrop-blur-md border border-amber-300/30 text-[10px] text-amber-200 font-bold">
           <span className="w-2 h-2 rounded-full bg-amber-300 animate-pulse" />
           <span>REAL BENGALURU SCENERY · CROSSFADE FEED</span>
         </div>
+      </div>
+
+      {/* Interaction Hint Pill */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 hidden lg:flex items-center gap-2 px-3 py-1 bg-black/80 backdrop-blur-md border border-[#E8A030]/50 text-[10px] text-slate-300 pointer-events-none">
+        <span className="text-[#E8A030] font-bold">DRAG OR SCROLL MOUSE</span>
+        <span>·</span>
+        <span className="text-white font-bold">[SPACE] AUTOPILOT</span>
+        <span>·</span>
+        <span className="text-emerald-400 font-bold">[↑/↓] REWIND/ADVANCE</span>
       </div>
 
       {/* 3. Top Right Global Flight Controls */}
@@ -1004,108 +1131,130 @@ export const ScrollWorldPage: React.FC = () => {
         </button>
 
         <button
-          onClick={() => setIsAutoPilot(!isAutoPilot)}
+          onClick={() => {
+            setIsAutoPilot(!isAutoPilot);
+          }}
           className={`px-3 py-1.5 border-2 border-[#121210] brut-sm font-bold text-xs flex items-center gap-1.5 cursor-pointer transition-all ${
             isAutoPilot ? 'bg-[#E8A030] text-[#121210]' : 'bg-white text-[#121210]'
           }`}
         >
           {isAutoPilot ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
-          <span>{isAutoPilot ? 'AUTOPILOT ON' : 'MANUAL SCRUB'}</span>
+          <span className="hidden sm:inline">{isAutoPilot ? 'AUTOPILOT ON' : 'MANUAL SCRUB'}</span>
+          <span className="sm:hidden">{isAutoPilot ? 'AUTO' : 'MANUAL'}</span>
         </button>
 
         <button
           onClick={() => {
-            setScrollProgress(0);
+            seekProgress(0, false, true);
             setIsAutoPilot(true);
           }}
           className="p-2 border-2 border-[#121210] bg-white hover:bg-slate-200 text-[#121210] brut-sm cursor-pointer"
-          title="Reset Camera"
+          title="Reset Camera to Orbit"
         >
           <RotateCcw className="w-4 h-4" />
         </button>
       </div>
 
       {/* 4. Left Side: Active Scene Story Dossier (Neo-Brutalist HUD Card) */}
-      <div className="absolute left-4 top-20 bottom-24 z-10 w-[330px] sm:w-[390px] flex flex-col justify-center pointer-events-none">
-        <div className="pointer-events-auto brut bg-[#121210]/92 backdrop-blur-md border-[3px] border-[#CFE8D6] p-4 sm:p-5 text-left text-white shadow-[6px_6px_0_0_#2E8C42] space-y-3.5 animate-in fade-in slide-in-from-left duration-300">
-          <div className="flex items-center justify-between border-b border-white/20 pb-2">
-            <span className="text-xs font-black tracking-widest text-[#E8A030]">
-              {currentWaypoint.chapter}
-            </span>
-            <span className="px-2 py-0.5 text-[10px] font-bold bg-[#CFE8D6] text-[#121210] border border-[#121210]">
-              {currentWaypoint.altitude}
-            </span>
-          </div>
+      <div className="absolute left-4 top-16 sm:top-20 bottom-24 z-10 w-[300px] sm:w-[380px] flex flex-col justify-center pointer-events-none">
+        {isDossierExpanded ? (
+          <div className="pointer-events-auto brut bg-[#121210]/94 backdrop-blur-md border-[3px] border-[#CFE8D6] p-4 sm:p-5 text-left text-white shadow-[6px_6px_0_0_#2E8C42] space-y-3.5 animate-in fade-in slide-in-from-left duration-300">
+            <div className="flex items-center justify-between border-b border-white/20 pb-2">
+              <span className="text-xs font-black tracking-widest text-[#E8A030]">
+                {currentWaypoint.chapter}
+              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="px-2 py-0.5 text-[10px] font-bold bg-[#CFE8D6] text-[#121210] border border-[#121210]">
+                  {currentWaypoint.altitude}
+                </span>
+                <button
+                  onClick={() => setIsDossierExpanded(false)}
+                  className="p-0.5 text-slate-400 hover:text-white cursor-pointer"
+                  title="Minimize Story Card"
+                >
+                  <Minimize2 className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
 
-          <div>
-            <h2 className="text-base sm:text-lg font-display font-extrabold text-white leading-tight tracking-tight">
-              {currentWaypoint.title}
-            </h2>
-            <div className="text-[10px] font-bold text-[#CFE8D6] mt-0.5">
-              {currentWaypoint.subtitle}
+            <div>
+              <h2 className="text-base sm:text-lg font-display font-extrabold text-white leading-tight tracking-tight">
+                {currentWaypoint.title}
+              </h2>
+              <div className="text-[10px] font-bold text-[#CFE8D6] mt-0.5">
+                {currentWaypoint.subtitle}
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-300 leading-relaxed font-body">
+              {currentWaypoint.copy}
+            </p>
+
+            <div className="grid grid-cols-2 gap-2 pt-1 border-t border-white/10">
+              {currentWaypoint.telemetry.map((t, idx) => (
+                <div
+                  key={idx}
+                  className={`p-2 border ${
+                    t.highlight
+                      ? 'border-[#E8A030] bg-[#E8A030]/10 text-white'
+                      : 'border-white/15 bg-white/5 text-slate-300'
+                  }`}
+                >
+                  <div className="text-[8px] text-slate-400 font-bold uppercase">{t.label}</div>
+                  <div className={`text-[10px] font-black truncate mt-0.5 ${t.highlight ? 'text-[#E8A030]' : 'text-white'}`}>
+                    {t.value}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-2 flex items-center gap-2">
+              <button
+                onClick={() => {
+                  selectIncidentById(activeCctvFeed.hazardId);
+                  setCurrentView('INCIDENT_DETAIL');
+                }}
+                className="flex-1 py-2 px-3 brut-sm bg-[#2E8C42] hover:bg-[#257336] text-white text-xs font-extrabold flex items-center justify-center gap-2 cursor-pointer transition-colors"
+              >
+                <span>INSPECT DOSSIER</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                onClick={() => setCurrentView('GODS_EYE')}
+                className="py-2 px-3 brut-sm bg-white hover:bg-slate-200 text-[#121210] text-xs font-bold cursor-pointer"
+              >
+                RADAR MAP
+              </button>
             </div>
           </div>
-
-          <p className="text-xs text-slate-300 leading-relaxed font-body">
-            {currentWaypoint.copy}
-          </p>
-
-          <div className="grid grid-cols-2 gap-2 pt-1 border-t border-white/10">
-            {currentWaypoint.telemetry.map((t, idx) => (
-              <div
-                key={idx}
-                className={`p-2 border ${
-                  t.highlight
-                    ? 'border-[#E8A030] bg-[#E8A030]/10 text-white'
-                    : 'border-white/15 bg-white/5 text-slate-300'
-                }`}
-              >
-                <div className="text-[8px] text-slate-400 font-bold uppercase">{t.label}</div>
-                <div className={`text-[10px] font-black truncate mt-0.5 ${t.highlight ? 'text-[#E8A030]' : 'text-white'}`}>
-                  {t.value}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="pt-2 flex items-center gap-2">
-            <button
-              onClick={() => {
-                selectIncidentById(activeCctvFeed.hazardId);
-                setCurrentView('INCIDENT_DETAIL');
-              }}
-              className="flex-1 py-2 px-3 brut-sm bg-[#2E8C42] hover:bg-[#257336] text-white text-xs font-extrabold flex items-center justify-center gap-2 cursor-pointer transition-colors"
-            >
-              <span>INSPECT DOSSIER</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-
-            <button
-              onClick={() => setCurrentView('GODS_EYE')}
-              className="py-2 px-3 brut-sm bg-white hover:bg-slate-200 text-[#121210] text-xs font-bold cursor-pointer"
-            >
-              RADAR MAP
-            </button>
-          </div>
-        </div>
+        ) : (
+          <button
+            onClick={() => setIsDossierExpanded(true)}
+            className="pointer-events-auto brut-sm bg-[#121210]/90 border-2 border-[#CFE8D6] text-white px-3 py-1.5 text-xs font-bold flex items-center gap-2 self-start cursor-pointer hover:bg-black"
+          >
+            <Maximize2 className="w-3.5 h-3.5 text-[#E8A030]" />
+            <span>EXPAND DOSSIER ({currentWaypoint.chapter})</span>
+          </button>
+        )}
       </div>
 
       {/* 5. Right Side: LIVE CCTV SURVEILLANCE FEED TERMINAL (God's Eye Ingest) */}
       <div
-        className={`absolute right-4 top-20 z-20 transition-all duration-300 ${
+        className={`absolute right-4 top-16 sm:top-20 z-20 transition-all duration-300 ${
           isCctvExpanded
-            ? 'w-[440px] sm:w-[540px] max-w-[calc(100vw-32px)]'
-            : 'w-[290px] sm:w-[350px]'
+            ? 'w-[380px] sm:w-[500px] max-w-[calc(100vw-32px)]'
+            : 'w-[280px] sm:w-[330px]'
         }`}
       >
         <div className="brut bg-[#121210]/95 backdrop-blur-md border-[2.5px] border-[#E8A030] text-left text-white shadow-[4px_4px_0_0_#121210] overflow-hidden">
           {/* CCTV Monitor Topbar */}
-          <div className="bg-[#1a1c1a] border-b border-white/20 p-2.5 flex items-center justify-between gap-1">
+          <div className="bg-[#1a1c1a] border-b border-white/20 p-2 sm:p-2.5 flex items-center justify-between gap-1">
             <div className="flex items-center gap-2 min-w-0">
               <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping shrink-0" />
               <div className="flex items-center gap-1.5 font-bold text-[11px] text-red-400 truncate">
                 <Video className="w-3.5 h-3.5 shrink-0" />
-                <span className="truncate">REC // {activeCctvFeed.videoUrl && mediaMode === 'VIDEO' ? 'LIVE VIDEO STREAM' : 'GEO CCTV CAMERA'}</span>
+                <span className="truncate">REC // {activeCctvFeed.videoUrl && mediaMode === 'VIDEO' ? 'LIVE CCTV FEED' : 'GEO CAMERA'}</span>
               </div>
             </div>
 
@@ -1162,7 +1311,7 @@ export const ScrollWorldPage: React.FC = () => {
                 key={activeCctvFeed.id + '-img'}
                 src={imgLoadError[activeCctvFeed.id] ? (activeCctvFeed.fallbackUrl || '/sample_data/images/real/blr_potholes_real.jpg') : activeCctvFeed.imageUrl}
                 alt={activeCctvFeed.name}
-                className="w-full h-full object-cover filter contrast-110 brightness-95 animate-cctv-pan"
+                className="w-full h-full object-cover filter contrast-110 brightness-95"
                 onError={() => {
                   if (!imgLoadError[activeCctvFeed.id]) {
                     setImgLoadError(prev => ({ ...prev, [activeCctvFeed.id]: true }));
@@ -1194,7 +1343,7 @@ export const ScrollWorldPage: React.FC = () => {
             <div className="absolute top-2 right-2 text-right pointer-events-none flex flex-col items-end gap-1">
               <div className="bg-[#2E8C42] text-white px-1.5 py-0.5 border border-[#CFE8D6]/40 text-[8px] font-black uppercase tracking-wider flex items-center gap-1 shadow-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                <span>REAL BENGALURU FEED</span>
+                <span>REAL FEED</span>
               </div>
               <div className="bg-black/70 px-1.5 py-0.5 border border-white/20 text-[9px] text-[#E8A030] font-bold">
                 {activeCctvFeed.zoom}
@@ -1203,22 +1352,22 @@ export const ScrollWorldPage: React.FC = () => {
 
             {/* AI Real-time Bounding Box Crosshair on Pothole */}
             <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-              <div className="relative w-36 h-22 border-2 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.7)] animate-pulse">
-                <div className="absolute -top-4 left-0 bg-red-600 text-white text-[8px] font-bold px-1.5 py-0.5 uppercase tracking-wide">
+              <div className="relative w-32 h-20 border-2 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.7)] animate-pulse">
+                <div className="absolute -top-3.5 left-0 bg-red-600 text-white text-[7px] font-bold px-1 py-0.2 uppercase tracking-wide">
                   HAZARD: {activeCctvFeed.hazardId}
                 </div>
-                <div className="absolute -bottom-4 right-0 bg-black/90 text-yellow-300 text-[8px] font-bold px-1 border border-yellow-500/50">
+                <div className="absolute -bottom-3.5 right-0 bg-black/90 text-yellow-300 text-[7px] font-bold px-1 border border-yellow-500/50">
                   DEPTH: {activeCctvFeed.hazardDepth}
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                  <div className="w-2 h-2 rounded-full bg-red-500" />
                 </div>
               </div>
             </div>
 
             {/* Bottom Feed Label */}
             <div className="absolute bottom-1 left-2 right-2 flex items-center justify-between text-[9px] font-mono bg-black/80 px-2 py-1 text-slate-200 pointer-events-none border border-white/10">
-              <span className="truncate max-w-[200px]">{activeCctvFeed.name}</span>
+              <span className="truncate max-w-[180px]">{activeCctvFeed.name}</span>
               <span className="text-[#E8A030] font-bold shrink-0">{activeCctvFeed.region}</span>
             </div>
           </div>
@@ -1240,7 +1389,7 @@ export const ScrollWorldPage: React.FC = () => {
                         setMediaMode('PHOTO');
                       }
                     }}
-                    className={`flex-1 py-1 px-1.5 text-[9px] font-bold border transition-colors cursor-pointer text-center truncate ${
+                    className={`flex-1 py-1 px-1 text-[9px] font-bold border transition-colors cursor-pointer text-center truncate ${
                       isSelected
                         ? 'bg-[#E8A030] text-[#121210] border-[#121210]'
                         : 'bg-white/10 hover:bg-white/20 text-slate-300 border-white/20'
@@ -1258,15 +1407,25 @@ export const ScrollWorldPage: React.FC = () => {
 
       {/* 6. Bottom Timeline Scrubber Navigation Bar */}
       <div className="absolute bottom-3 left-4 right-4 z-20">
-        <div className="brut bg-[#121210] border-2 border-[#CFE8D6] p-2.5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-[4px_4px_0_0_#2E8C42]">
+        <div className="brut bg-[#121210] border-2 border-[#CFE8D6] p-2.5 flex flex-col sm:flex-row items-center justify-between gap-2.5 shadow-[4px_4px_0_0_#2E8C42]">
+          {/* Quick Prev / Next + Waypoint Buttons */}
           <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
+            <button
+              onClick={jumpPrevWaypoint}
+              disabled={activeWaypointIndex === 0}
+              className="p-1 border border-white/20 bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed text-white cursor-pointer"
+              title="Previous Chapter"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
+
             {WAYPOINTS.map((wp, idx) => {
               const isActive = activeWaypointIndex === idx;
               return (
                 <button
                   key={wp.id}
                   onClick={() => jumpToWaypoint(idx)}
-                  className={`px-2.5 py-1 text-[10px] font-extrabold whitespace-nowrap transition-all border cursor-pointer ${
+                  className={`px-2 py-1 text-[10px] font-extrabold whitespace-nowrap transition-all border cursor-pointer ${
                     isActive
                       ? 'bg-[#E8A030] text-[#121210] border-[#121210] shadow-[2px_2px_0_0_#ffffff]'
                       : 'bg-white/10 hover:bg-white/20 text-slate-300 border-white/20'
@@ -1276,9 +1435,19 @@ export const ScrollWorldPage: React.FC = () => {
                 </button>
               );
             })}
+
+            <button
+              onClick={jumpNextWaypoint}
+              disabled={activeWaypointIndex === WAYPOINTS.length - 1}
+              className="p-1 border border-white/20 bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed text-white cursor-pointer"
+              title="Next Chapter"
+            >
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
           </div>
 
-          <div className="flex items-center gap-3 w-full sm:w-72">
+          {/* Interactive Range Scrubber */}
+          <div className="flex items-center gap-2.5 w-full sm:w-72">
             <span className="text-[10px] text-slate-400 font-bold">SCRUB:</span>
             <input
               type="range"
@@ -1287,8 +1456,8 @@ export const ScrollWorldPage: React.FC = () => {
               step="0.001"
               value={scrollProgress}
               onChange={(e) => {
-                setIsAutoPilot(false);
-                setScrollProgress(parseFloat(e.target.value));
+                const val = parseFloat(e.target.value);
+                seekProgress(val, true, true);
               }}
               className="flex-1 accent-[#E8A030] cursor-ew-resize h-2 bg-white/20 rounded-none"
             />
@@ -1299,7 +1468,7 @@ export const ScrollWorldPage: React.FC = () => {
 
           <button
             onClick={() => setCurrentView('GODS_EYE')}
-            className="hidden md:flex items-center gap-1.5 px-3 py-1 bg-[#2E8C42] hover:bg-[#257336] text-white text-[10px] font-extrabold border border-white cursor-pointer"
+            className="hidden md:flex items-center gap-1.5 px-3 py-1 bg-[#2E8C42] hover:bg-[#257336] text-white text-[10px] font-extrabold border border-white cursor-pointer shrink-0"
           >
             <span>GOD'S EYE RADAR</span>
             <ArrowRight className="w-3 h-3" />
