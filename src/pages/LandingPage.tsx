@@ -11,8 +11,7 @@ import {
   RotateCcw,
   CheckCircle2,
   Clock,
-  Compass,
-  Mic
+  Compass
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { CITY_METRICS } from '../data/mockData';
@@ -20,7 +19,7 @@ import { formatINR } from '../utils/formatters';
 import { FolderFloat } from '../components/common/FolderFloat';
 
 export const LandingPage: React.FC = () => {
-  const { setCurrentView, incidents, selectIncidentById, resetDemo, setIsVoiceChatOpen } = useApp();
+  const { setCurrentView, incidents, selectIncidentById, resetDemo } = useApp();
 
   const stepsStory = [
     { step: '01', title: 'DETECT', desc: 'Stereoscopic depth & asphalt cracking via citizen photo/video', icon: Cpu, badge: 'AI VISION' },
@@ -71,14 +70,6 @@ export const LandingPage: React.FC = () => {
               >
                 <Compass className="w-4 h-4 animate-spin" style={{ animationDuration: '10s' }} />
                 <span>⚡ 3D SCROLL WORLD</span>
-              </button>
-
-              <button
-                onClick={() => setIsVoiceChatOpen(true)}
-                className="brut bg-[#121210] text-[#CFE8D6] hover:bg-[#1a1c1a] px-5 py-3 font-display font-extrabold text-sm sm:text-base btn-press cursor-pointer flex items-center gap-2 shadow-[4px_4px_0_0_#2E8C42]"
-              >
-                <Mic className="w-4 h-4 text-emerald-400" />
-                <span>🎙️ TALK TO VOICE AI</span>
               </button>
 
 

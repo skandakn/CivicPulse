@@ -10,8 +10,7 @@ import {
   ChevronDown,
   Plus,
   Compass,
-  LogIn,
-  Mic
+  LogIn
 } from 'lucide-react';
 import { useApp, UserRole } from '../../context/AppContext';
 import { useAuthSession } from '../../context/AuthContext';
@@ -39,9 +38,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     setCurrentView,
     currentView,
     incidents,
-    addToast,
-    isVoiceChatOpen,
-    setIsVoiceChatOpen
+    addToast
   } = useApp();
 
   const {
@@ -125,8 +122,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     COMPLAINTS: { title: 'Citizen Grievances & SLA', badge1: 'SAHAYA 2.0' },
     ANALYTICS: { title: 'Bengaluru Civic Analytics', badge1: 'AUDIT METRICS' },
     DEMO: { title: 'Hackathon Evaluation Lab', badge1: 'DETERMINISTIC' },
-    SCROLL_WORLD: { title: '3D Scroll-World Flight', badge1: 'INTERACTIVE 3D' },
-    VOICE_CHAT: { title: 'AI Voice Chatbot & Helpline', badge1: 'VOICE REPLIES', badge2: 'GEMINI 3.8' }
+    SCROLL_WORLD: { title: '3D Scroll-World Flight', badge1: 'INTERACTIVE 3D' }
   };
 
   const activeHeader = viewTitles[currentView] || { title: 'CivicPulse Ledger', badge1: 'CIVIC OPS' };
@@ -219,16 +215,6 @@ export const TopBar: React.FC<TopBarProps> = ({
         >
           <Compass className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '10s' }} />
           <span>3D WORLD</span>
-        </button>
-
-        {/* Voice Chatbot Button */}
-        <button
-          onClick={() => setIsVoiceChatOpen(!isVoiceChatOpen)}
-          className="hidden sm:flex brut bg-[#121210] text-[#CFE8D6] hover:bg-black items-center gap-1.5 px-3 py-1.5 text-xs font-display font-extrabold btn-press cursor-pointer border border-[#CFE8D6]"
-          title="Open 24/7 AI Voice Assistant (Replies with Voice)"
-        >
-          <Mic className="w-3.5 h-3.5 text-emerald-400" />
-          <span>VOICE AI</span>
         </button>
 
 

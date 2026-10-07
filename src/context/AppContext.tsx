@@ -59,8 +59,6 @@ interface AppContextType {
   filteredIncidents: PotholeIncident[];
   isJudgeDemoOpen: boolean;
   setIsJudgeDemoOpen: (open: boolean) => void;
-  isVoiceChatOpen: boolean;
-  setIsVoiceChatOpen: (open: boolean) => void;
   loadDemoCase: () => void;
   resetDemo: () => void;
   updateIncidentStatus: (id: string, status: PotholeIncident['status']) => void;
@@ -83,7 +81,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [userRole, setUserRole] = useState<UserRole>('CITIZEN');
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const [isJudgeDemoOpen, setIsJudgeDemoOpen] = useState<boolean>(false);
-  const [isVoiceChatOpen, setIsVoiceChatOpen] = useState<boolean>(false);
 
   // Keyboard shortcut for Cmd+K / Ctrl+K search
   useEffect(() => {
@@ -424,8 +421,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         filteredIncidents,
         isJudgeDemoOpen,
         setIsJudgeDemoOpen,
-        isVoiceChatOpen,
-        setIsVoiceChatOpen,
         loadDemoCase,
         resetDemo,
         updateIncidentStatus

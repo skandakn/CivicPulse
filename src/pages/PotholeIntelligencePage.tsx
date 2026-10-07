@@ -146,17 +146,17 @@ export const PotholeIntelligencePage: React.FC = () => {
             )}
 
             {/* Scanning Line */}
-            <div className="absolute left-0 right-0 h-1 bg-[#2E8C42] border-y border-[#121210] pointer-events-none animate-pulse" style={{ top: '48%' }} />
+            <div className="absolute left-0 right-0 h-1 bg-[#2E8C42] border-y border-[#121210] pointer-events-none animate-pulse" style={{ top: '60%' }} />
 
             {/* Interactive Bounding Polygon Overlay */}
             {showBoundingBox && (
               <div
                 className="absolute border-4 border-[#C03A3A] bg-[#C03A3A]/10 pointer-events-none transition-all duration-300 shadow-[6px_6px_0_#121210]"
                 style={{
-                  top: '25%',
-                  left: '26%',
-                  width: '48%',
-                  height: '50%'
+                  top: '38%',
+                  left: '22%',
+                  width: '56%',
+                  height: '45%'
                 }}
               >
                 {/* Reticle Marks */}
