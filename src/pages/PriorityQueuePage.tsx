@@ -7,9 +7,6 @@ import {
   Inbox,
   AlertTriangle,
   FileText,
-  Check,
-  X,
-  Info,
   ChevronRight
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
@@ -756,74 +753,6 @@ export const PriorityQueuePage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Right Action Rail ("DECIDE") */}
-                <div className="document-actions w-full xl:w-48 shrink-0 sticky top-4 space-y-4">
-                  <div className="font-mono text-[10px] font-bold tracking-widest text-[#121210]/60 uppercase">
-                    DECIDE
-                  </div>
-
-                  {/* APPROVE Button */}
-                  <button
-                    id="btn-approve"
-                    onClick={() => triggerStamp('APPROVED', '#2E8C42')}
-                    className="stamp-btn w-full bg-[#2E8C42] text-white hover:bg-[#257335]"
-                  >
-                    <Check className="w-7 h-7 stroke-[3]" />
-                    <span className="text-sm">APPROVE</span>
-                    <span className="font-mono text-[10px] opacity-80 normal-case tracking-normal font-normal">
-                      ⌘ + ↵
-                    </span>
-                  </button>
-
-                  {/* REJECT Button */}
-                  <button
-                    id="btn-reject"
-                    onClick={() => triggerStamp('REJECTED', '#C03A3A')}
-                    className="stamp-btn w-full bg-[#C03A3A] text-white hover:bg-[#a62e2e]"
-                  >
-                    <X className="w-7 h-7 stroke-[3]" />
-                    <span className="text-sm">REJECT</span>
-                    <span className="font-mono text-[10px] opacity-80 normal-case tracking-normal font-normal">
-                      ⌘ + ⌫
-                    </span>
-                  </button>
-
-                  {/* NEEDS DETAIL Button */}
-                  <button
-                    id="btn-detail"
-                    onClick={() => triggerStamp('NEEDS DETAIL', '#E8A030')}
-                    className="stamp-btn w-full bg-[#E8A030] text-[#121210] hover:bg-[#d69022]"
-                  >
-                    <Info className="w-7 h-7 stroke-[3]" />
-                    <span className="text-sm">NEEDS DETAIL</span>
-                    <span className="font-mono text-[10px] opacity-80 normal-case tracking-normal font-normal">
-                      ⌘ + D
-                    </span>
-                  </button>
-
-                  {/* Policy Check Card */}
-                  <div className="brut bg-white p-3.5 mt-4">
-                    <div className="font-mono text-[10px] font-bold tracking-widest text-[#121210]/60 uppercase border-b-2 border-[#121210]/20 pb-1 mb-2">
-                      POLICY CHECK
-                    </div>
-                    <div className="text-xs font-mono flex justify-between py-1">
-                      <span>IRC-SP-100</span>
-                      <span className="text-[#2E8C42] font-extrabold">PASS</span>
-                    </div>
-                    <div className="text-xs font-mono flex justify-between py-1">
-                      <span>Budget · PWD</span>
-                      <span className="text-[#2E8C42] font-extrabold">62%</span>
-                    </div>
-                    <div className="text-xs font-mono flex justify-between py-1">
-                      <span>Contractor DLP</span>
-                      <span className="text-[#2E8C42] font-extrabold">ACTIVE</span>
-                    </div>
-                    <div className="text-xs font-mono flex justify-between py-1">
-                      <span>SLA Risk</span>
-                      <span className="text-[#E8A030] font-extrabold">HIGH (24H)</span>
-                    </div>
-                  </div>
-                </div>
               </div>
             )}
 
