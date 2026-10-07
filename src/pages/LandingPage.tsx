@@ -9,7 +9,6 @@ import {
   Flame,
   ShieldCheck,
   RotateCcw,
-  Zap,
   CheckCircle2,
   Clock,
   Compass,
@@ -21,7 +20,7 @@ import { formatINR } from '../utils/formatters';
 import { FolderFloat } from '../components/common/FolderFloat';
 
 export const LandingPage: React.FC = () => {
-  const { setCurrentView, incidents, selectIncidentById, loadDemoCase, resetDemo, setIsVoiceChatOpen } = useApp();
+  const { setCurrentView, incidents, selectIncidentById, resetDemo, setIsVoiceChatOpen } = useApp();
 
   const stepsStory = [
     { step: '01', title: 'DETECT', desc: 'Stereoscopic depth & asphalt cracking via citizen photo/video', icon: Cpu, badge: 'AI VISION' },
@@ -82,13 +81,6 @@ export const LandingPage: React.FC = () => {
                 <span>🎙️ TALK TO VOICE AI</span>
               </button>
 
-              <button
-                onClick={loadDemoCase}
-                className="brut bg-[#E8A030] text-[#121210] hover:bg-[#d99020] px-6 py-3 font-display font-extrabold text-sm sm:text-base btn-press cursor-pointer flex items-center gap-2"
-              >
-                <Zap className="w-4 h-4 fill-[#121210]" />
-                <span>1-CLICK JUDGE DEMO</span>
-              </button>
 
               <button
                 onClick={() => setCurrentView('PRIORITY_QUEUE')}
