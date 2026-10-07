@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   Building2,
-  ShieldAlert,
   AlertTriangle,
   Ban,
   FileText,
@@ -22,21 +21,13 @@ const QualityBadge: React.FC<{ score: number }> = ({ score }) => {
 };
 
 export const ContractorIntelligencePage: React.FC = () => {
-  const { contractors, incidents, addToast } = useApp();
+  const { contractors, incidents } = useApp();
   const [selectedContractor, setSelectedContractor] = useState<Contractor>(contractors[0]);
 
   const filtered = contractors;
 
   const incidentsByContractor = (contractorId: string) =>
     incidents.filter(i => i.contractorId === contractorId);
-
-  const handleIssueNotice = (contractor: Contractor) => {
-    addToast(
-      'Defect Liability Notice Dispatched',
-      `Legal notice issued to ${contractor.name} under Karnataka Transparency in Public Procurements Act (Clause 45.2)`,
-      'warning',
-    );
-  };
 
   const totalPenalties = contractors.reduce((s, c) => s + c.penaltiesLeviedINR, 0);
   const avgQuality = Math.round(contractors.reduce((s, c) => s + c.qualityScore, 0) / contractors.length);
@@ -285,25 +276,6 @@ export const ContractorIntelligencePage: React.FC = () => {
                 </span>
               </div>
             )}
-          </div>
-
-          {/* Action buttons */}
-          <div className="space-y-3">
-            <button
-              onClick={() => handleIssueNotice(selectedContractor)}
-              className="w-full py-3.5 brut bg-[#C03A3A] text-white hover:bg-[#a62e2e] font-display font-extrabold text-sm flex items-center justify-center gap-2 btn-press cursor-pointer"
-            >
-              <ShieldAlert className="w-4 h-4" />
-              <span>ISSUE DEFECT LIABILITY NOTICE (DLP CLAUSE 45.2)</span>
-            </button>
-            <button
-              onClick={() =>
-                addToast('Audit Dossier Exported', `PDF generated for ${selectedContractor.name}`, 'info')
-              }
-              className="w-full py-2.5 brut bg-white text-[#121210] hover:bg-zinc-100 font-display font-extrabold text-xs btn-press cursor-pointer"
-            >
-              DOWNLOAD COMPREHENSIVE CONTRACTOR AUDIT DOSSIER
-            </button>
           </div>
         </div>
       </div>
